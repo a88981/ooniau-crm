@@ -1543,7 +1543,7 @@ function renderApps(list) {
         <div>電話：${a.phone||'—'}</div>
         ${a.email ? '<div>Email：'+a.email+'</div>' : '<div>Email：—</div>'}
         ${a.bday ? '<div>生日：'+a.bday+'</div>' : '<div>生日：—</div>'}
-        <div style="grid-column:1/-1">收件：${a.address||'未填'}</div>
+        <div>地址：${a.address||'—'}</div>
         ${a.reason ? '<div style="grid-column:1/-1">訂閱原因：'+a.reason+'</div>' : ''}
       </div>
       ${a.screenshot ? `<div style="margin-bottom:.8rem"><a href="${a.screenshot}" target="_blank" style="font-size:.75rem;color:var(--purple);letter-spacing:.05em">📷 查看訂閱截圖 ↗</a></div>` : ''}
