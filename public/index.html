@@ -1072,7 +1072,7 @@ function renderApps(list) {
         <div>收件：${a.shipType||'不需要'}${a.address?' · '+a.address:''}${a.convenience?' · '+a.convenience:''}</div>
         ${a.reason ? '<div style="grid-column:1/-1">訂閱原因：'+a.reason+'</div>' : ''}
       </div>
-      ${a.screenshot ? `<div style="margin-bottom:.8rem"><a href="${a.screenshot}" target="_blank"><img src="${a.screenshot}" style="max-height:120px;border-radius:3px;border:0.5px solid var(--gold-dim)" alt="截圖"></a></div>` : ''}
+      ${a.screenshot ? `<div style="margin-bottom:.8rem"><a href="${a.screenshot}" target="_blank" style="font-size:.75rem;color:var(--purple);letter-spacing:.05em">📷 查看訂閱截圖 ↗</a></div>` : ''}
       ${a.status === '待審核' ? `<div style="display:flex;gap:8px">
         <button class="btn btn-del btn-sm" onclick="reviewApp('${a.id}','reject')">拒絕</button>
         <button class="btn btn-green btn-sm" onclick="reviewApp('${a.id}','approve')">核准</button>
