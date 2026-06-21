@@ -45,13 +45,13 @@ module.exports = async function handler(req, res) {
         body: JSON.stringify({
           parent: { database_id: REWARDS_DB },
           properties: {
+            '觸發日期': { title:     [{ text:{ content: triggerDate||'' } }] },
             '會員':     { relation:  [{ id: memberId }] },
             '獎勵類型': { select:    { name: type } },
             '里程碑':   { select:    { name: milestone } },
-            '兌換內容': { select:    { name: rewardItem||'' } },
+            ...(rewardItem ? { '兌換內容': { select: { name: rewardItem } } } : {}),
             '指定插圖': { rich_text: [{ text:{ content: illustration||'' } }] },
             '已兌換':   { checkbox:  false },
-            '觸發日期': { date:      { start: triggerDate } },
             '備註':     { rich_text: [{ text:{ content: note||'' } }] },
           },
         }),
