@@ -602,7 +602,7 @@ async function apiFetch(path,opts={}){
 }
 async function loadAll(){
   try{
-    const [m,h,rw]=await Promise.all([apiFetch('/api/members'),apiFetch('/api/holi天'),apiFetch('/api/rewards')]);
+    const [m,h,rw]=await Promise.all([apiFetch('/api/members'),apiFetch('/api/holidays'),apiFetch('/api/rewards')]);
     members=m; holi天=h; allRewards=rw;
     renderDash(); render會員(members); render提醒(curFilter); renderCal();
   }catch(e){ showToast('⚠ 無法連線，請確認設定'); }
@@ -1011,7 +1011,7 @@ async function saveHoliday(){
   const name=document.getElementById('nh-name').value.trim(), date=document.getElementById('nh-date').value;
   if(!name||!date){showToast('請填寫名稱和日期');return;}
   try{
-    const c=await apiFetch('/api/holi天',{method:'POST',body:{name,date,type:document.getElementById('nh-type').value,note:document.getElementById('nh-note').value}});
+    const c=await apiFetch('/api/holidays',{method:'POST',body:{name,date,type:document.getElementById('nh-type').value,note:document.getElementById('nh-note').value}});
     holi天.push(c); closeM('add-holiday');
     ['nh-name','nh-date','nh-note'].forEach(id=>document.getElementById(id).value='');
     renderCal(); render提醒(curFilter); showToast('✦ 節日已新增');
