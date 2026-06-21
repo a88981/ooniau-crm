@@ -265,7 +265,7 @@ tr:hover td{background:#FEFBF2}
       <div class="ni" id="nav-members"  onclick="go('members',this)">  <span>◎</span>會員列表</div>
       <div class="ni" id="nav-reminders" onclick="go('reminders',this)"><span>◇</span>提醒中心</div>
       <div class="ni" id="nav-calendar"  onclick="go('calendar',this)"> <span>△</span>節日日曆</div>
-      <div class="ni" onclick="go('review',this)">   <span>◉</span>審核申請 <span id="review-badge" style="display:none;background:#E24B4A;color:#fff;font-size:.55rem;padding:1px 6px;border-radius:10px;margin-left:4px"></span></div>
+      <div class="ni" onclick="go('review',this);loadApplications(currentAppFilter)">   <span>◉</span>審核申請 <span id="review-badge" style="display:none;background:#E24B4A;color:#fff;font-size:.55rem;padding:1px 6px;border-radius:10px;margin-left:4px"></span></div>
     </nav>
     <div class="sb-foot">🐈‍⬛ Ooniau 暖暖</div>
   </div>
@@ -857,7 +857,7 @@ function refreshDrwInfo(m){
   const lvSel = document.getElementById('pay-level');
   if(lvSel) lvSel.value = m.level || '';
 }
-function closeDrw(){ document.getElementById('drw-bg').classList.remove('open'); document.getElementById('drw').classList.remove('open'); drw會員Id=null; }
+function closeDrw(){ document.getElementById('drw-bg').classList.remove('open'); document.getElementById('drw').classList.remove('open'); drw會員Id=null; drw會員Payments=[]; drw會員Rewards=[]; }
 function openEditFromDrw(){ const m=members.find(x=>x.id===drw會員Id); if(m){ closeDrw(); edit會員(m); } }
 
 // ── MEMBER MODAL ─────────────────────────────────────────
@@ -951,13 +951,16 @@ async function delete會員(){
   const id=drw會員Id||document.getElementById('nm-id').value;
   const delM = members.find(m=>m.id===id);
   if(!id||!confirm(`確定要刪除「${delM?.name||'這位會員'}」？此操作無法復原。`))return;
+  // disable 兩個刪除按鈕防重複點擊
+  const delBtns = [document.getElementById('nm-del'), document.querySelector('.drw-foot .btn-del')].filter(Boolean);
+  delBtns.forEach(b=>b.disabled=true);
   try{
     await apiFetch(`/api/members?id=${id}`,{method:'DELETE'});
     members=members.filter(m=>m.id!==id);
-    allRewards=allRewards.filter(r=>r.memberId!==id); // 清掉該會員的獎勵
+    allRewards=allRewards.filter(r=>r.memberId!==id);
     showToast('已刪除');
     closeM('add-member'); closeDrw(); renderDash(); filterM(document.getElementById('m-search')?.value||''); render提醒(curFilter); renderCal();
-  }catch(e){showToast('⚠ 刪除失敗');}
+  }catch(e){ delBtns.forEach(b=>b.disabled=false); showToast('⚠ 刪除失敗');}
 }
 
 // ── DASHBOARD ────────────────────────────────────────────
@@ -1118,7 +1121,9 @@ async function addPayment(){
   if(btn) btn.disabled=true;
   try{
     const p=await apiFetch('/api/payments',{method:'POST',body:{ memberId:drw會員Id, dateStart, dateEnd, level, note:document.getElementById('pay-note').value }});
-    drw會員Payments.unshift(p); renderPayments(drw會員Payments);
+    drw會員Payments.push(p);
+    drw會員Payments.sort((a,b)=>(a.dateStart||a.date||'')>(b.dateStart||b.date||'')?1:-1);
+    renderPayments(drw會員Payments);
     // 自動帶入下一筆開始日
     const nextStart = new Date(dateEnd);
     nextStart.setDate(nextStart.getDate()+1);
@@ -1456,7 +1461,7 @@ function renderCal(){
     const hasBd=members.some(m=>m.bday&&m.bday.slice(5)===ds.slice(5));
     const hasH=holi天.some(h=>h.date===ds);
     const hasEx=members.some(m=>m.exp===ds);
-    const hasRw=allRewards.some(r=>r.triggerDate===ds&&!r.redeemed&&r.triggerDate<=TODAY.toISOString().slice(0,10));
+    const hasRw=allRewards.some(r=>r.triggerDate===ds&&!r.redeemed);
     let dots='';
     if(hasBd) dots+=`<div class="d dp"></div>`;
     if(hasH)  dots+=`<div class="d dg"></div>`;
@@ -1476,7 +1481,7 @@ function showMonthEp(){
   holi天.filter(h=>h.date.startsWith(ms)).forEach(h=>{
     items.push({day:parseInt(h.date.slice(8)), html:`<div class="epi"><div class="epidot" style="background:#D4A800"></div><div><div class="epiname">${h.name}</div><div class="epitype">${h.type} · ${h.date.slice(8)}日</div></div></div>`});
   });
-  members.filter(m=>m.bday&&m.bday.length>=10&&`${calY}-${m.bday.slice(5,10).padStart(5,'0')}`.startsWith(ms)).forEach(m=>{
+  members.filter(m=>m.bday&&m.bday.length>=10&&m.bday.slice(5,7)===String(calMo+1).padStart(2,'0')).forEach(m=>{
     items.push({day:parseInt(m.bday.slice(8)), html:`<div class="epi"><div class="epidot" style="background:#9080C0"></div><div><div class="epiname">${m.name} 生日</div><div class="epitype">${m.bday.slice(8)}日</div></div></div>`});
   });
   members.filter(m=>m.exp&&m.exp.startsWith(ms)).forEach(m=>{
@@ -1573,7 +1578,7 @@ function renderApps(list) {
 }
 
 function filterApps(status, el) {
-  document.querySelectorAll('#view-review .filter-row .btn, #view-review .ptop .btn').forEach(b => b.classList.remove('f-on'));
+  document.querySelectorAll('#view-review .ptop .btn').forEach(b => b.classList.remove('f-on'));
   el.classList.add('f-on');
   loadApplications(status);
 }
@@ -1642,7 +1647,8 @@ function openAddRewardModal() {
   const lvInfo = LEVELS[m.level] || {};
   // 預設今天
   document.getElementById('ar-trigger').value = new Date().toISOString().slice(0,10);
-  // 預設里程碑
+  // 清空類型和里程碑
+  document.getElementById('ar-type').value = '';
   document.getElementById('ar-milestone').value = '';
   document.getElementById('ar-note').value = '';
   document.getElementById('ar-illus').value = '';
