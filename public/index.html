@@ -903,7 +903,7 @@ function editReward(rewardId, level) {
   document.getElementById('rw-illus').value = rw.illustration || '';
   document.getElementById('rw-note').value = rw.note || '';
   const foot = document.querySelector('#modal-reward .mdfoot');
-  foot.innerHTML = '<button class="btn btn-del" onclick="cancelRedeem('' + rewardId + '')">取消兌換</button><button class="btn" onclick="closeM(\'reward\')">關閉</button><button class="btn btn-g" onclick="confirmRedeem()">儲存</button>';
+  foot.innerHTML = `<button class="btn btn-del" onclick="cancelRedeem('${rewardId}')">取消兌換</button><button class="btn" onclick="closeM('reward')">關閉</button><button class="btn btn-g" onclick="confirmRedeem()">儲存</button>`;
   openM('reward');
 }
 
