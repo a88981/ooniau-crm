@@ -288,6 +288,8 @@ tr:hover td{background:#FEFBF2}
         <div><div class="plabel">會員</div><div class="ptitle">會員列表</div></div>
         <div class="ptop-actions">
           <button class="btn" onclick="exportCSV()">↓ 匯出 CSV</button>
+          <button class="btn" onclick="document.getElementById('csv-import-input').click()">↑ 匯入 CSV</button>
+          <input type="file" id="csv-import-input" accept=".csv" style="display:none" onchange="importCSV(this)">
           <button class="btn btn-g" onclick="openAdd會員()">＋ 新增會員</button>
         </div>
       </div>
@@ -592,6 +594,20 @@ tr:hover td{background:#FEFBF2}
     <div class="mdfoot">
       <button class="btn" onclick="closeM('add-reward')">取消</button>
       <button class="btn btn-g" onclick="confirmAddReward()">新增</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal CSV 匯入預覽 -->
+<div class="mdbg" id="modal-csv-import">
+  <div class="md" style="width:520px;max-height:80vh;overflow-y:auto">
+    <div class="mdtitle">匯入 CSV 預覽</div>
+    <div id="csv-preview-info" style="font-size:.72rem;color:var(--th);margin-bottom:.8rem"></div>
+    <div id="csv-preview-list" style="max-height:320px;overflow-y:auto;margin-bottom:1rem"></div>
+    <div id="csv-import-warning" style="font-size:.7rem;color:#A32D2D;margin-bottom:.8rem;display:none"></div>
+    <div class="mdfoot">
+      <button class="btn" onclick="closeM('csv-import')">取消</button>
+      <button class="btn btn-g" id="csv-confirm-btn" onclick="confirmImportCSV()">確認匯入</button>
     </div>
   </div>
 </div>
@@ -1302,6 +1318,109 @@ async function confirmAddReward() {
     closeM('add-reward');
     showToast('✦ 已新增獎勵');
   } catch(e) { showToast('⚠ 新增失敗'); }
+}
+
+
+// ── CSV 匯入 ─────────────────────────────────────────────
+let csvImportData = [];
+
+function importCSV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result.replace(/^﻿/, ''); // 移除 BOM
+    const lines = text.split('\n').map(l => l.replace('\r', '')).filter(l => l.trim());
+    if (lines.length < 2) { showToast('⚠ CSV 內容為空'); return; }
+
+    // 解析 CSV（處理引號內的逗號）
+    function parseRow(row) {
+      const cols = [];
+      let cur = '', inQ = false;
+      for (let i = 0; i < row.length; i++) {
+        const c = row[i];
+        if (c === '"') {
+          if (inQ && row[i+1] === '"') { cur += '"'; i++; }
+          else inQ = !inQ;
+        } else if (c === ',' && !inQ) { cols.push(cur); cur = ''; }
+        else cur += c;
+      }
+      cols.push(cur);
+      return cols;
+    }
+
+    const header = parseRow(lines[0]);
+    // 欄位對應（依 exportCSV 的順序）
+    const colMap = {
+      '姓名': 'name', 'YouTube會員名稱': 'memberName', '電話': 'phone',
+      'Email': 'email', '生日': 'bday', '會員等級': 'level', '方案': 'plan',
+      '加入日期': 'join', '到期日': 'exp', '收件方式': 'shipType',
+      '宅配地址': 'address', '超商門市': 'convenience', '備註': 'note',
+    };
+    const idxMap = {};
+    header.forEach((h, i) => { if (colMap[h]) idxMap[colMap[h]] = i; });
+
+    if (!idxMap.name) { showToast('⚠ 找不到「姓名」欄位，請確認格式'); return; }
+
+    csvImportData = lines.slice(1).map(line => {
+      const cols = parseRow(line);
+      const obj = {};
+      Object.entries(idxMap).forEach(([field, idx]) => { obj[field] = cols[idx] || ''; });
+      return obj;
+    }).filter(r => r.name);
+
+    if (!csvImportData.length) { showToast('⚠ 沒有有效資料'); return; }
+
+    // 顯示預覽
+    const existing = new Set(members.map(m => m.memberName).filter(Boolean));
+    const newCount = csvImportData.filter(r => !existing.has(r.memberName)).length;
+    const updateCount = csvImportData.filter(r => existing.has(r.memberName)).length;
+
+    document.getElementById('csv-preview-info').innerHTML =
+      `共 <b>${csvImportData.length}</b> 筆 ・ 新增 <b>${newCount}</b> 筆 ・ 更新 <b>${updateCount}</b> 筆（依 YouTube 名稱比對）`;
+
+    document.getElementById('csv-preview-list').innerHTML = csvImportData.map(r => `
+      <div style="display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:.5px solid var(--gold-dim);font-size:.72rem">
+        <span style="flex:1;font-weight:500;color:var(--pd)">${r.name}</span>
+        <span style="color:var(--tm);flex:1">${r.memberName||'—'}</span>
+        <span>${r.level||'—'}</span>
+        <span style="color:${existing.has(r.memberName)?'var(--purple)':'var(--green)'};font-size:.65rem">
+          ${existing.has(r.memberName)?'更新':'新增'}
+        </span>
+      </div>`).join('');
+
+    document.getElementById('csv-import-warning').style.display = updateCount ? 'block' : 'none';
+    document.getElementById('csv-import-warning').textContent = `⚠ 更新的 ${updateCount} 筆會覆蓋現有資料`;
+    openM('csv-import');
+    input.value = ''; // 清除 file input
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+async function confirmImportCSV() {
+  const btn = document.getElementById('csv-confirm-btn');
+  btn.disabled = true; btn.textContent = '匯入中…';
+  let success = 0, fail = 0;
+  for (const row of csvImportData) {
+    try {
+      const existing = members.find(m => m.memberName && m.memberName === row.memberName);
+      if (existing) {
+        // 更新現有會員
+        const updated = await apiFetch(`/api/members?id=${existing.id}`, { method: 'PATCH', body: row });
+        members = members.map(m => m.id === existing.id ? updated : m);
+      } else {
+        // 新增會員
+        const created = await apiFetch('/api/members', { method: 'POST', body: row });
+        members.push(created);
+      }
+      success++;
+    } catch(e) { fail++; }
+  }
+  btn.disabled = false; btn.textContent = '確認匯入';
+  closeM('csv-import');
+  renderDash(); render會員(members); render提醒(curFilter); renderCal();
+  showToast(`✦ 匯入完成：${success} 筆成功${fail ? '，' + fail + ' 筆失敗' : ''}`);
+  csvImportData = [];
 }
 
 // ── INIT ─────────────────────────────────────────────────
