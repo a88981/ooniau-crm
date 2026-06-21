@@ -22,9 +22,7 @@ function pageToApp(p) {
     plan:        pr['方案類型']?.select?.name || '',
     reason:      pr['訂閱原因']?.rich_text?.[0]?.plain_text || '',
     joinDate:    pr['加入日期']?.date?.start || '',
-    shipType:    pr['收件方式']?.select?.name || '',
-    address:     pr['宅配地址']?.rich_text?.[0]?.plain_text || '',
-    convenience: pr['超商門市']?.rich_text?.[0]?.plain_text || '',
+    address:     pr['地址']?.rich_text?.[0]?.plain_text || '',
     screenshot:  pr['截圖網址']?.url || '',
     orderNos:    pr['訂單編號']?.rich_text?.[0]?.plain_text || '',
     status:      pr['狀態']?.select?.name || '待審核',
@@ -62,7 +60,7 @@ module.exports = async function handler(req, res) {
 
     // POST：新增申請
     if (req.method === 'POST') {
-      const { name, memberName, phone, email, bday, level, plan, reason, joinDate, shipType, address, convenience, screenshot, orderNos } = req.body;
+      const { name, memberName, phone, email, bday, level, plan, reason, joinDate, address, screenshot, orderNos } = req.body;
       const r = await fetch('https://api.notion.com/v1/pages', {
         method: 'POST', headers: h,
         body: JSON.stringify({
@@ -137,6 +135,7 @@ module.exports = async function handler(req, res) {
                 '會員到期日': { date: { start: expDate } },
                 '方案類型':   { select: { name: app.plan } },
                 '會員等級':   { select: { name: app.level } },
+                ...(app.address ? { '地址': { rich_text: [{ text: { content: app.address } }] } } : {}),
                 ...(app.orderNos ? { '訂單編號': { rich_text: [{ text: { content: app.orderNos } }] } } : {}),
               },
             }),
