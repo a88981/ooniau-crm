@@ -433,9 +433,10 @@ tr:hover td{background:#FEFBF2}
     <div class="dsec">
       <div class="dsec-label">獎勵兌換</div>
       <div id="reward-list"><div class="loading"><div class="spinner"></div></div></div>
-      <div style="margin-top:.6rem">
+      <div style="margin-top:.6rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
         <button class="btn btn-sm btn-g" onclick="syncRewards()">↻ 同步獎勵</button>
-        <span style="font-size:.58rem;color:var(--th);margin-left:.5rem">根據加入日期自動產生應有的獎勵筆數</span>
+        <button class="btn btn-sm" onclick="openAddRewardModal()">＋ 手動新增</button>
+        <span style="font-size:.58rem;color:var(--th)">根據加入日期自動產生應有的獎勵筆數</span>
       </div>
     </div>
 
@@ -540,6 +541,47 @@ tr:hover td{background:#FEFBF2}
     <div class="mdfoot">
       <button class="btn" onclick="closeM('reward')">取消</button>
       <button class="btn btn-g" onclick="confirmRedeem()">標記已兌換</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 手動新增獎勵 -->
+<div class="mdbg" id="modal-add-reward">
+  <div class="md" style="width:380px">
+    <div class="mdtitle">手動新增獎勵</div>
+    <div class="fr">
+      <label class="fl">獎勵類型</label>
+      <select class="fi" id="ar-type" onchange="arTypeChange()">
+        <option value="3個月獎勵">3個月獎勵</option>
+        <option value="6個月獎勵">6個月獎勵</option>
+        <option value="9個月獎勵">9個月獎勵</option>
+        <option value="12個月獎勵">12個月獎勵（週邊）</option>
+        <option value="自訂">自訂</option>
+      </select>
+    </div>
+    <div class="fr">
+      <label class="fl">里程碑</label>
+      <input class="fi" id="ar-milestone" placeholder="例如：3個月">
+    </div>
+    <div class="fr">
+      <label class="fl">觸發日期</label>
+      <input class="fi" type="date" id="ar-trigger">
+    </div>
+    <div class="fr" id="ar-item-wrap">
+      <label class="fl">兌換項目</label>
+      <select class="fi" id="ar-item"></select>
+    </div>
+    <div class="fr" id="ar-illus-wrap" style="display:none">
+      <label class="fl">指定插圖</label>
+      <input class="fi" id="ar-illus" placeholder="例如：2024年8月暖暖插圖">
+    </div>
+    <div class="fr">
+      <label class="fl">備註</label>
+      <input class="fi" id="ar-note" placeholder="選填">
+    </div>
+    <div class="mdfoot">
+      <button class="btn" onclick="closeM('add-reward')">取消</button>
+      <button class="btn btn-g" onclick="confirmAddReward()">新增</button>
     </div>
   </div>
 </div>
@@ -882,7 +924,7 @@ async function syncRewards(){
 let redeemRewardId=null, redeem會員Level=null;
 
 function editReward(rewardId, level) {
-  const rw = drwMemberRewards.find(r => r.id === rewardId);
+  const rw = drw會員Rewards.find(r => r.id === rewardId);
   if (!rw) return;
   redeemRewardId = rewardId;
   redeem會員Level = level;
@@ -911,9 +953,9 @@ async function cancelRedeem(id) {
   if (!confirm('確定要取消這筆兌換記錄？')) return;
   try {
     const updated = await apiFetch('/api/rewards?id=' + id, { method: 'PATCH', body: { redeemed: false, redeemedAt: '', rewardItem: '', illustration: '', note: '' } });
-    drwMemberRewards = drwMemberRewards.map(r => r.id === id ? updated : r);
+    drw會員Rewards = drw會員Rewards.map(r => r.id === id ? updated : r);
     allRewards = allRewards.map(r => r.id === id ? updated : r);
-    renderRewards(drwMemberRewards, drwMemberId);
+    renderRewards(drw會員Rewards, drw會員Id);
     renderDash(); closeM('reward'); showToast('已取消兌換');
   } catch(e) { showToast('⚠ 操作失敗'); }
 }
@@ -1136,6 +1178,78 @@ async function reviewApp(id, action) {
     loadApplications(currentAppFilter);
     loadAll();
   } catch(e) { showToast('⚠ 操作失敗'); }
+}
+
+
+// ── 手動新增獎勵 ──────────────────────────────────────────
+function openAddRewardModal() {
+  const m = members.find(x => x.id === drw會員Id);
+  if (!m) return;
+  const lvInfo = LEVELS[m.level] || {};
+  // 預設今天
+  document.getElementById('ar-trigger').value = new Date().toISOString().slice(0,10);
+  // 預設里程碑
+  document.getElementById('ar-milestone').value = '';
+  document.getElementById('ar-note').value = '';
+  document.getElementById('ar-illus').value = '';
+  // 填兌換項目選項
+  const sel = document.getElementById('ar-item');
+  const items = lvInfo.items || ['相印小卡'];
+  sel.innerHTML = items.map(i => `<option value="${i}">${i}</option>`).join('');
+  // 顯示/隱藏插圖欄
+  document.getElementById('ar-illus-wrap').style.display = lvInfo.hasIllus ? 'block' : 'none';
+  document.getElementById('ar-item-wrap').style.display = 'block';
+  // 同步里程碑預設
+  arTypeChange();
+  openM('add-reward');
+}
+
+function arTypeChange() {
+  const type = document.getElementById('ar-type').value;
+  const is12 = type === '12個月獎勵';
+  document.getElementById('ar-item-wrap').style.display = is12 ? 'none' : 'block';
+  document.getElementById('ar-illus-wrap').style.display = 'none';
+  // 自動帶入里程碑
+  const milestoneMap = {
+    '3個月獎勵': '3個月', '6個月獎勵': '6個月',
+    '9個月獎勵': '9個月', '12個月獎勵': '12個月',
+  };
+  if (milestoneMap[type]) {
+    document.getElementById('ar-milestone').value = milestoneMap[type];
+  }
+  // 若是 LV4 以上且非12月，顯示插圖欄
+  const m = members.find(x => x.id === drw會員Id);
+  const lvInfo = LEVELS[m?.level] || {};
+  if (!is12 && lvInfo.hasIllus) {
+    document.getElementById('ar-illus-wrap').style.display = 'block';
+  }
+}
+
+async function confirmAddReward() {
+  const type = document.getElementById('ar-type').value;
+  const milestone = document.getElementById('ar-milestone').value.trim();
+  const triggerDate = document.getElementById('ar-trigger').value;
+  const note = document.getElementById('ar-note').value.trim();
+  const is12 = type === '12個月獎勵';
+  const rewardItem = is12 ? '專屬週邊' : document.getElementById('ar-item').value;
+  const m = members.find(x => x.id === drw會員Id);
+  const lvInfo = LEVELS[m?.level] || {};
+  const illustration = (!is12 && lvInfo.hasIllus) ? document.getElementById('ar-illus').value.trim() : '';
+  if (!milestone) { showToast('請填寫里程碑'); return; }
+  if (!triggerDate) { showToast('請選擇觸發日期'); return; }
+  try {
+    const created = await apiFetch('/api/rewards', {
+      method: 'POST',
+      body: { memberId: drw會員Id, type, milestone, rewardItem, illustration, triggerDate, note }
+    });
+    drw會員Rewards.push(created);
+    drw會員Rewards.sort((a,b) => a.triggerDate > b.triggerDate ? 1 : -1);
+    allRewards.push(created);
+    renderRewards(drw會員Rewards, drw會員Id);
+    renderDash();
+    closeM('add-reward');
+    showToast('✦ 已新增獎勵');
+  } catch(e) { showToast('⚠ 新增失敗'); }
 }
 
 // ── INIT ─────────────────────────────────────────────────
