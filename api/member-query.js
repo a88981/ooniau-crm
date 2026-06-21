@@ -1,5 +1,5 @@
 // api/member-query.js
-// 用訂單編號查詢會員獎勵（公開 API，不需要 auth）
+// 公開 API：用訂單編號或手機號碼查詢會員獎勵
 
 const NOTION_TOKEN = process.env.NOTION_TOKEN;
 const MEMBERS_DB   = process.env.NOTION_MEMBERS_DB;
@@ -11,6 +11,23 @@ const h = {
   'Notion-Version': '2022-06-28',
 };
 
+// 拉出所有會員（最多 200 筆，分頁）
+async function getAllMembers() {
+  let results = [], cursor;
+  do {
+    const body = { page_size: 100 };
+    if (cursor) body.start_cursor = cursor;
+    const r = await fetch(`https://api.notion.com/v1/databases/${MEMBERS_DB}/query`, {
+      method: 'POST', headers: h, body: JSON.stringify(body),
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(JSON.stringify(d));
+    results = results.concat(d.results.filter(p => !p.archived));
+    cursor = d.has_more ? d.next_cursor : null;
+  } while (cursor);
+  return results;
+}
+
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
@@ -18,36 +35,47 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { orderNo } = req.query;
-  if (!orderNo) return res.status(400).json({ error: '請提供訂單編號' });
+  const { orderNo, phone } = req.query;
+  if (!orderNo && !phone) return res.status(400).json({ error: '請提供訂單編號或手機號碼' });
 
   try {
-    // 1. 用訂單編號查會員
-    const mRes = await fetch(`https://api.notion.com/v1/databases/${MEMBERS_DB}/query`, {
-      method: 'POST', headers: h,
-      body: JSON.stringify({
-        filter: { property: '訂單編號', rich_text: { equals: orderNo.trim() } },
-        page_size: 1,
-      }),
-    });
-    const mData = await mRes.json();
-    if (!mRes.ok) return res.status(502).json({ error: mData });
+    // 拉所有會員，在後端比對
+    const pages = await getAllMembers();
 
-    const pages = mData.results.filter(p => !p.archived);
-    if (!pages.length) return res.status(404).json({ error: '找不到此訂單編號的會員' });
+    let page = null;
 
-    const p = pages[0];
-    const pr = p.properties;
+    if (orderNo) {
+      const target = orderNo.trim();
+      page = pages.find(p => {
+        const val = p.properties['訂單編號']?.rich_text?.[0]?.plain_text || '';
+        // 逗號分隔，比對每一筆
+        return val.split(',').map(s => s.trim()).includes(target);
+      });
+    } else if (phone) {
+      const target = phone.trim().replace(/[-\s]/g, '');
+      page = pages.find(p => {
+        const val = (p.properties['電話']?.phone_number || '').replace(/[-\s]/g, '');
+        return val === target;
+      });
+    }
+
+    if (!page) {
+      const msg = orderNo ? '找不到此訂單編號的會員' : '找不到此手機號碼的會員';
+      return res.status(404).json({ error: msg });
+    }
+
+    const pr = page.properties;
     const member = {
-      id:         p.id,
-      name:       pr['姓名']?.title?.[0]?.plain_text || '',
-      level:      pr['會員等級']?.select?.name || '',
-      plan:       pr['方案類型']?.select?.name || '',
-      join:       pr['加入日期']?.date?.start || '',
-      exp:        pr['會員到期日']?.date?.start || '',
+      id:       page.id,
+      name:     pr['姓名']?.title?.[0]?.plain_text || '',
+      level:    pr['會員等級']?.select?.name || '',
+      plan:     pr['方案類型']?.select?.name || '',
+      join:     pr['加入日期']?.date?.start || '',
+      exp:      pr['會員到期日']?.date?.start || '',
+      orderNos: pr['訂單編號']?.rich_text?.[0]?.plain_text || '',
     };
 
-    // 2. 查該會員的獎勵
+    // 查獎勵
     const rRes = await fetch(`https://api.notion.com/v1/databases/${REWARDS_DB}/query`, {
       method: 'POST', headers: h,
       body: JSON.stringify({
