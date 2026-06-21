@@ -67,18 +67,18 @@ module.exports = async function handler(req, res) {
         body: JSON.stringify({
           parent: { database_id: APPLICATIONS_DB },
           properties: {
-            '姓名':          { title:      [{ text: { content: name } }] },
+            '姓名':           { title:      [{ text: { content: name } }] },
             'YouTube會員名稱': { rich_text: [{ text: { content: memberName || '' } }] },
-            '電話':          { phone_number: phone || null },
-            'Email':         { email: email || null },
-            '生日':          { date: bday ? { start: bday } : null },
-            '會員等級':      { select: { name: level } },
-            '方案類型':      { select: { name: plan } },
-            '訂閱原因':      { rich_text: [{ text: { content: reason || '' } }] },
-            '加入日期':      { date: joinDate ? { start: joinDate } : null },
-            '宅配地址':      { rich_text: [{ text: { content: address || '' } }] },
-            '截圖網址':      { url: screenshot || null },
-            '狀態':          { select: { name: '待審核' } },
+            '電話':           { phone_number: phone || null },
+            'Email':          { email: email || null },
+            '生日':           { date: bday ? { start: bday } : null },
+            '會員等級':       { select: { name: level } },
+            '方案類型':       { select: { name: plan } },
+            '訂閱原因':       { rich_text: [{ text: { content: reason || '' } }] },
+            '加入日期':       { date: joinDate ? { start: joinDate } : null },
+            '宅配地址':       { rich_text: [{ text: { content: address || '' } }] },
+            '截圖網址':       { url: screenshot || null },
+            '狀態':           { select: { name: '待審核' } },
           },
         }),
       });
@@ -109,8 +109,10 @@ module.exports = async function handler(req, res) {
         if (!appR.ok) return res.status(502).json({ error: appD });
         const app = pageToApp(appD);
 
-        // 2. 計算到期日
-        const expDate = app.plan === '單月' ? addMonths(app.joinDate, 1) : addMonths(app.joinDate, 12);
+        // 2. 計算到期日（修正：單筆=1個月，年繳=12個月）
+        const expDate = app.plan === '單筆'
+          ? addMonths(app.joinDate, 1)
+          : addMonths(app.joinDate, 12);
 
         // 3. 比對 YouTube 名稱找現有會員
         const searchR = await fetch(`https://api.notion.com/v1/databases/${MEMBERS_DB}/query`, {
@@ -124,7 +126,7 @@ module.exports = async function handler(req, res) {
         let memberId;
 
         if (searchD.results && searchD.results.length > 0) {
-          // 找到舊會員 → 更新到期日
+          // 找到舊會員 → 更新到期日、方案、收件資訊
           memberId = searchD.results[0].id;
           await fetch(`https://api.notion.com/v1/pages/${memberId}`, {
             method: 'PATCH', headers: h,
@@ -132,6 +134,10 @@ module.exports = async function handler(req, res) {
               properties: {
                 '會員到期日': { date: { start: expDate } },
                 '方案類型':   { select: { name: app.plan } },
+                '會員等級':   { select: { name: app.level } },
+                ...(app.shipType ? { '收件方式': { select: { name: app.shipType } } } : {}),
+                ...(app.address ? { '宅配地址': { rich_text: [{ text: { content: app.address } }] } } : {}),
+                ...(app.convenience ? { '超商門市': { rich_text: [{ text: { content: app.convenience } }] } } : {}),
               },
             }),
           });
@@ -162,17 +168,17 @@ module.exports = async function handler(req, res) {
           memberId = newMemberD.id;
         }
 
-        // 4. 新增繳費記錄
-        const prices = { 'LV.3 里民暖暖包': app.plan === '單月' ? 520 : 520, 'LV.4 肌肉暖暖包': app.plan === '單月' ? 1450 : 1450, 'LV.5 真蒸暖暖包': app.plan === '單月' ? 3000 : 3000 };
+        // 4. 新增訂閱記錄（對應新欄位：開始日期/結束日期/階級）
         await fetch('https://api.notion.com/v1/pages', {
           method: 'POST', headers: h,
           body: JSON.stringify({
             parent: { database_id: PAYMENTS_DB },
             properties: {
-              '繳費日期': { title: [{ text: { content: app.joinDate } }] },
+              '開始日期': { title:    [{ text: { content: app.joinDate } }] },
+              '結束日期': { date:     { start: expDate } },
+              '階級':     { select:   { name: app.level } },
+              '備註':     { rich_text:[{ text: { content: `${app.plan} 方案` } }] },
               '會員':     { relation: [{ id: memberId }] },
-              '金額':     { number: prices[app.level] || 0 },
-              '備註':     { rich_text: [{ text: { content: `${app.plan} 方案` } }] },
             },
           }),
         });
