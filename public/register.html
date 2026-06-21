@@ -217,9 +217,16 @@ body{font-family:'Noto Sans TC',sans-serif;font-size:16px;color:var(--pd);backgr
 
     </div>
 
+    <!-- 訂單編號 -->
+    <div class="card">
+      <div class="sec-title">綠界訂單編號 <span class="req">*</span></div>
+      <input class="fi" id="f-order" placeholder="請輸入綠界付款成功的訂單編號">
+      <div class="err-msg" id="e-order">請填寫訂單編號</div>
+    </div>
+
     <!-- 截圖連結 -->
     <div class="card">
-      <div class="sec-title">訂閱截圖 <span class="req">*</span></div>
+      <div class="sec-title">訂單截圖 <span class="req">*</span></div>
       <div class="link-hint">
         <strong>上傳步驟：</strong><br>
         1. 點下方按鈕前往 Imgur<br>
@@ -303,6 +310,7 @@ async function submitForm() {
     ['f-email',      'e-email'],
     ['f-bday',       'e-bday'],
     ['f-join',       'e-join'],
+    ['f-order',      'e-order'],
     ['f-screenshot', 'e-screenshot'],
   ];
   checks.forEach(([fid, eid]) => {
@@ -365,6 +373,7 @@ async function submitForm() {
       shipType:    selectedShip,
       address:     addressStr,
       convenience: cvsStr,
+      orderNos:    document.getElementById('f-order').value.trim(),
       screenshot:  document.getElementById('f-screenshot').value.trim(),
     };
 
