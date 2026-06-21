@@ -66,13 +66,15 @@ module.exports = async function handler(req, res) {
 
     const pr = page.properties;
     const member = {
-      id:       page.id,
-      name:     pr['姓名']?.title?.[0]?.plain_text || '',
-      level:    pr['會員等級']?.select?.name || '',
-      plan:     pr['方案類型']?.select?.name || '',
-      join:     pr['加入日期']?.date?.start || '',
-      exp:      pr['會員到期日']?.date?.start || '',
-      orderNos: pr['訂單編號']?.rich_text?.[0]?.plain_text || '',
+      id:         page.id,
+      name:       pr['姓名']?.title?.[0]?.plain_text || '',
+      memberName: pr['YouTube會員名稱']?.rich_text?.[0]?.plain_text || '',
+      level:      pr['會員等級']?.select?.name || '',
+      plan:       pr['方案類型']?.select?.name || '',
+      join:       pr['加入日期']?.date?.start || '',
+      exp:        pr['會員到期日']?.date?.start || '',
+      orderNos:   pr['訂單編號']?.rich_text?.[0]?.plain_text || '',
+      bday:       pr['生日']?.date?.start || '',
     };
 
     // 查獎勵
