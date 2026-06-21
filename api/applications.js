@@ -40,7 +40,7 @@ function addMonths(dateStr, months) {
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
@@ -194,6 +194,15 @@ module.exports = async function handler(req, res) {
       return res.status(400).json({ error: 'Invalid action' });
     }
 
+    if (req.method === 'DELETE') {
+      const { id } = req.query;
+      const r = await fetch(`https://api.notion.com/v1/pages/${id}`, {
+        method: 'PATCH', headers: h, body: JSON.stringify({ archived: true }),
+      });
+      const d = await r.json();
+      if (!r.ok) return res.status(502).json({ error: d });
+      return res.status(200).json({ ok: true });
+    }
     return res.status(405).json({ error: 'Method not allowed' });
   } catch (e) {
     return res.status(500).json({ error: e.message });
