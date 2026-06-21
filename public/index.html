@@ -1358,7 +1358,10 @@ function build提醒(){
   const list=[];
   members.forEach(m=>{
     const bd=天UntilBday(m.bday);
-    if(m.bday&&bd<=30&&m.exp&&天Until(m.exp)>=0) list.push({type:'birthday',icon:'🎂',title:`${m.name} 生日提醒`,sub:`${m.level} · ${m.bday.slice(5).replace('-','/')}`,天:bd,ic:'rb',urgent:bd<=7,id:m.id});
+    if(m.bday&&bd<=30&&m.exp&&天Until(m.exp)>=0){
+      const bdYear = 天UntilBday(m.bday)===0?TODAY.getFullYear():(TODAY.getMonth()+1>parseInt(m.bday.slice(5,7))||(TODAY.getMonth()+1===parseInt(m.bday.slice(5,7))&&TODAY.getDate()>parseInt(m.bday.slice(8)))?TODAY.getFullYear()+1:TODAY.getFullYear());
+      list.push({type:'birthday',icon:'🎂',title:`${m.name} 生日提醒`,sub:`${m.level} · ${bdYear}/${m.bday.slice(5).replace('-','/')}`,天:bd,ic:'rb',urgent:bd<=7,id:m.id});
+    }
     const ex=天Until(m.exp);
     if(m.exp&&ex>=0&&ex<=30){ const urg=ex<=7; list.push({type:urg?'urgent':'soon',icon:urg?'⚠':'◇',title:`${m.name} 會員即將到期`,sub:`${m.plan||''} · ${m.exp}`,天:ex,ic:urg?'re':'rh',urgent:urg,id:m.id}); }
   });
@@ -1388,7 +1391,7 @@ function build提醒(){
       list.push({type:gType,icon:rIcon,title:`${m.name||'—'} ${gType==='activity'?'活動':'訂閱'}獎勵待兌換${countLabel}`,sub,天:trigD,ic:'rg',urgent:overdue,id:memberId,isReward:true,overdue});
     });
   });
-  holi天.forEach(h=>{ const d=天Until(h.date); if(d>=0&&d<=90) list.push({type:'holiday',icon:'◈',title:h.name,sub:`${h.type}${h.note?' · '+h.note:''}`,天:d,ic:'rh',urgent:false}); });
+  holi天.forEach(h=>{ const d=天Until(h.date); if(d>=0&&d<=90) list.push({type:'holiday',icon:'◈',title:h.name,sub:`${h.date} · ${h.type}${h.note?' · '+h.note:''}`,天:d,ic:'rh',urgent:false}); });
   return list.sort((a,b)=>{
     // 非獎勵排前面
     if(!a.isReward && b.isReward) return -1;
