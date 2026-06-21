@@ -1,90 +1,1148 @@
-const NOTION_TOKEN = process.env.NOTION_TOKEN;
-const REWARDS_DB   = process.env.NOTION_REWARDS_DB;
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ooniau 暖暖｜綠界會員管理</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐈‍⬛</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500&family=Noto+Sans+TC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#F5C800;--gold-dim:rgba(230,200,80,0.18);--gold-b:rgba(230,200,80,0.32);
+  --purple:#9080C0;--pd:#2D2840;--pm:#4A4060;--ps:#B8A8D8;
+  --tm:#8880A0;--th:#BEB8D0;
+  --lv3:#3B6D11;--lv3bg:#EAF3DE;
+  --lv4:#A07800;--lv4bg:#FFF8D6;
+  --lv5:#7050A0;--lv5bg:#F0EBF8;
+}
+html,body{height:100%;font-family:'Noto Sans TC',sans-serif;font-size:18px;color:var(--pd);background:#F8F7F5}
+.app{display:flex;height:100vh;overflow:hidden}
 
-const h = {
-  'Authorization': `Bearer ${NOTION_TOKEN}`,
-  'Content-Type': 'application/json',
-  'Notion-Version': '2022-06-28',
+/* ── SIDEBAR ─────────────────────────── */
+.sb{width:200px;background:#fff;border-right:.5px solid var(--gold-b);display:flex;flex-direction:column;flex-shrink:0}
+.brand{padding:1.4rem 1.4rem 1.1rem;border-bottom:.5px solid var(--gold-dim)}
+.brand-en{font-size:.58rem;letter-spacing:.3em;color:var(--th);text-transform:uppercase;margin-bottom:.3rem}
+.brand-name{font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:400;color:var(--purple);letter-spacing:.08em;line-height:1.4}
+.brand-sub{font-size:.63rem;color:var(--tm);margin-top:.15rem;letter-spacing:.06em}
+.nav{flex:1;padding:1rem 0}
+.ni{display:flex;align-items:center;gap:10px;padding:11px 1.4rem;font-size:.74rem;letter-spacing:.1em;color:var(--tm);cursor:pointer;border-left:2px solid transparent;transition:all .18s;user-select:none}
+.ni:hover{color:var(--pm);background:#FFF9F0}
+.ni.active{color:var(--purple);border-left-color:var(--gold);background:linear-gradient(to right,#FFFBEE,transparent);font-weight:500}
+.sb-foot{padding:1rem 1.4rem;border-top:.5px solid var(--gold-dim);font-size:.58rem;letter-spacing:.12em;color:var(--th)}
+
+/* ── MAIN ────────────────────────────── */
+.main{flex:1;overflow:auto}
+.view{display:none;padding:1.5rem 1.8rem;min-height:100%}
+.view.active{display:block}
+.ptop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem;padding-bottom:.9rem;border-bottom:.5px solid var(--gold-dim)}
+.plabel{font-size:.58rem;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem}
+.ptitle{font-family:'Noto Serif TC',serif;font-size:1.1rem;font-weight:300;color:var(--pm);letter-spacing:.06em}
+.ptop-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* ── BUTTONS ─────────────────────────── */
+.btn{padding:6px 16px;font-family:'Noto Sans TC',sans-serif;font-size:.68rem;letter-spacing:.12em;color:var(--purple);background:transparent;border:1px solid rgba(155,144,184,.4);border-radius:40px;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:5px}
+.btn:hover{background:#F1EDF7;border-color:var(--ps)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-g{border-color:var(--gold);color:var(--pd);background:linear-gradient(135deg,#FFF9E6,#FFFBF0)}
+.btn-g:hover{background:#FFF3C0;border-color:#E6A800}
+.btn-sm{padding:3px 10px;font-size:.6rem}
+.btn-del{color:#A32D2D;border-color:rgba(162,45,45,.3)}
+.btn-del:hover{background:#FEF0F0}
+.btn-green{color:#3B6D11;border-color:rgba(59,109,17,.3)}
+.btn-green:hover{background:#EAF3DE}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
+.f-on{background:#FFF8D6 !important;border-color:var(--gold) !important;color:var(--pd) !important}
+
+/* ── STATS ───────────────────────────── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.2rem}
+.stat{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;padding:.85rem 1rem;text-align:center}
+.stn{font-family:'Cormorant Garamond',serif;font-size:1.85rem;font-weight:300;color:var(--purple);margin-bottom:2px}
+.stl{font-size:.56rem;letter-spacing:.15em;color:var(--th);text-transform:uppercase}
+
+/* ── DASHBOARD ───────────────────────── */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dash-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.panel{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;padding:1rem 1.2rem}
+.pl{font-size:.58rem;letter-spacing:.28em;color:var(--gold);text-transform:uppercase;margin-bottom:.75rem;display:flex;align-items:center;gap:.6rem}
+.pl::after{content:'';flex:1;max-width:30px;height:.5px;background:var(--gold)}
+.ri-row{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:.5px solid var(--gold-dim);cursor:pointer}
+.ri-row:last-child{border-bottom:none;padding-bottom:0}
+.ri-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.rb{background:#F0EBF8}.rh{background:#FFF8D6}.re{background:#FCEAEA}.rg{background:#EAF3DE}
+.ri-info{flex:1}
+.ri-name{font-size:.76rem;font-weight:500;color:var(--pd);margin-bottom:1px}
+.ri-sub{font-size:.62rem;color:var(--tm)}
+.ri-天{text-align:right}
+.dn{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:300;color:var(--purple);display:block;line-height:1.1}
+.dn.red{color:#A32D2D}
+.dl{font-size:.58rem;color:var(--th);letter-spacing:.08em}
+
+/* ── TABLE ───────────────────────────── */
+.twrap{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;overflow:hidden}
+.tbar{display:flex;align-items:center;gap:8px;padding:9px 1.1rem;border-bottom:.5px solid var(--gold-dim)}
+.tbar input{border:none;background:transparent;font-family:'Noto Sans TC',sans-serif;font-size:.76rem;color:var(--pd);flex:1;outline:none}
+.tbar input::placeholder{color:var(--th)}
+table{width:100%;border-collapse:collapse}
+th{font-size:.56rem;letter-spacing:.15em;color:var(--th);font-weight:400;padding:7px 11px;text-transform:uppercase;border-bottom:.5px solid var(--gold-dim);background:#FEFDFB;text-align:left;white-space:nowrap}
+td{padding:8px 11px;border-bottom:.5px solid rgba(230,200,80,.1);font-size:.74rem;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#FEFBF2}
+
+/* ── BADGES ──────────────────────────── */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:.58rem;letter-spacing:.05em;white-space:nowrap}
+.b-lv3{background:var(--lv3bg);color:var(--lv3)}
+.b-lv4{background:var(--lv4bg);color:var(--lv4)}
+.b-lv5{background:var(--lv5bg);color:var(--lv5)}
+.b-ok{background:#EAF5EE;color:#3B6D11}
+.b-soon{background:#FFF8D6;color:#A07800}
+.b-urg{background:#FCEAEA;color:#A32D2D}
+.b-exp{background:#EBEBEB;color:#888}
+.b-yr{background:var(--lv5bg);color:var(--lv5)}
+.b-once{background:#E6F1F8;color:#305080}
+.b-home{background:#EAF5EE;color:#3B6D11}
+.b-cvs{background:#FFF3D6;color:#7A5800}
+.b-reward{background:#FFF3D6;color:#7A5800}
+.b-redeemed{background:#F2F2F2;color:#888}
+
+/* ── AVATAR ──────────────────────────── */
+.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.av-a{background:#F0EBF8;color:#9080C0}
+.av-b{background:#FFF8D6;color:#A07800}
+.av-c{background:#EAF3DE;color:#3B6D11}
+.av-d{background:#EAF0FF;color:#5060A0}
+.av-e{background:#FCEAEA;color:#8B1A1A}
+.mrow{display:flex;align-items:center;gap:9px}
+.mname{font-size:.76rem;font-weight:500;color:var(--pd)}
+.myt{font-size:.6rem;color:var(--tm);margin-top:1px}
+
+/* ── DRAWER ──────────────────────────── */
+.drw-bg{display:none;position:fixed;inset:0;background:rgba(45,40,64,.22);z-index:200}
+.drw-bg.open{display:block}
+.drw{position:fixed;top:0;right:-520px;width:500px;height:100vh;background:#fff;border-left:.5px solid var(--gold-b);overflow:auto;transition:right .28s ease;z-index:201}
+.drw.open{right:0}
+.drw-head{display:flex;justify-content:space-between;align-items:flex-start;padding:1.5rem 1.6rem 1rem;border-bottom:.5px solid var(--gold-dim);position:sticky;top:0;background:#fff;z-index:1}
+.drw-title{font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:300;color:var(--pm);letter-spacing:.06em}
+.drw-yt{font-size:.65rem;color:var(--tm);margin-top:3px}
+.drw-close{background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--th);padding:2px 6px;line-height:1}
+.drw-close:hover{color:var(--tm)}
+.drw-body{padding:1.2rem 1.6rem}
+.dsec{margin-bottom:1.3rem}
+.dsec-label{font-size:.56rem;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem}
+.dsec-label::after{content:'';flex:1;height:.5px;background:var(--gold-dim)}
+.drow{display:flex;align-items:baseline;gap:.5rem;padding:5px 0;border-bottom:.5px solid var(--gold-dim)}
+.drow:last-child{border-bottom:none}
+.dkey{font-size:.6rem;color:var(--th);letter-spacing:.08em;width:76px;flex-shrink:0}
+.dval{font-size:.78rem;color:var(--pd);flex:1}
+.dval.mono{font-family:'Cormorant Garamond',serif;font-size:.9rem}
+.addr-box{background:#FEFDFB;border:.5px solid var(--gold-dim);border-radius:3px;padding:.7rem .9rem;font-size:.74rem;line-height:1.8;margin-top:.4rem}
+.drw-foot{padding:1rem 1.6rem;border-top:.5px solid var(--gold-dim);display:flex;gap:8px;position:sticky;bottom:0;background:#fff}
+
+/* 累積訂閱 */
+.subscribe-bar{background:linear-gradient(to right,#FFFBEE,#FFF9F5);border:.5px solid var(--gold-dim);border-radius:4px;padding:.8rem 1rem;display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem}
+.sub-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--purple);line-height:1}
+.sub-label{font-size:.6rem;color:var(--tm);letter-spacing:.08em}
+.sub-detail{font-size:.65rem;color:var(--th);margin-top:2px}
+
+/* 繳費歷史 */
+.pay-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:.5px solid var(--gold-dim)}
+.pay-item:last-child{border-bottom:none}
+.pay-date{font-size:.68rem;color:var(--tm);width:80px;flex-shrink:0}
+.pay-amt{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;color:var(--pd);flex:1}
+.pay-note{font-size:.64rem;color:var(--th)}
+.pay-del{background:none;border:none;cursor:pointer;color:var(--th);font-size:.8rem;padding:2px 4px}
+.pay-del:hover{color:#A32D2D}
+.add-pay-row{display:flex;gap:6px;margin-top:.6rem;flex-wrap:wrap}
+.add-pay-row .fi{flex:1;min-width:80px;padding:5px 8px;font-size:.72rem}
+
+/* 獎勵 */
+.reward-item{padding:.75rem .9rem;border:.5px solid var(--gold-dim);border-radius:4px;margin-bottom:6px;display:flex;align-items:flex-start;gap:10px}
+.reward-item.redeemed{opacity:.55;background:#FAFAFA}
+.reward-badge-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;width:56px}
+.reward-milestone{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--purple);line-height:1;text-align:center}
+.reward-milestone-label{font-size:.52rem;color:var(--th);letter-spacing:.08em}
+.reward-info{flex:1}
+.reward-type{font-size:.74rem;font-weight:500;color:var(--pd);margin-bottom:3px}
+.reward-sub{font-size:.62rem;color:var(--tm)}
+.reward-illus{font-size:.62rem;color:var(--purple);margin-top:3px;font-style:italic}
+.reward-actions{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0}
+
+/* 提醒中心 */
+.rlist{display:flex;flex-direction:column;gap:8px}
+.rcard{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;padding:.9rem 1.1rem;display:flex;align-items:center;gap:11px;cursor:pointer;transition:border-color .18s}
+.rcard:hover{border-color:var(--gold-b)}
+.rcard.urg{border-left:2px solid #E24B4A}
+.rcard.warn{border-left:2px solid var(--gold)}
+.rcard.reward-card{border-left:2px solid var(--purple)}
+.rico{width:34px;height:34px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.rbody{flex:1}
+.rtitle{font-size:.78rem;font-weight:500;color:var(--pd);margin-bottom:2px}
+.rsub{font-size:.62rem;color:var(--tm)}
+.rdbig{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--purple);display:block;line-height:1}
+.rdbig.red{color:#A32D2D}
+.rdbig.star{color:var(--purple)}
+.rdsm{font-size:.56rem;color:var(--th);letter-spacing:.08em}
+
+/* 節日日曆 */
+.callayout{display:grid;grid-template-columns:1fr 220px;gap:12px}
+.calwrap{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;padding:1rem}
+.calnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem}
+.calml{font-family:'Noto Serif TC',serif;font-size:.85rem;font-weight:300;color:var(--pm);letter-spacing:.1em}
+.calhead{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:4px}
+.calhead span{font-size:.56rem;color:var(--th);letter-spacing:.1em;padding:3px}
+.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cday{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:3px;cursor:pointer;font-size:.68rem;transition:background .15s}
+.cday:hover{background:#FFF8E6}
+.cday.today{background:#FFF3C0;color:var(--purple);font-weight:500}
+.cday.other{color:var(--th)}
+.dots{display:flex;gap:2px;margin-top:2px}
+.d{width:4px;height:4px;border-radius:50%}
+.dp{background:#9080C0}.dg{background:#D4A800}.dr{background:#E24B4A}
+.calleg{display:flex;gap:10px;margin-top:.8rem;flex-wrap:wrap}
+.leg{display:flex;align-items:center;gap:4px;font-size:.58rem;color:var(--tm)}
+.epanel{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;padding:1rem}
+.eptitle{font-size:.58rem;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;margin-bottom:.75rem}
+.epi{display:flex;gap:7px;padding:6px 0;border-bottom:.5px solid var(--gold-dim)}
+.epi:last-child{border-bottom:none}
+.epidot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.epiname{font-size:.72rem;font-weight:500;color:var(--pd);margin-bottom:1px}
+.epitype{font-size:.58rem;color:var(--tm)}
+
+/* MODAL */
+.mdbg{display:none;position:fixed;inset:0;background:rgba(45,40,64,.32);z-index:300;align-items:center;justify-content:center}
+.mdbg.open{display:flex}
+.md{background:#fff;border:.5px solid var(--gold-b);border-radius:4px;padding:1.6rem;width:500px;max-width:94vw;max-height:92vh;overflow:auto}
+.mdtitle{font-family:'Noto Serif TC',serif;font-size:.95rem;font-weight:300;color:var(--pm);letter-spacing:.08em;margin-bottom:1.2rem}
+.fl{font-size:.56rem;letter-spacing:.18em;color:var(--tm);margin-bottom:4px;display:block;text-transform:uppercase}
+.fi{width:100%;padding:7px 10px;border:.5px solid var(--gold-b);border-radius:2px;font-family:'Noto Sans TC',sans-serif;font-size:.76rem;color:var(--pd);background:#fff;outline:none;transition:border-color .18s}
+.fi:focus{border-color:var(--ps)}
+.fr{margin-bottom:.8rem}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.mdfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:1rem;padding-top:.85rem;border-top:.5px solid var(--gold-dim)}
+.secdiv{font-size:.56rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin:.85rem 0 .55rem;padding-bottom:.35rem;border-bottom:.5px solid var(--gold-dim)}
+.ship-toggle{display:flex;gap:7px;margin-bottom:.8rem}
+.ship-opt{flex:1;padding:7px;border:.5px solid var(--gold-b);border-radius:3px;text-align:center;cursor:pointer;font-size:.7rem;letter-spacing:.08em;color:var(--tm);transition:all .18s}
+.ship-opt.sel{border-color:var(--purple);background:#F5F0FF;color:var(--purple);font-weight:500}
+.ship-fld{display:none}
+.ship-fld.show{display:block}
+
+/* UTILS */
+.loading{display:flex;align-items:center;justify-content:center;gap:9px;padding:1.8rem;font-size:.7rem;color:var(--th);letter-spacing:.12em}
+.spinner{width:15px;height:15px;border:1.5px solid var(--gold-dim);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.empty{font-size:.68rem;color:var(--th);letter-spacing:.15em;text-align:center;padding:1.5rem}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--pd);color:#fff;font-size:.7rem;letter-spacing:.1em;padding:.6rem 1.1rem;border-radius:40px;opacity:0;transform:translateY(8px);transition:all .28s;z-index:9999;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.divider{height:.5px;background:var(--gold-dim);margin:1rem 0}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sb">
+    <div class="brand">
+      <div class="brand-en">Ooniau 會員 CRM</div>
+      <div class="brand-name">暖暖</div>
+      <div class="brand-sub">綠界會員管理</div>
+    </div>
+    <nav class="nav">
+      <div class="ni active"  onclick="go('dashboard',this)"><span>✦</span>總覽</div>
+      <div class="ni" onclick="go('members',this)">  <span>◎</span>會員列表</div>
+      <div class="ni" onclick="go('reminders',this)"><span>◇</span>提醒中心</div>
+      <div class="ni" onclick="go('calendar',this)"> <span>△</span>節日日曆</div>
+      <div class="ni" onclick="go('review',this)">   <span>◉</span>審核申請 <span id="review-badge" style="display:none;background:#E24B4A;color:#fff;font-size:.55rem;padding:1px 6px;border-radius:10px;margin-left:4px"></span></div>
+    </nav>
+    <div class="sb-foot">🐈‍⬛ Ooniau 暖暖</div>
+  </div>
+
+  <div class="main">
+
+    <!-- 總覽 -->
+    <div id="view-dashboard" class="view active">
+      <div class="ptop">
+        <div><div class="plabel">Overview</div><div class="ptitle">總覽</div></div>
+        <button class="btn btn-g" onclick="openAdd會員()">＋ 新增會員</button>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="stn" id="s-total">—</div><div class="stl">Total 會員</div></div>
+        <div class="stat"><div class="stn" style="color:#D4A800" id="s-bday">—</div><div class="stl">本週生日</div></div>
+        <div class="stat"><div class="stn" style="color:#A32D2D" id="s-exp7">—</div><div class="stl">7天內到期</div></div>
+        <div class="stat"><div class="stn" style="color:var(--purple)" id="s-reward">—</div><div class="stl">獎勵待兌換</div></div>
+      </div>
+      <div class="dash-grid-3">
+        <div class="panel"><div class="pl">即將生日</div><div id="dash-bday"><div class="loading"><div class="spinner"></div></div></div></div>
+        <div class="panel"><div class="pl">即將到期</div><div id="dash-exp"><div class="loading"><div class="spinner"></div></div></div></div>
+        <div class="panel"><div class="pl">待兌換獎勵</div><div id="dash-reward"><div class="loading"><div class="spinner"></div></div></div></div>
+      </div>
+    </div>
+
+    <!-- 會員列表 -->
+    <div id="view-members" class="view">
+      <div class="ptop">
+        <div><div class="plabel">會員</div><div class="ptitle">會員列表</div></div>
+        <div class="ptop-actions">
+          <button class="btn" onclick="exportCSV()">↓ 匯出 CSV</button>
+          <button class="btn btn-g" onclick="openAdd會員()">＋ 新增會員</button>
+        </div>
+      </div>
+      <div class="twrap">
+        <div class="tbar">
+          <span style="color:var(--th)">⌕</span>
+          <input type="text" placeholder="搜尋姓名、YouTube名稱、電話…" oninput="filterM(this.value)">
+        </div>
+        <table>
+          <thead><tr>
+            <th>會員</th><th>YouTube名稱</th><th>等級</th><th>方案</th>
+            <th>累積訂閱</th><th>到期日</th><th>收件</th><th>狀態</th><th></th>
+          </tr></thead>
+          <tbody id="m-tbody"><tr><td colspan="9"><div class="loading"><div class="spinner"></div>載入中</div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 提醒中心 -->
+    <div id="view-reminders" class="view">
+      <div class="ptop">
+        <div><div class="plabel">提醒</div><div class="ptitle">提醒中心</div></div>
+      </div>
+      <div class="filter-row">
+        <button class="btn f-on" onclick="filterR('all',this)">全部</button>
+        <button class="btn" onclick="filterR('urgent',this)">⚠ 7天內到期</button>
+        <button class="btn" onclick="filterR('soon',this)">◇ 30天內到期</button>
+        <button class="btn" onclick="filterR('birthday',this)">🎂 生日</button>
+        <button class="btn" onclick="filterR('reward',this)">🎁 獎勵待兌換</button>
+        <button class="btn" onclick="filterR('holiday',this)">◈ 節日</button>
+      </div>
+      <div class="rlist" id="r-list"><div class="loading"><div class="spinner"></div>載入中</div></div>
+    </div>
+
+    <!-- 日曆 -->
+    <div id="view-calendar" class="view">
+      <div class="ptop">
+        <div><div class="plabel">日曆</div><div class="ptitle">節日日曆</div></div>
+        <button class="btn btn-g" onclick="openM('add-holiday')">＋ 新增節日</button>
+      </div>
+      <div class="callayout">
+        <div class="calwrap">
+          <div class="calnav">
+            <button class="btn" style="padding:4px 11px" onclick="prevMo()">‹</button>
+            <span class="calml" id="cal-label"></span>
+            <button class="btn" style="padding:4px 11px" onclick="nextMo()">›</button>
+          </div>
+          <div class="calhead"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
+          <div class="calgrid" id="cal-grid"></div>
+          <div class="calleg">
+            <div class="leg"><div class="d dp" style="width:6px;height:6px"></div>生日</div>
+            <div class="leg"><div class="d dg" style="width:6px;height:6px"></div>節日</div>
+            <div class="leg"><div class="d dr" style="width:6px;height:6px"></div>到期</div>
+          </div>
+        </div>
+        <div class="epanel">
+          <div class="eptitle" id="ep-title">本月事項</div>
+          <div id="ep-list"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 審核申請 -->
+    <div id="view-review" class="view">
+      <div class="ptop">
+        <div><div class="plabel">審核</div><div class="ptitle">審核申請</div></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn f-on" onclick="filterApps('待審核',this)">待審核</button>
+          <button class="btn" onclick="filterApps('已核准',this)">已核准</button>
+          <button class="btn" onclick="filterApps('已拒絕',this)">已拒絕</button>
+        </div>
+      </div>
+      <div id="app-list"><div class="loading"><div class="spinner"></div>載入中</div></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- 會員詳細 Drawer -->
+<div class="drw-bg" id="drw-bg" onclick="closeDrw()"></div>
+<div class="drw" id="drw">
+  <div class="drw-head">
+    <div>
+      <div class="plabel" style="margin-bottom:.25rem">會員</div>
+      <div class="drw-title" id="d-name">—</div>
+      <div class="drw-yt" id="d-yt"></div>
+    </div>
+    <button class="drw-close" onclick="closeDrw()">✕</button>
+  </div>
+  <div class="drw-body">
+
+    <!-- 累積訂閱時間 -->
+    <div class="subscribe-bar" id="d-sub-bar">
+      <div><div class="sub-num" id="d-sub-num">—</div></div>
+      <div><div class="sub-label" id="d-sub-label">累積訂閱</div><div class="sub-detail" id="d-sub-detail"></div></div>
+    </div>
+
+    <!-- 基本資料 -->
+    <div class="dsec">
+      <div class="dsec-label">基本資料</div>
+      <div class="drow"><span class="dkey">電話</span><span class="dval" id="d-phone">—</span></div>
+      <div class="drow"><span class="dkey">Email</span><span class="dval" id="d-email">—</span></div>
+      <div class="drow"><span class="dkey">生日</span><span class="dval" id="d-bday">—</span></div>
+    </div>
+
+    <!-- 會員資格 -->
+    <div class="dsec">
+      <div class="dsec-label">會員資格</div>
+      <div class="drow"><span class="dkey">等級</span><span class="dval" id="d-level">—</span></div>
+      <div class="drow"><span class="dkey">方案</span><span class="dval" id="d-plan">—</span></div>
+      <div class="drow"><span class="dkey">加入日期</span><span class="dval mono" id="d-join">—</span></div>
+      <div class="drow"><span class="dkey">到期日</span><span class="dval mono" id="d-exp">—</span></div>
+      <div class="drow"><span class="dkey">狀態</span><span class="dval" id="d-status">—</span></div>
+    </div>
+
+    <!-- 收件資訊 -->
+    <div class="dsec" id="d-ship-sec">
+      <div class="dsec-label">收件資訊</div>
+      <div class="drow"><span class="dkey">收件方式</span><span class="dval" id="d-shiptype">—</span></div>
+      <div id="d-addr-wrap" style="display:none"><div class="addr-box" id="d-address"></div></div>
+      <div id="d-cvs-wrap"  style="display:none"><div class="addr-box" id="d-cvs"></div></div>
+    </div>
+
+    <!-- 備註 -->
+    <div class="dsec" id="d-note-sec" style="display:none">
+      <div class="dsec-label">備註</div>
+      <div class="addr-box" id="d-note"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 繳費歷史 -->
+    <div class="dsec">
+      <div class="dsec-label">繳費歷史</div>
+      <div id="pay-list"><div class="loading"><div class="spinner"></div></div></div>
+      <div class="add-pay-row" style="margin-top:.75rem">
+        <input class="fi" id="pay-date" type="date" style="flex:0 0 120px">
+        <input class="fi" id="pay-amt"  type="number" placeholder="金額" style="flex:0 0 90px">
+        <input class="fi" id="pay-note" placeholder="備註（選填）" style="flex:1">
+        <button class="btn btn-g btn-sm" onclick="addPayment()">新增</button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 獎勵記錄 -->
+    <div class="dsec">
+      <div class="dsec-label">獎勵兌換</div>
+      <div id="reward-list"><div class="loading"><div class="spinner"></div></div></div>
+      <div style="margin-top:.6rem">
+        <button class="btn btn-sm btn-g" onclick="syncRewards()">↻ 同步獎勵</button>
+        <span style="font-size:.58rem;color:var(--th);margin-left:.5rem">根據加入日期自動產生應有的獎勵筆數</span>
+      </div>
+    </div>
+
+  </div>
+  <div class="drw-foot">
+    <button class="btn btn-del btn-sm" onclick="delete會員()">刪除會員</button>
+    <button class="btn btn-sm" onclick="closeDrw()">關閉</button>
+    <button class="btn btn-g btn-sm" onclick="openEditFromDrw()">編輯</button>
+  </div>
+</div>
+
+<!-- Modal 新增/編輯會員 -->
+<div class="mdbg" id="modal-add-member">
+  <div class="md">
+    <div class="mdtitle" id="member-modal-title">新增會員</div>
+    <input type="hidden" id="nm-id">
+    <div class="secdiv">基本資料</div>
+    <div class="f2">
+      <div class="fr"><label class="fl">姓名</label><input class="fi" id="nm-name" placeholder="真實姓名"></div>
+      <div class="fr"><label class="fl">YouTube 會員名稱</label><input class="fi" id="nm-yt" placeholder="頻道顯示名稱"></div>
+    </div>
+    <div class="f2">
+      <div class="fr"><label class="fl">電話</label><input class="fi" id="nm-phone" placeholder="09xx-xxx-xxx"></div>
+      <div class="fr"><label class="fl">Email</label><input class="fi" id="nm-email" placeholder="選填"></div>
+    </div>
+    <div class="f2">
+      <div class="fr"><label class="fl">生日</label><input class="fi" id="nm-bday" type="date"></div>
+      <div class="fr"><label class="fl">備註</label><input class="fi" id="nm-note" placeholder="喜好、特殊需求…"></div>
+    </div>
+    <div class="secdiv">會員資格</div>
+    <div class="f3">
+      <div class="fr"><label class="fl">會員等級</label>
+        <select class="fi" id="nm-level">
+          <option value="LV.3 里民暖暖包">LV.3 里民暖暖包</option>
+          <option value="LV.4 肌肉暖暖包">LV.4 肌肉暖暖包</option>
+          <option value="LV.5 真蒸暖暖包">LV.5 真蒸暖暖包</option>
+        </select>
+      </div>
+      <div class="fr"><label class="fl">方案類型</label>
+        <select class="fi" id="nm-plan"><option value="年繳">年繳</option><option value="單筆">單筆</option></select>
+      </div>
+      <div class="fr"><label class="fl">加入日期</label><input class="fi" id="nm-join" type="date"></div>
+    </div>
+    <div class="fr" style="max-width:175px"><label class="fl">會員到期日</label><input class="fi" id="nm-exp" type="date"></div>
+    <div class="secdiv">寄送資訊</div>
+    <div class="ship-toggle">
+      <div class="ship-opt sel" id="ship-none" onclick="selShip('')">不填</div>
+      <div class="ship-opt" id="ship-home" onclick="selShip('宅配')">🏠 宅配</div>
+      <div class="ship-opt" id="ship-cvs"  onclick="selShip('超商取貨')">🏪 超商取貨</div>
+    </div>
+    <input type="hidden" id="nm-ship" value="">
+    <div class="ship-fld" id="fld-home">
+      <div class="fr"><label class="fl">宅配地址</label><input class="fi" id="nm-addr" placeholder="縣市＋鄉鎮市區＋路段門牌"></div>
+    </div>
+    <div class="ship-fld" id="fld-cvs">
+      <div class="fr"><label class="fl">超商門市</label><input class="fi" id="nm-cvs" placeholder="7-11 暖暖門市 / 全家 基隆暖暖店"></div>
+    </div>
+    <div class="mdfoot">
+      <button class="btn btn-del" id="nm-del" style="display:none" onclick="delete會員()">刪除</button>
+      <button class="btn" onclick="cancel會員Modal()">取消</button>
+      <button class="btn btn-g" id="nm-submit" onclick="save會員()">新增</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 節日 -->
+<div class="mdbg" id="modal-add-holiday">
+  <div class="md" style="width:400px">
+    <div class="mdtitle">新增節日 ／ 活動</div>
+    <div class="fr"><label class="fl">名稱</label><input class="fi" id="nh-name" placeholder="端午節、品牌活動…"></div>
+    <div class="f2">
+      <div class="fr"><label class="fl">日期</label><input class="fi" id="nh-date" type="date"></div>
+      <div class="fr"><label class="fl">類型</label>
+        <select class="fi" id="nh-type"><option>傳統節日</option><option>西洋節日</option><option>品牌活動</option><option>其他</option></select>
+      </div>
+    </div>
+    <div class="fr"><label class="fl">提醒備忘</label><input class="fi" id="nh-note" placeholder="記得準備什麼…"></div>
+    <div class="mdfoot">
+      <button class="btn" onclick="closeM('add-holiday')">取消</button>
+      <button class="btn btn-g" onclick="saveHoliday()">新增</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 獎勵兌換設定 -->
+<div class="mdbg" id="modal-reward">
+  <div class="md" style="width:380px">
+    <div class="mdtitle" id="reward-modal-title">設定兌換內容</div>
+    <input type="hidden" id="rw-id">
+    <div class="fr" id="rw-item-wrap">
+      <label class="fl">兌換項目</label>
+      <select class="fi" id="rw-item">
+        <option value="相印小卡">相印小卡</option>
+        <option value="半小時占卜">半小時占卜</option>
+      </select>
+    </div>
+    <div class="fr" id="rw-illus-wrap" style="display:none">
+      <label class="fl">指定插圖（填寫哪張）</label>
+      <input class="fi" id="rw-illus" placeholder="例如：2024年8月暖暖插圖">
+    </div>
+    <div class="fr"><label class="fl">備註</label><input class="fi" id="rw-note" placeholder="選填"></div>
+    <div class="mdfoot">
+      <button class="btn" onclick="closeM('reward')">取消</button>
+      <button class="btn btn-g" onclick="confirmRedeem()">標記已兌換</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';
+let members=[], holi天=[], allRewards=[];
+let calY=new Date().getFullYear(), calMo=new Date().getMonth();
+const TODAY=new Date(); TODAY.setHours(0,0,0,0);
+const avList=['av-a','av-b','av-c','av-d','av-e'];
+let curFilter='all', drw會員Id=null, drw會員Payments=[], drw會員Rewards=[];
+
+// ── LEVELS ───────────────────────────────────────────────
+const LEVELS = {
+  'LV.3 里民暖暖包': { cls:'b-lv3', reward3:'相印小卡或半小時占卜', hasIllus:false, items:['相印小卡','半小時占卜'] },
+  'LV.4 肌肉暖暖包': { cls:'b-lv4', reward3:'實體拍立得',           hasIllus:true,  items:['實體拍立得'] },
+  'LV.5 真蒸暖暖包': { cls:'b-lv5', reward3:'親簽拍立得',           hasIllus:true,  items:['親簽拍立得'] },
 };
+function lvBadge(lv){ const l=LEVELS[lv]; return l?`<span class="badge ${l.cls}">${lv}</span>`:`<span class="badge b-exp">${lv||'—'}</span>`; }
+function planBadge(p){ return p==='年繳'?`<span class="badge b-yr">年繳</span>`:`<span class="badge b-once">單筆</span>`; }
+function shipBadge(s){ if(!s)return'—'; return s==='宅配'?`<span class="badge b-home">🏠 宅配</span>`:`<span class="badge b-cvs">🏪 超商</span>`; }
 
-function pageToReward(p) {
-  const pr = p.properties;
-  return {
-    id:           p.id,
-    memberId:     pr['會員']?.relation?.[0]?.id || '',
-    type:         pr['獎勵類型']?.select?.name   || '',
-    milestone:    pr['里程碑']?.select?.name     || '',
-    rewardItem:   pr['兌換內容']?.select?.name   || '',
-    illustration: pr['指定插圖']?.rich_text?.[0]?.plain_text || '',
-    redeemed:     pr['已兌換']?.checkbox         || false,
-    redeemedAt:   pr['兌換日期']?.date?.start    || '',
-    triggerDate:  pr['觸發日期']?.date?.start    || '',
-    note:         pr['備註']?.rich_text?.[0]?.plain_text || '',
-  };
+// ── UTILS ────────────────────────────────────────────────
+function 天Until(s){ if(!s)return 9999; const d=new Date(s); d.setHours(0,0,0,0); return Math.ceil((d-TODAY)/86400000); }
+function 天UntilBday(s){
+  if(!s)return 9999;
+  const b=new Date(s);
+  let nx=new Date(TODAY.getFullYear(),b.getMonth(),b.getDate());
+  if(nx<=TODAY) nx=new Date(TODAY.getFullYear()+1,b.getMonth(),b.getDate());
+  return Math.ceil((nx-TODAY)/86400000);
+}
+function expStatus(s){
+  const d=天Until(s);
+  if(d<0)  return{label:'已到期',cls:'b-exp'};
+  if(d<=7) return{label:`剩${d}天`,cls:'b-urg'};
+  if(d<=30)return{label:`剩${d}天`,cls:'b-soon'};
+  return{label:'有效',cls:'b-ok'};
+}
+function initials(n){ return(n||'??').slice(0,2); }
+function showToast(msg,dur=2500){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),dur); }
+function calcSubscribe(joinStr){
+  if(!joinStr)return null;
+  const j=new Date(joinStr); j.setHours(0,0,0,0);
+  let yrs=TODAY.getFullYear()-j.getFullYear();
+  let mos=TODAY.getMonth()-j.getMonth();
+  let 天=TODAY.getDate()-j.getDate();
+  if(天<0){ mos--; }
+  if(mos<0){ yrs--; mos+=12; }
+  const total=yrs*12+mos;
+  return{ years:yrs, months:mos, totalMonths:total, since:joinStr };
 }
 
-module.exports = async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin',  '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PATCH,DELETE,OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  if (req.method === 'OPTIONS') return res.status(200).end();
+// ── API ──────────────────────────────────────────────────
+async function apiFetch(path,opts={}){
+  const r=await fetch(API+path,{ headers:{'Content-Type':'application/json'}, ...opts, body:opts.body?JSON.stringify(opts.body):undefined });
+  if(!r.ok) throw new Error(r.status);
+  return r.json();
+}
+async function loadAll(){
+  try{
+    const [m,h,rw]=await Promise.all([apiFetch('/api/members'),apiFetch('/api/holidays'),apiFetch('/api/rewards')]);
+    members=m; holi天=h; allRewards=rw;
+    renderDash(); render會員(members); render提醒(curFilter); renderCal();
+  }catch(e){ showToast('⚠ 無法連線，請確認設定'); }
+}
+
+// ── NAV ──────────────────────────────────────────────────
+function go(v,el){
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(x=>x.classList.remove('active'));
+  document.getElementById('view-'+v).classList.add('active');
+  el.classList.add('active');
+}
+
+// ── MODAL / DRAWER ───────────────────────────────────────
+function openM(id){ document.getElementById('modal-'+id).classList.add('open'); }
+function closeM(id){ document.getElementById('modal-'+id).classList.remove('open'); }
+document.querySelectorAll('.mdbg').forEach(m=>m.addEventListener('click',e=>{ if(e.target===m)m.classList.remove('open'); }));
+
+function openDrw(m){
+  drw會員Id=m.id;
+  document.getElementById('d-name').textContent=m.name||'—';
+  document.getElementById('d-yt').textContent=m.memberName?`@ ${m.memberName}`:'';
+  // 累積訂閱
+  const sub=calcSubscribe(m.join);
+  if(sub){
+    const numEl=document.getElementById('d-sub-num');
+    if(sub.years>0){ numEl.textContent=sub.years; document.getElementById('d-sub-label').textContent=`年 ${sub.months} 個月`; }
+    else{ numEl.textContent=sub.totalMonths; document.getElementById('d-sub-label').textContent='個月'; }
+    document.getElementById('d-sub-detail').textContent=`自 ${m.join} 加入`;
+  }
+  document.getElementById('d-phone').textContent=m.phone||'—';
+  document.getElementById('d-email').textContent=m.email||'—';
+  document.getElementById('d-bday').textContent=m.bday||'—';
+  document.getElementById('d-level').innerHTML=lvBadge(m.level);
+  document.getElementById('d-plan').innerHTML=planBadge(m.plan);
+  document.getElementById('d-join').textContent=m.join||'—';
+  document.getElementById('d-exp').textContent=m.exp||'—';
+  const st=expStatus(m.exp);
+  document.getElementById('d-status').innerHTML=`<span class="badge ${st.cls}">${st.label}</span>`;
+  document.getElementById('d-shiptype').innerHTML=shipBadge(m.shipType);
+  document.getElementById('d-addr-wrap').style.display=m.shipType==='宅配'&&m.address?'block':'none';
+  document.getElementById('d-cvs-wrap').style.display=m.shipType==='超商取貨'&&m.convenience?'block':'none';
+  if(m.address)   document.getElementById('d-address').textContent=m.address;
+  if(m.convenience) document.getElementById('d-cvs').textContent=m.convenience;
+  document.getElementById('d-note-sec').style.display=m.note?'block':'none';
+  if(m.note) document.getElementById('d-note').textContent=m.note;
+  document.getElementById('drw-bg').classList.add('open');
+  document.getElementById('drw').classList.add('open');
+  loadPayments(m.id);
+  loadRewards(m.id);
+}
+function closeDrw(){ document.getElementById('drw-bg').classList.remove('open'); document.getElementById('drw').classList.remove('open'); drw會員Id=null; }
+function openEditFromDrw(){ const m=members.find(x=>x.id===drw會員Id); if(m){ closeDrw(); edit會員(m); } }
+
+// ── MEMBER MODAL ─────────────────────────────────────────
+function selShip(v){
+  document.getElementById('nm-ship').value=v;
+  ['none','home','cvs'].forEach(k=>document.getElementById('ship-'+k).classList.toggle('sel',(k==='none'&&v==='')|(k==='home'&&v==='宅配')|(k==='cvs'&&v==='超商取貨')));
+  document.getElementById('fld-home').classList.toggle('show',v==='宅配');
+  document.getElementById('fld-cvs').classList.toggle('show',v==='超商取貨');
+}
+function openAdd會員(){ reset會員Modal(); openM('add-member'); }
+function edit會員(m){
+  reset會員Modal();
+  document.getElementById('member-modal-title').textContent='編輯會員';
+  document.getElementById('nm-id').value=m.id;
+  document.getElementById('nm-name').value=m.name||'';
+  document.getElementById('nm-yt').value=m.memberName||'';
+  document.getElementById('nm-phone').value=m.phone||'';
+  document.getElementById('nm-email').value=m.email||'';
+  document.getElementById('nm-bday').value=m.bday||'';
+  document.getElementById('nm-level').value=m.level||'LV.3 里民暖暖包';
+  document.getElementById('nm-plan').value=m.plan||'年繳';
+  document.getElementById('nm-join').value=m.join||'';
+  document.getElementById('nm-exp').value=m.exp||'';
+  document.getElementById('nm-note').value=m.note||'';
+  document.getElementById('nm-addr').value=m.address||'';
+  document.getElementById('nm-cvs').value=m.convenience||'';
+  selShip(m.shipType||'');
+  document.getElementById('nm-del').style.display='inline-flex';
+  document.getElementById('nm-submit').textContent='儲存';
+  openM('add-member');
+}
+function cancel會員Modal(){ reset會員Modal(); closeM('add-member'); }
+function reset會員Modal(){
+  document.getElementById('member-modal-title').textContent='新增會員';
+  document.getElementById('nm-id').value='';
+  ['nm-name','nm-yt','nm-phone','nm-email','nm-bday','nm-join','nm-exp','nm-note','nm-addr','nm-cvs'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('nm-level').value='LV.3 里民暖暖包';
+  document.getElementById('nm-plan').value='年繳';
+  document.getElementById('nm-del').style.display='none';
+  document.getElementById('nm-submit').textContent='新增';
+  selShip('');
+}
+async function save會員(){
+  const name=document.getElementById('nm-name').value.trim();
+  if(!name){showToast('請填寫姓名');return;}
+  const id=document.getElementById('nm-id').value;
+  const payload={ name, memberName:document.getElementById('nm-yt').value, phone:document.getElementById('nm-phone').value, email:document.getElementById('nm-email').value, bday:document.getElementById('nm-bday').value, level:document.getElementById('nm-level').value, plan:document.getElementById('nm-plan').value, join:document.getElementById('nm-join').value, exp:document.getElementById('nm-exp').value, shipType:document.getElementById('nm-ship').value, address:document.getElementById('nm-addr').value, convenience:document.getElementById('nm-cvs').value, note:document.getElementById('nm-note').value };
+  const btn=document.getElementById('nm-submit'); btn.disabled=true; btn.textContent='儲存中…';
+  try{
+    if(id){ const u=await apiFetch(`/api/members?id=${id}`,{method:'PATCH',body:payload}); members=members.map(m=>m.id===id?u:m); showToast('✦ 已更新'); }
+    else{ const c=await apiFetch('/api/members',{method:'POST',body:payload}); members.push(c); showToast('✦ 已新增會員'); }
+    cancel會員Modal(); renderDash(); render會員(members); render提醒(curFilter); renderCal();
+  }catch(e){showToast('⚠ 儲存失敗');}
+  finally{btn.disabled=false; btn.textContent=id?'儲存':'新增';}
+}
+async function delete會員(){
+  const id=drw會員Id||document.getElementById('nm-id').value;
+  if(!id||!confirm('確定要刪除這位會員？'))return;
+  try{
+    await apiFetch(`/api/members?id=${id}`,{method:'DELETE'});
+    members=members.filter(m=>m.id!==id); showToast('已刪除');
+    closeM('add-member'); closeDrw(); renderDash(); render會員(members); render提醒(curFilter); renderCal();
+  }catch(e){showToast('⚠ 刪除失敗');}
+}
+
+// ── DASHBOARD ────────────────────────────────────────────
+function renderDash(){
+  document.getElementById('s-total').textContent=members.length;
+  document.getElementById('s-bday').textContent=members.filter(m=>天UntilBday(m.bday)<=7).length;
+  document.getElementById('s-exp7').textContent=members.filter(m=>{const d=天Until(m.exp);return d>=0&&d<=7;}).length;
+  const pendingRewards=allRewards.filter(r=>!r.redeemed).length;
+  document.getElementById('s-reward').textContent=pendingRewards;
+
+  const icons=['🎂','✨','🌸','🎁'];
+  const bd=[...members].filter(m=>m.bday).sort((a,b)=>天UntilBday(a.bday)-天UntilBday(b.bday)).slice(0,4);
+  document.getElementById('dash-bday').innerHTML=bd.length?bd.map((m,i)=>{const d=天UntilBday(m.bday);return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${m.id}'))"><div class="ri-dot rb">${icons[i]||'🎂'}</div><div class="ri-info"><div class="ri-name">${m.name}</div><div class="ri-sub">${m.level.replace('LV.','LV.')} · ${m.bday.slice(5).replace('-','/')}</div></div><div class="ri-天"><span class="dn${d<=7?' red':''}">${d}</span><span class="dl">天</span></div></div>`;}).join(''):'<div class="empty">近期無生日</div>';
+
+  const ex=[...members].filter(m=>m.exp&&天Until(m.exp)>=0).sort((a,b)=>天Until(a.exp)-天Until(b.exp)).slice(0,4);
+  document.getElementById('dash-exp').innerHTML=ex.length?ex.map(m=>{const d=天Until(m.exp);return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${m.id}'))"><div class="ri-dot ${d<=7?'re':'rh'}">${d<=7?'⚠':'◇'}</div><div class="ri-info"><div class="ri-name">${m.name}</div><div class="ri-sub">${m.plan||''} · ${m.exp}</div></div><div class="ri-天"><span class="dn${d<=7?' red':''}">${d}</span><span class="dl">天</span></div></div>`;}).join(''):'<div class="empty">近期無到期</div>';
+
+  const rw=allRewards.filter(r=>!r.redeemed).slice(0,4);
+  document.getElementById('dash-reward').innerHTML=rw.length?rw.map(r=>{const m=members.find(x=>x.id===r.memberId)||{};return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${r.memberId}'))"><div class="ri-dot rg">🎁</div><div class="ri-info"><div class="ri-name">${m.name||'—'}</div><div class="ri-sub">${r.milestone} · ${r.rewardItem||r.type}</div></div></div>`;}).join(''):'<div class="empty">無待兌換獎勵</div>';
+}
+
+// ── 會員列表 TABLE ────────────────────────────────────────
+function render會員(list){
+  const tb=document.getElementById('m-tbody');
+  if(!list.length){tb.innerHTML=`<tr><td colspan="9"><div class="empty">找不到會員</div></td></tr>`;return;}
+  tb.innerHTML=list.map((m,i)=>{
+    const st=expStatus(m.exp);
+    const sub=calcSubscribe(m.join);
+    const subStr=sub?( sub.years>0?`${sub.years}年${sub.months}個月`:`${sub.totalMonths}個月` ):'—';
+    return`<tr style="cursor:pointer" onclick="openDrw(members.find(x=>x.id==='${m.id}'))">
+      <td><div class="mrow"><div class="av ${avList[i%5]}">${initials(m.name)}</div><div><div class="mname">${m.name}</div></div></div></td>
+      <td style="font-size:.7rem;color:var(--tm)">${m.memberName||'—'}</td>
+      <td>${lvBadge(m.level)}</td>
+      <td>${planBadge(m.plan)}</td>
+      <td style="font-size:.72rem;color:var(--purple);font-weight:500">${subStr}</td>
+      <td style="font-size:.7rem;font-weight:500;color:var(--pd)">${m.exp||'—'}</td>
+      <td>${shipBadge(m.shipType)}</td>
+      <td><span class="badge ${st.cls}">${st.label}</span></td>
+      <td><button class="btn btn-sm" onclick="event.stopPropagation();edit會員(members.find(x=>x.id==='${m.id}'))">編輯</button></td>
+    </tr>`;
+  }).join('');
+}
+function filterM(q){ render會員(members.filter(m=>(m.name||'').includes(q)||(m.memberName||'').includes(q)||(m.phone||'').includes(q))); }
+
+// ── PAYMENTS ─────────────────────────────────────────────
+async function loadPayments(memberId){
+  document.getElementById('pay-list').innerHTML='<div class="loading"><div class="spinner"></div></div>';
+  try{
+    const list=await apiFetch(`/api/payments?memberId=${memberId}`);
+    drw會員Payments=list;
+    renderPayments(list);
+  }catch(e){ document.getElementById('pay-list').innerHTML='<div class="empty">載入失敗</div>'; }
+}
+function renderPayments(list){
+  if(!list.length){ document.getElementById('pay-list').innerHTML='<div class="empty">尚無繳費記錄</div>'; return; }
+  document.getElementById('pay-list').innerHTML=list.map(p=>`
+    <div class="pay-item">
+      <span class="pay-date">${p.date||'—'}</span>
+      <span class="pay-amt">$${(p.amount||0).toLocaleString()}</span>
+      <span class="pay-note">${p.note||''}</span>
+      <button class="pay-del" onclick="deletePayment('${p.id}')" title="刪除">✕</button>
+    </div>`).join('');
+}
+async function addPayment(){
+  const date=document.getElementById('pay-date').value;
+  const amt=document.getElementById('pay-amt').value;
+  if(!date||!amt){showToast('請填寫日期和金額');return;}
+  try{
+    const p=await apiFetch('/api/payments',{method:'POST',body:{ memberId:drw會員Id, date, amount:Number(amt), note:document.getElementById('pay-note').value }});
+    drw會員Payments.unshift(p); renderPayments(drw會員Payments);
+    ['pay-date','pay-amt','pay-note'].forEach(id=>document.getElementById(id).value='');
+    showToast('✦ 繳費記錄已新增');
+  }catch(e){showToast('⚠ 新增失敗');}
+}
+async function deletePayment(id){
+  if(!confirm('刪除這筆繳費記錄？'))return;
+  try{
+    await apiFetch(`/api/payments?id=${id}`,{method:'DELETE'});
+    drw會員Payments=drw會員Payments.filter(p=>p.id!==id); renderPayments(drw會員Payments);
+    showToast('已刪除');
+  }catch(e){showToast('⚠ 刪除失敗');}
+}
+
+// ── REWARDS ──────────────────────────────────────────────
+function calcExpectedRewards(member){
+  const sub=calcSubscribe(member.join);
+  if(!sub||sub.totalMonths<3)return[];
+  const lvInfo=LEVELS[member.level];
+  if(!lvInfo)return[];
+  const rewards=[];
+  // 每3個月一筆
+  for(let mo=3; mo<=sub.totalMonths; mo+=3){
+    const trigDate=new Date(member.join);
+    trigDate.setMonth(trigDate.getMonth()+mo);
+    rewards.push({ milestone:`${mo}個月`, type:'3個月獎勵', triggerDate:trigDate.toISOString().slice(0,10) });
+  }
+  // 每12個月週邊
+  for(let mo=12; mo<=sub.totalMonths; mo+=12){
+    const trigDate=new Date(member.join);
+    trigDate.setMonth(trigDate.getMonth()+mo);
+    rewards.push({ milestone:`${mo}個月(週邊)`, type:'12個月獎勵', triggerDate:trigDate.toISOString().slice(0,10) });
+  }
+  return rewards;
+}
+
+async function loadRewards(memberId){
+  document.getElementById('reward-list').innerHTML='<div class="loading"><div class="spinner"></div></div>';
+  try{
+    const list=await apiFetch(`/api/rewards?memberId=${memberId}`);
+    drw會員Rewards=list;
+    renderRewards(list, memberId);
+  }catch(e){ document.getElementById('reward-list').innerHTML='<div class="empty">載入失敗</div>'; }
+}
+
+function renderRewards(list, memberId){
+  if(!list.length){ document.getElementById('reward-list').innerHTML='<div class="empty">尚無獎勵記錄，點「同步獎勵」產生</div>'; return; }
+  const m=members.find(x=>x.id===memberId)||{};
+  const lvInfo=LEVELS[m.level]||{};
+  document.getElementById('reward-list').innerHTML=list.map(r=>`
+    <div class="reward-item${r.redeemed?' redeemed':''}">
+      <div class="reward-badge-wrap">
+        <div class="reward-milestone">${r.milestone.replace('個月(週邊)','').replace('個月','')}<span style="font-size:.6rem">mo</span></div>
+        <div class="reward-milestone-label">${r.type==='12個月獎勵'?'週邊':'訂閱'}</div>
+      </div>
+      <div class="reward-info">
+        <div class="reward-type">${r.type==='12個月獎勵'?'🏆 專屬週邊獎勵':'🎁 '+(r.rewardItem||lvInfo.reward3||'訂閱獎勵')}</div>
+        <div class="reward-sub">觸發日期 ${r.triggerDate||'—'} ${r.redeemed?'· 已兌換 '+r.redeemedAt:''}</div>
+        ${r.illustration?`<div class="reward-illus">指定插圖：${r.illustration}</div>`:''}
+      </div>
+      <div class="reward-actions">
+        ${r.redeemed
+          ? `<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><span class="badge b-redeemed">已兌換</span><button class="btn btn-sm" onclick="editReward('${r.id}','${m.level||''}')">編輯</button></div>`
+          : `<button class="btn btn-sm btn-green" onclick="openRedeemModal('${r.id}','${m.level||''}')">兌換</button>`
+        }
+      </div>
+    </div>`).join('');
+}
+
+async function syncRewards(){
+  const m=members.find(x=>x.id===drw會員Id);
+  if(!m){return;}
+  const expected=calcExpectedRewards(m);
+  if(!expected.length){showToast('訂閱未滿3個月，暫無獎勵');return;}
+  const existing=drw會員Rewards.map(r=>r.milestone);
+  const missing=expected.filter(e=>!existing.includes(e.milestone));
+  if(!missing.length){showToast('獎勵已是最新，無需同步');return;}
+  const lvInfo=LEVELS[m.level]||{};
+  try{
+    for(const rw of missing){
+      const defaultItem=rw.type==='12個月獎勵'?'專屬週邊':(lvInfo.items?lvInfo.items[0]:'');
+      const created=await apiFetch('/api/rewards',{method:'POST',body:{ memberId:m.id, type:rw.type, milestone:rw.milestone, rewardItem:defaultItem, triggerDate:rw.triggerDate }});
+      drw會員Rewards.push(created);
+      allRewards.push(created);
+    }
+    drw會員Rewards.sort((a,b)=>a.triggerDate>b.triggerDate?1:-1);
+    renderRewards(drw會員Rewards, m.id);
+    renderDash();
+    showToast(`✦ 已同步 ${missing.length} 筆獎勵`);
+  }catch(e){showToast('⚠ 同步失敗');}
+}
+
+let redeemRewardId=null, redeem會員Level=null;
+
+function editReward(rewardId, level) {
+  const rw = drw會員Rewards.find(r => r.id === rewardId);
+  if (!rw) return;
+  redeemRewardId = rewardId;
+  redeem會員Level = level;
+  const lvInfo = LEVELS[level] || {};
+  const is12 = rw.type === '12個月獎勵';
+  document.getElementById('reward-modal-title').textContent = '編輯兌換記錄';
+  const itemWrap = document.getElementById('rw-item-wrap');
+  const illusWrap = document.getElementById('rw-illus-wrap');
+  if (is12) {
+    itemWrap.style.display = 'none'; illusWrap.style.display = 'none';
+  } else {
+    itemWrap.style.display = 'block';
+    const sel = document.getElementById('rw-item');
+    sel.innerHTML = (lvInfo.items || ['相印小卡']).map(i => '<option value="' + i + '"' + (rw.rewardItem===i?' selected':'') + '>' + i + '</option>').join('');
+    illusWrap.style.display = lvInfo.hasIllus ? 'block' : 'none';
+  }
+  document.getElementById('rw-id').value = rewardId;
+  document.getElementById('rw-illus').value = rw.illustration || '';
+  document.getElementById('rw-note').value = rw.note || '';
+  const foot = document.querySelector('#modal-reward .mdfoot');
+  foot.innerHTML = `<button class="btn btn-del" onclick="cancelRedeem('${rewardId}')">取消兌換</button><button class="btn" onclick="closeM('reward')">關閉</button><button class="btn btn-g" onclick="confirmRedeem()">儲存</button>`;
+  openM('reward');
+}
+
+async function cancelRedeem(id) {
+  if (!confirm('確定要取消這筆兌換記錄？')) return;
   try {
-    if (req.method === 'GET') {
-      const { memberId } = req.query;
-      const filter = memberId ? { filter: { property:'會員', relation:{ contains: memberId } } } : {};
-      const r = await fetch(`https://api.notion.com/v1/databases/${REWARDS_DB}/query`,
-        { method:'POST', headers:h, body: JSON.stringify({ ...filter, page_size:100, sorts:[{ property:'觸發日期', direction:'ascending' }] }) });
-      const d = await r.json();
-      if (!r.ok) return res.status(502).json({ error: d });
-      return res.status(200).json(d.results.filter(p=>!p.archived).map(pageToReward));
-    }
-    if (req.method === 'POST') {
-      const { memberId, type, milestone, rewardItem, illustration, triggerDate, note } = req.body;
-      const r = await fetch('https://api.notion.com/v1/pages', {
-        method:'POST', headers:h,
-        body: JSON.stringify({
-          parent: { database_id: REWARDS_DB },
-          properties: {
-            '觸發日期': { title:     [{ text:{ content: triggerDate||'' } }] },
-            '會員':     { relation:  [{ id: memberId }] },
-            '獎勵類型': { select:    { name: type } },
-            '里程碑':   { select:    { name: milestone } },
-            ...(rewardItem ? { '兌換內容': { select: { name: rewardItem } } } : {}),
-            '指定插圖': { rich_text: [{ text:{ content: illustration||'' } }] },
-            '已兌換':   { checkbox:  false },
-            '備註':     { rich_text: [{ text:{ content: note||'' } }] },
-          },
-        }),
-      });
-      const d = await r.json();
-      if (!r.ok) return res.status(502).json({ error: d });
-      return res.status(200).json(pageToReward(d));
-    }
-    if (req.method === 'PATCH') {
-      const { id } = req.query;
-      const { redeemed, redeemedAt, rewardItem, illustration, note } = req.body;
-      const props = {};
-      if (redeemed     !== undefined) props['已兌換']   = { checkbox: redeemed };
-      if (redeemedAt   !== undefined) props['兌換日期'] = { date: redeemedAt ? { start: redeemedAt } : null };
-      if (rewardItem   !== undefined) props['兌換內容'] = { select: { name: rewardItem } };
-      if (illustration !== undefined) props['指定插圖'] = { rich_text: [{ text:{ content: illustration } }] };
-      if (note         !== undefined) props['備註']     = { rich_text: [{ text:{ content: note } }] };
-      const r = await fetch(`https://api.notion.com/v1/pages/${id}`, {
-        method:'PATCH', headers:h, body: JSON.stringify({ properties: props }),
-      });
-      const d = await r.json();
-      if (!r.ok) return res.status(502).json({ error: d });
-      return res.status(200).json(pageToReward(d));
-    }
-    if (req.method === 'DELETE') {
-      const { id } = req.query;
-      const r = await fetch(`https://api.notion.com/v1/pages/${id}`, {
-        method:'PATCH', headers:h, body: JSON.stringify({ archived: true }),
-      });
-      const d = await r.json();
-      if (!r.ok) return res.status(502).json({ error: d });
-      return res.status(200).json({ ok: true });
-    }
-    return res.status(405).json({ error: 'Method not allowed' });
-  } catch(e) { return res.status(500).json({ error: e.message }); }
+    const updated = await apiFetch('/api/rewards?id=' + id, { method: 'PATCH', body: { redeemed: false, redeemedAt: '', rewardItem: '', illustration: '', note: '' } });
+    drw會員Rewards = drw會員Rewards.map(r => r.id === id ? updated : r);
+    allRewards = allRewards.map(r => r.id === id ? updated : r);
+    renderRewards(drw會員Rewards, drw會員Id);
+    renderDash(); closeM('reward'); showToast('已取消兌換');
+  } catch(e) { showToast('⚠ 操作失敗'); }
 }
+function openRedeemModal(rewardId, level){
+  redeemRewardId=rewardId; redeem會員Level=level;
+  const rw=drw會員Rewards.find(r=>r.id===rewardId);
+  const lvInfo=LEVELS[level]||{};
+  const is12=(rw&&rw.type==='12個月獎勵');
+  document.getElementById('reward-modal-title').textContent=is12?'兌換週邊獎勵':'兌換訂閱獎勵';
+  const itemWrap=document.getElementById('rw-item-wrap');
+  const illusWrap=document.getElementById('rw-illus-wrap');
+  if(is12){
+    itemWrap.style.display='none'; illusWrap.style.display='none';
+  } else {
+    itemWrap.style.display='block';
+    const sel=document.getElementById('rw-item');
+    sel.innerHTML=(lvInfo.items||['相印小卡']).map(i=>`<option value="${i}">${i}</option>`).join('');
+    illusWrap.style.display=lvInfo.hasIllus?'block':'none';
+    sel.onchange=()=>{ illusWrap.style.display=(lvInfo.hasIllus&&!['相印小卡','半小時占卜'].includes(sel.value)||lvInfo.hasIllus)?'block':'none'; };
+  }
+  document.getElementById('rw-id').value=rewardId;
+  document.getElementById('rw-illus').value='';
+  document.getElementById('rw-note').value='';
+  // 確保 footer 是正常兌換的按鈕
+  const foot = document.querySelector('#modal-reward .mdfoot');
+  foot.innerHTML = `<button class="btn" onclick="closeM('reward')">取消</button><button class="btn btn-g" onclick="confirmRedeem()">標記已兌換</button>`;
+  openM('reward');
+}
+async function confirmRedeem(){
+  const id=document.getElementById('rw-id').value;
+  const rw=drw會員Rewards.find(r=>r.id===id);
+  const is12=(rw&&rw.type==='12個月獎勵');
+  const lvInfo=LEVELS[redeem會員Level]||{};
+  const item=is12?'專屬週邊':document.getElementById('rw-item').value;
+  const illus=lvInfo.hasIllus&&!is12?document.getElementById('rw-illus').value:'';
+  const note=document.getElementById('rw-note').value;
+  const today=new Date().toISOString().slice(0,10);
+  try{
+    const updated=await apiFetch(`/api/rewards?id=${id}`,{method:'PATCH',body:{ redeemed:true, redeemedAt:today, rewardItem:item, illustration:illus, note }});
+    drw會員Rewards=drw會員Rewards.map(r=>r.id===id?updated:r);
+    allRewards=allRewards.map(r=>r.id===id?updated:r);
+    renderRewards(drw會員Rewards, drw會員Id);
+    renderDash(); closeM('reward'); showToast('✦ 已標記兌換');
+  }catch(e){showToast('⚠ 更新失敗');}
+}
+
+// ── 提醒中心 ────────────────────────────────────────────
+function build提醒(){
+  const list=[];
+  members.forEach(m=>{
+    const bd=天UntilBday(m.bday);
+    if(m.bday&&bd<=30) list.push({type:'birthday',icon:'🎂',title:`${m.name} 生日提醒`,sub:`${m.level} · ${m.bday.slice(5).replace('-','/')}`,天:bd,ic:'rb',urgent:bd<=7,id:m.id});
+    const ex=天Until(m.exp);
+    if(m.exp&&ex>=0&&ex<=30){ const urg=ex<=7; list.push({type:urg?'urgent':'soon',icon:urg?'⚠':'◇',title:`${m.name} 會員即將到期`,sub:`${m.plan||''} · ${m.exp}`,天:ex,ic:urg?'re':'rh',urgent:urg,id:m.id}); }
+  });
+  allRewards.filter(r=>!r.redeemed).forEach(r=>{
+    const m=members.find(x=>x.id===r.memberId)||{};
+    list.push({type:'reward',icon:'🎁',title:`${m.name||'—'} 獎勵待兌換`,sub:`${r.milestone} · ${r.rewardItem||r.type}`,天:-1,ic:'rg',urgent:false,id:r.memberId,isReward:true});
+  });
+  holi天.forEach(h=>{ const d=天Until(h.date); if(d>=0&&d<=90) list.push({type:'holiday',icon:'◈',title:h.name,sub:`${h.type}${h.note?' · '+h.note:''}`,天:d,ic:'rh',urgent:false}); });
+  return list.sort((a,b)=>{ if(a.isReward&&!b.isReward)return 1; if(!a.isReward&&b.isReward)return -1; return a.天-b.天; });
+}
+function render提醒(type){
+  curFilter=type;
+  const all=build提醒();
+  const list=type==='all'?all:all.filter(r=>r.type===type||(type==='urgent'&&r.type==='urgent')||(type==='soon'&&r.type==='soon'));
+  const el=document.getElementById('r-list');
+  if(!list.length){el.innerHTML='<div class="empty">目前無提醒事項</div>';return;}
+  el.innerHTML=list.map(r=>`
+    <div class="rcard${r.urgent?' urg':r.type==='soon'?' warn':r.type==='reward'?' reward-card':''}" ${r.id?`onclick="openDrw(members.find(x=>x.id==='${r.id}'))"`:''}>
+      <div class="rico ${r.ic}">${r.icon}</div>
+      <div class="rbody"><div class="rtitle">${r.title}</div><div class="rsub">${r.sub}</div></div>
+      <div style="text-align:right">${r.isReward
+        ?`<span style="font-size:1.2rem">🎁</span>`
+        :`<span class="rdbig${r.urgent?' red':''}">${r.天}</span><span class="rdsm">天</span>`
+      }</div>
+    </div>`).join('');
+}
+function filterR(type,el){
+  document.querySelectorAll('.filter-row .btn').forEach(b=>b.classList.remove('f-on'));
+  el.classList.add('f-on'); render提醒(type);
+}
+
+// ── 節日日曆 ─────────────────────────────────────────────
+const MOS=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+function renderCal(){
+  document.getElementById('cal-label').textContent=`${calY} · ${MOS[calMo]}`;
+  const first=new Date(calY,calMo,1).getDay(), dim=new Date(calY,calMo+1,0).getDate(), prev=new Date(calY,calMo,0).getDate();
+  let html='';
+  for(let i=0;i<first;i++) html+=`<div class="cday other"><span>${prev-first+1+i}</span></div>`;
+  for(let d=1;d<=dim;d++){
+    const ds=`${calY}-${String(calMo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isT=new Date(ds).getTime()===TODAY.getTime();
+    const hasBd=members.some(m=>m.bday&&m.bday.slice(5)===ds.slice(5));
+    const hasH=holi天.some(h=>h.date===ds);
+    const hasEx=members.some(m=>m.exp===ds);
+    let dots='';
+    if(hasBd) dots+=`<div class="d dp"></div>`;
+    if(hasH)  dots+=`<div class="d dg"></div>`;
+    if(hasEx) dots+=`<div class="d dr"></div>`;
+    html+=`<div class="cday${isT?' today':''}" onclick="showDay(${d},'${ds}')"><span>${d}</span>${dots?`<div class="dots">${dots}</div>`:''}</div>`;
+  }
+  const rem=(7-(first+dim)%7)%7;
+  for(let i=1;i<=rem;i++) html+=`<div class="cday other"><span>${i}</span></div>`;
+  document.getElementById('cal-grid').innerHTML=html;
+  showMonthEp();
+}
+function showMonthEp(){
+  const ms=`${calY}-${String(calMo+1).padStart(2,'0')}`;
+  document.getElementById('ep-title').textContent=`${calMo+1}月 事項`;
+  let html='';
+  holi天.filter(h=>h.date.startsWith(ms)).forEach(h=>{html+=`<div class="epi"><div class="epidot" style="background:#D4A800"></div><div><div class="epiname">${h.name}</div><div class="epitype">${h.type} · ${h.date.slice(8)}日</div></div></div>`;});
+  members.filter(m=>m.bday&&m.bday.replace(/^\d{4}/,String(calY)).startsWith(ms)).forEach(m=>{html+=`<div class="epi"><div class="epidot" style="background:#9080C0"></div><div><div class="epiname">${m.name} 生日</div><div class="epitype">${m.bday.slice(8)}日</div></div></div>`;});
+  members.filter(m=>m.exp&&m.exp.startsWith(ms)).forEach(m=>{html+=`<div class="epi"><div class="epidot" style="background:#E24B4A"></div><div><div class="epiname">${m.name} 到期</div><div class="epitype">${m.plan||''} · ${m.exp.slice(8)}日</div></div></div>`;});
+  if(!html) html='<div class="empty" style="padding:.4rem 0">本月暫無事項</div>';
+  document.getElementById('ep-list').innerHTML=html;
+}
+function showDay(d,ds){
+  document.getElementById('ep-title').textContent=`${calMo+1}月${d}日`;
+  let html='';
+  holi天.filter(h=>h.date===ds).forEach(h=>{html+=`<div class="epi"><div class="epidot" style="background:#D4A800"></div><div><div class="epiname">${h.name}</div><div class="epitype">${h.note||h.type}</div></div></div>`;});
+  members.filter(m=>m.bday&&m.bday.slice(5)===ds.slice(5)).forEach(m=>{html+=`<div class="epi"><div class="epidot" style="background:#9080C0"></div><div><div class="epiname">${m.name} 🎂</div><div class="epitype">${m.level}</div></div></div>`;});
+  members.filter(m=>m.exp===ds).forEach(m=>{html+=`<div class="epi"><div class="epidot" style="background:#E24B4A"></div><div><div class="epiname">${m.name} 到期</div><div class="epitype">${m.plan||''}</div></div></div>`;});
+  if(!html) html='<div class="empty" style="padding:.4rem 0">這天無事項</div>';
+  document.getElementById('ep-list').innerHTML=html;
+}
+function prevMo(){calMo--;if(calMo<0){calMo=11;calY--;}renderCal();}
+function nextMo(){calMo++;if(calMo>11){calMo=0;calY++;}renderCal();}
+
+// ── HOLIDAYS ─────────────────────────────────────────────
+async function saveHoliday(){
+  const name=document.getElementById('nh-name').value.trim(), date=document.getElementById('nh-date').value;
+  if(!name||!date){showToast('請填寫名稱和日期');return;}
+  try{
+    const c=await apiFetch('/api/holidays',{method:'POST',body:{name,date,type:document.getElementById('nh-type').value,note:document.getElementById('nh-note').value}});
+    holi天.push(c); closeM('add-holiday');
+    ['nh-name','nh-date','nh-note'].forEach(id=>document.getElementById(id).value='');
+    renderCal(); render提醒(curFilter); showToast('✦ 節日已新增');
+  }catch(e){showToast('⚠ 新增失敗');}
+}
+
+// ── CSV EXPORT ───────────────────────────────────────────
+function exportCSV(){
+  const header=['姓名','YouTube會員名稱','電話','Email','生日','會員等級','方案','加入日期','到期日','累積訂閱(月)','收件方式','宅配地址','超商門市','備註'];
+  const rows=members.map(m=>{
+    const sub=calcSubscribe(m.join);
+    return [m.name,m.memberName,m.phone,m.email,m.bday,m.level,m.plan,m.join,m.exp,sub?sub.totalMonths:'',m.shipType,m.address,m.convenience,m.note].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`);
+  });
+  const csv=[header,...rows].map(r=>r.join(',')).join('\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
+  a.download=`ooniau_members_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click(); showToast('✦ CSV 匯出成功');
+}
+
+
+// ── APPLICATIONS ──────────────────────────────────────────
+let currentAppFilter = '待審核';
+
+async function loadApplications(status) {
+  currentAppFilter = status || '待審核';
+  const el = document.getElementById('app-list');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>載入中</div>';
+  try {
+    const list = await apiFetch('/api/applications?status=' + encodeURIComponent(currentAppFilter));
+    renderApps(list);
+    const pending = status === '待審核' ? list.length : null;
+    if (pending !== null) {
+      const badge = document.getElementById('review-badge');
+      if (pending > 0) { badge.style.display = 'inline'; badge.textContent = pending; }
+      else { badge.style.display = 'none'; }
+    }
+  } catch(e) { el.innerHTML = '<div class="empty">載入失敗</div>'; }
+}
+
+function renderApps(list) {
+  const el = document.getElementById('app-list');
+  if (!list.length) { el.innerHTML = '<div class="empty">目前無申請</div>'; return; }
+  el.innerHTML = list.map(a => {
+    const statusCls = a.status === '待審核' ? 'b-soon' : a.status === '已核准' ? 'b-ok' : 'b-exp';
+    return `<div style="background:#fff;border:0.5px solid var(--gold-dim);border-radius:4px;padding:1.2rem 1.4rem;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem">
+        <div>
+          <div style="font-size:.82rem;font-weight:500;color:var(--pd);margin-bottom:3px">${a.name} <span style="font-size:.7rem;color:var(--tm)">@ ${a.memberName}</span></div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            ${lvBadge(a.level)}
+            <span class="badge ${a.plan === '年繳' ? 'b-yr' : 'b-once'}">${a.plan}</span>
+            <span class="badge ${statusCls}">${a.status}</span>
+          </div>
+        </div>
+        <div style="font-size:.68rem;color:var(--th)">${a.createdAt.slice(0,10)}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.72rem;color:var(--tm);margin-bottom:.8rem">
+        <div>綠界訂閱日期：${a.joinDate||'—'}</div>
+        <div>電話：${a.phone||'—'}</div>
+        <div>收件：${a.shipType||'不需要'}${a.address?' · '+a.address:''}${a.convenience?' · '+a.convenience:''}</div>
+        ${a.reason ? '<div style="grid-column:1/-1">訂閱原因：'+a.reason+'</div>' : ''}
+      </div>
+      ${a.screenshot ? `<div style="margin-bottom:.8rem"><a href="${a.screenshot}" target="_blank" style="font-size:.75rem;color:var(--purple);letter-spacing:.05em">📷 查看訂閱截圖 ↗</a></div>` : ''}
+      ${a.status === '待審核' ? `<div style="display:flex;gap:8px">
+        <button class="btn btn-del btn-sm" onclick="reviewApp('${a.id}','reject')">拒絕</button>
+        <button class="btn btn-green btn-sm" onclick="reviewApp('${a.id}','approve')">核准</button>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function filterApps(status, el) {
+  document.querySelectorAll('#view-review .filter-row .btn, #view-review .ptop .btn').forEach(b => b.classList.remove('f-on'));
+  el.classList.add('f-on');
+  loadApplications(status);
+}
+
+async function reviewApp(id, action) {
+  const label = action === 'approve' ? '核准' : '拒絕';
+  if (!confirm(`確定要${label}這筆申請？`)) return;
+  try {
+    await apiFetch(`/api/applications?id=${id}`, { method: 'PATCH', body: { action } });
+    showToast(action === 'approve' ? '✦ 已核准，會員資料已更新' : '已拒絕');
+    loadApplications(currentAppFilter);
+    loadAll();
+  } catch(e) { showToast('⚠ 操作失敗'); }
+}
+
+// ── INIT ─────────────────────────────────────────────────
+loadAll();
+// 載入後更新審核 badge
+fetch("/api/applications?status=%E5%BE%85%E5%AF%A9%E6%A0%B8").then(r=>r.json()).then(list=>{const b=document.getElementById("review-badge");if(list.length>0){b.style.display="inline";b.textContent=list.length;}}).catch(()=>{});
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) loadAll(); });
+</script>
+</body>
+</html>
