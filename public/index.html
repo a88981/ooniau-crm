@@ -249,7 +249,7 @@ tr:hover td{background:#FEFBF2}
 <body>
 <div id="auth-screen" style="position:fixed;inset:0;background:#F8F7F5;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:1rem">
   <div style="font-size:1.1rem;font-weight:600;color:var(--pd);letter-spacing:.1em">Ooniau 暖暖 後台</div>
-  <input type="password" id="auth-input" placeholder="請輸入密碼" style="padding:8px 14px;border:.5px solid var(--gold-dim);border-radius:4px;font-size:.85rem;width:200px;text-align:center" onkeydown="if(event.key==='Enter')checkAuth()">
+  <input type="password" id="auth-input" placeholder="請輸入密碼" style="padding:8px 14px;border:.5px solid var(--gold-dim);border-radius:4px;font-size:.85rem;width:200px;text-align:center" onkeydown="if(event.key==='Enter')checkAuth()" oninput="document.getElementById('auth-err').style.display='none'">
   <button class="btn btn-g" onclick="checkAuth()" style="width:200px">進入</button>
   <div id="auth-err" style="font-size:.7rem;color:#A32D2D;display:none">密碼錯誤</div>
 </div>
@@ -307,7 +307,7 @@ tr:hover td{background:#FEFBF2}
       <div class="twrap">
         <div class="tbar">
           <span style="color:var(--th)">⌕</span>
-          <input type="text" id="m-search" placeholder="搜尋姓名、YT名稱、電話、Email、備註…" oninput="filterM(this.value)">
+          <input type="text" id="m-search" placeholder="搜尋姓名、YT名稱、電話、Email、備註…" oninput="debouncedFilterM(this.value)">
           <div class="filter-row" style="margin-left:auto;flex-shrink:0">
             <button class="btn btn-sm f-on" onclick="setMFilter('all',this)">全部</button>
             <button class="btn btn-sm" onclick="setMFilter('active',this)">有效</button>
@@ -460,6 +460,7 @@ tr:hover td{background:#FEFBF2}
           <option value="">選擇階級</option>
           <option>LV.3 里民暖暖包</option>
           <option>LV.4 肌肉暖暖包</option>
+          <option>LV.5 真蒸暖暖包</option>
         </select>
         <input class="fi" id="pay-note" placeholder="備註（選填）" style="flex:1">
         <button class="btn btn-g btn-sm" onclick="addPayment()">新增</button>
@@ -695,7 +696,7 @@ function 天UntilBday(s){
   if(!s)return 9999;
   const b=new Date(s);
   let nx=new Date(TODAY.getFullYear(),b.getMonth(),b.getDate());
-  if(nx<=TODAY) nx=new Date(TODAY.getFullYear()+1,b.getMonth(),b.getDate());
+  if(nx<TODAY) nx=new Date(TODAY.getFullYear()+1,b.getMonth(),b.getDate());
   return Math.ceil((nx-TODAY)/86400000);
 }
 function expStatus(s){
@@ -752,11 +753,17 @@ async function loadAll(){
     if(badge){ if(apps.length>0){badge.style.display='inline';badge.textContent=apps.length;}else{badge.style.display='none';} }
     renderDash(); filterM(document.getElementById('m-search')?.value||''); render提醒(curFilter); renderCal();
     // 如果 drawer 是開著的，只更新靜態資料（不重打 loadPayments/loadRewards）
-    if(drw會員Id){
+    if(drw會員Id && document.getElementById('drw').classList.contains('open')){
       const updated = members.find(x=>x.id===drw會員Id);
       if(updated) refreshDrwInfo(updated);
     }
   }catch(e){ showToast(e.message==='TIMEOUT'?'⚠ 連線逾時，請稍後再試':'⚠ 無法連線，請確認設定'); }
+}
+
+// ── UTILS (debounce) ────────────────────────────────────
+function debounce(fn, ms){
+  let t;
+  return function(...args){ clearTimeout(t); t = setTimeout(()=>fn.apply(this,args), ms); };
 }
 
 // ── NAV ──────────────────────────────────────────────────
@@ -789,6 +796,7 @@ document.addEventListener('keydown', e => {
 });
 
 function openDrw(m){
+  if(!m) return;
   drw會員Id=m.id;
   refreshDrwInfo(m);
   document.getElementById('drw-bg').classList.add('open');
@@ -1038,6 +1046,7 @@ function applyMFilter(list) {
   if (curMFilter === 'expired') return list.filter(m => { const d = 天Until(m.exp); return m.exp && d < 0; });
   return list;
 }
+const debouncedFilterM = debounce(filterM, 150);
 function filterM(q) {
   let searched = members.filter(m =>
     (m.name||'').includes(q) ||
@@ -1144,6 +1153,9 @@ async function deletePayment(id, silent=false, delBtn=null){
 }
 
 // ── REWARDS ──────────────────────────────────────────────
+function addMonthsSafe(base, months) {
+  return new Date(base.getFullYear(), base.getMonth() + months, 1);
+}
 function calcExpectedRewards(member){
   if(!member.join) return [];
   const j = new Date(member.join); j.setHours(0,0,0,0);
@@ -1164,10 +1176,6 @@ function calcExpectedRewards(member){
   if(totalMonths < 3) return [];
   const rewards = [];
   const joinDate = new Date(member.join);
-  // 月份溢出修正：固定用每月1日避免 1/31+1月=3/3 的問題
-  function addMonthsSafe(base, months) {
-    return new Date(base.getFullYear(), base.getMonth() + months, 1);
-  }
   // 每3個月一筆
   for(let mo=3; mo<=totalMonths; mo+=3){
     const trigDate = addMonthsSafe(joinDate, mo);
@@ -1236,11 +1244,11 @@ async function syncRewards(){
   const syncBtn = document.getElementById('sync-rewards-btn');
   if(syncBtn) syncBtn.disabled = true;
   const expected=calcExpectedRewards(m);
-  if(!expected.length){showToast('訂閱未滿3個月，暫無獎勵');return;}
+  if(!expected.length){showToast('訂閱未滿3個月，暫無獎勵');if(syncBtn)syncBtn.disabled=false;return;}
   const existing=drw會員Rewards.map(r=>r.milestone);
   const missing=expected.filter(e=>!existing.includes(e.milestone));
   const alreadyRedeemed=expected.filter(e=>existing.includes(e.milestone)&&drw會員Rewards.find(r=>r.milestone===e.milestone&&r.redeemed));
-  if(!missing.length){showToast(`獎勵已是最新${alreadyRedeemed.length?'（已兌換 '+alreadyRedeemed.length+' 筆）':''}，無需同步`);return;}
+  if(!missing.length){showToast(`獎勵已是最新${alreadyRedeemed.length?'（已兌換 '+alreadyRedeemed.length+' 筆）':''}，無需同步`);if(syncBtn)syncBtn.disabled=false;return;}
   const lvInfo=LEVELS[m.level]||{};
   try{
     const created = await Promise.all(missing.map(rw => {
@@ -1417,7 +1425,7 @@ function render提醒(type){
   const el=document.getElementById('r-list');
   if(!list.length){el.innerHTML='<div class="empty">目前無提醒事項</div>';return;}
   el.innerHTML=list.map(r=>`
-    <div class="rcard${r.urgent?' urg':r.type==='soon'?' warn':r.type==='reward'?' reward-card':r.type==='activity'?' activity-card':''}" ${r.id?`onclick="openDrw(members.find(x=>x.id==='${r.id}'))"`:''}>
+    <div class="rcard${r.urgent?' urg':r.type==='soon'?' warn':r.type==='reward'?' reward-card':r.type==='activity'?' activity-card':''}" ${r.id?`onclick="const _m=members.find(x=>x.id==='${r.id}');if(_m)openDrw(_m)"`:''}>
       <div class="rico ${r.ic}">${r.icon}</div>
       <div class="rbody"><div class="rtitle">${r.title}</div><div class="rsub">${r.sub}</div></div>
       <div style="text-align:right">${r.isReward
@@ -1598,7 +1606,7 @@ async function reviewApp(id, action) {
       showToast('已拒絕');
     }
     await Promise.all([loadApplications(currentAppFilter), loadAll()]);
-  } catch(e) { showToast('⚠ 操作失敗'); }
+  } catch(e) { showToast('⚠ 操作失敗'); throw e; }
 }
 
 
@@ -1980,6 +1988,7 @@ async function checkAuth(){
       sessionStorage.setItem('ooniau_auth','1');
       enterApp();
     } else {
+      document.getElementById('auth-err').textContent = '密碼錯誤';
       document.getElementById('auth-err').style.display = 'block';
       document.getElementById('auth-input').value = '';
       document.getElementById('auth-input').focus();
