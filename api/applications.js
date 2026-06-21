@@ -189,7 +189,7 @@ module.exports = async function handler(req, res) {
           body: JSON.stringify({ properties: { '狀態': { select: { name: '已核准' } } } }),
         });
 
-        return res.status(200).json({ ok: true, memberId });
+        return res.status(200).json({ ok: true, memberId, isNew: !(searchD.results && searchD.results.length > 0) });
       }
 
       return res.status(400).json({ error: 'Invalid action' });
