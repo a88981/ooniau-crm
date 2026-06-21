@@ -30,6 +30,7 @@ function pageToMember(p) {
     address:     txt('宅配地址'),
     convenience: txt('超商門市'),
     note:        txt('備註'),
+    orderNos:    txt('訂單編號'), // 逗號分隔多筆
   };
 }
 
@@ -48,6 +49,7 @@ function memberToProps(m) {
   if (m.address     !== undefined) props['宅配地址']       = { rich_text:   [{ text: { content: m.address } }] };
   if (m.convenience !== undefined) props['超商門市']       = { rich_text:   [{ text: { content: m.convenience } }] };
   if (m.note        !== undefined) props['備註']           = { rich_text:   [{ text: { content: m.note } }] };
+  if (m.orderNos    !== undefined) props['訂單編號']       = { rich_text:   [{ text: { content: m.orderNos } }] };
   return props;
 }
 
