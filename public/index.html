@@ -325,7 +325,7 @@ tr:hover td{background:#FEFBF2}
         <table>
           <thead><tr>
             <th>會員</th><th>YouTube名稱</th><th>等級</th><th>方案</th>
-            <th>累積訂閱</th><th>到期日</th><th>收件</th><th>狀態</th><th></th>
+            <th>累積訂閱</th><th>到期日</th><th>狀態</th><th></th>
           </tr></thead>
           <tbody id="m-tbody"><tr><td colspan="9"><div class="loading"><div class="spinner"></div>載入中</div></td></tr></tbody>
         </table>
@@ -436,9 +436,6 @@ tr:hover td{background:#FEFBF2}
     <!-- 收件資訊 -->
     <div class="dsec" id="d-ship-sec">
       <div class="dsec-label">收件資訊</div>
-      <div class="drow"><span class="dkey">收件</span><span class="dval" id="d-shiptype">—</span></div>
-      <div id="d-addr-wrap" style="display:none"><div class="addr-box" id="d-address"></div></div>
-      <div id="d-cvs-wrap"  style="display:none"><div class="addr-box" id="d-cvs"></div></div>
     </div>
 
     <!-- 備註 -->
@@ -530,19 +527,6 @@ tr:hover td{background:#FEFBF2}
       <div class="fr"><label class="fl">加入日期</label><input class="fi" id="nm-join" type="date" oninput="autoCalcExp()"></div>
     </div>
     <div class="fr" style="max-width:175px"><label class="fl">會員到期日</label><input class="fi" id="nm-exp" type="date"></div>
-    <div class="secdiv">寄送資訊</div>
-    <div class="ship-toggle">
-      <div class="ship-opt sel" id="ship-none" onclick="selShip('')">不填</div>
-      <div class="ship-opt" id="ship-home" onclick="selShip('宅配')">🏠 宅配</div>
-      <div class="ship-opt" id="ship-cvs"  onclick="selShip('超商取貨')">🏪 超商取貨</div>
-    </div>
-    <input type="hidden" id="nm-ship" value="">
-    <div class="ship-fld" id="fld-home">
-      <div class="fr"><label class="fl">地址</label><input class="fi" id="nm-addr" placeholder="縣市＋鄉鎮市區＋路段門牌"></div>
-    </div>
-    <div class="ship-fld" id="fld-cvs">
-      <div class="fr"><label class="fl">超商門市</label><input class="fi" id="nm-cvs" placeholder="7-11 暖暖門市 / 全家 基隆暖暖店"></div>
-    </div>
     <div class="mdfoot">
       <button class="btn btn-del" id="nm-del" style="display:none" onclick="delete會員()">刪除</button>
       <button class="btn" onclick="cancel會員Modal()">取消</button>
@@ -853,11 +837,7 @@ function refreshDrwInfo(m){
   const st=expStatus(m.exp);
   const daysStr=m.exp?`<span style="font-size:.62rem;color:var(--th);margin-left:4px">${m.exp}</span>`:'';
   document.getElementById('d-status').innerHTML=`<span class="badge ${st.cls}">${st.label}</span>${daysStr}`;
-  document.getElementById('d-shiptype').innerHTML=shipBadge(m.shipType);
-  document.getElementById('d-addr-wrap').style.display=m.shipType==='宅配'&&m.address?'block':'none';
-  document.getElementById('d-cvs-wrap').style.display=m.shipType==='超商取貨'&&m.convenience?'block':'none';
   document.getElementById('d-address').textContent=m.address||'';
-  document.getElementById('d-cvs').textContent=m.convenience||'';
   document.getElementById('d-note-sec').style.display=m.note?'block':'none';
   document.getElementById('d-note').textContent=m.note||'';
   const lvSel = document.getElementById('pay-level');
@@ -867,12 +847,6 @@ function closeDrw(){ document.getElementById('drw-bg').classList.remove('open');
 function openEditFromDrw(){ const m=members.find(x=>x.id===drw會員Id); if(m){ closeDrw(); edit會員(m); } }
 
 // ── MEMBER MODAL ─────────────────────────────────────────
-function selShip(v){
-  document.getElementById('nm-ship').value=v;
-  ['none','home','cvs'].forEach(k=>document.getElementById('ship-'+k).classList.toggle('sel',(k==='none'&&v==='')|(k==='home'&&v==='宅配')|(k==='cvs'&&v==='超商取貨')));
-  document.getElementById('fld-home').classList.toggle('show',v==='宅配');
-  document.getElementById('fld-cvs').classList.toggle('show',v==='超商取貨');
-}
 function openAdd會員(){ reset會員Modal(); openM('add-member'); }
 function edit會員(m){
   reset會員Modal();
@@ -889,9 +863,7 @@ function edit會員(m){
   document.getElementById('nm-exp').value=m.exp||'';
   document.getElementById('nm-note').value=m.note||'';
   document.getElementById('nm-addr').value=m.address||'';
-  document.getElementById('nm-cvs').value=m.convenience||'';
   document.getElementById('nm-order').value=m.orderNos||'';
-  selShip(m.shipType||'');
   document.getElementById('nm-del').style.display='inline-flex';
   document.getElementById('nm-submit').textContent='儲存';
   openM('add-member');
@@ -920,18 +892,17 @@ function cancel會員Modal(){ reset會員Modal(); closeM('add-member'); }
 function reset會員Modal(){
   document.getElementById('member-modal-title').textContent='新增會員';
   document.getElementById('nm-id').value='';
-  ['nm-name','nm-yt','nm-phone','nm-email','nm-bday','nm-join','nm-exp','nm-note','nm-addr','nm-cvs','nm-order'].forEach(id=>document.getElementById(id).value='');
+  ['nm-name','nm-yt','nm-phone','nm-email','nm-bday','nm-join','nm-exp','nm-note','nm-addr','nm-order'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('nm-level').value='LV.3 里民暖暖包';
   document.getElementById('nm-plan').value='年繳';
   document.getElementById('nm-del').style.display='none';
   document.getElementById('nm-submit').textContent='新增';
-  selShip('');
 }
 async function save會員(){
   const name=document.getElementById('nm-name').value.trim();
   if(!name){showToast('請填寫姓名');return;}
   const id=document.getElementById('nm-id').value;
-  const payload={ name, memberName:document.getElementById('nm-yt').value, phone:document.getElementById('nm-phone').value, email:document.getElementById('nm-email').value, bday:document.getElementById('nm-bday').value, level:document.getElementById('nm-level').value, plan:document.getElementById('nm-plan').value, join:document.getElementById('nm-join').value, exp:document.getElementById('nm-exp').value, shipType:document.getElementById('nm-ship').value, address:document.getElementById('nm-addr').value, convenience:document.getElementById('nm-cvs').value, note:document.getElementById('nm-note').value, orderNos:document.getElementById('nm-order').value };
+  const payload={ name, memberName:document.getElementById('nm-yt').value, phone:document.getElementById('nm-phone').value, email:document.getElementById('nm-email').value, bday:document.getElementById('nm-bday').value, level:document.getElementById('nm-level').value, plan:document.getElementById('nm-plan').value, join:document.getElementById('nm-join').value, exp:document.getElementById('nm-exp').value, address:document.getElementById('nm-addr').value, note:document.getElementById('nm-note').value, orderNos:document.getElementById('nm-order').value };
   const btn=document.getElementById('nm-submit'); btn.disabled=true; btn.textContent='儲存中…';
   try{
     if(id){
@@ -1011,7 +982,6 @@ function render會員(list){
       <td>${planBadge(m.plan)}</td>
       <td style="font-size:.72rem;color:var(--purple);font-weight:500">${subStr}</td>
       <td style="font-size:.7rem;font-weight:500;color:var(--pd)">${m.exp||'—'}</td>
-      <td>${shipBadge(m.shipType)}</td>
       <td><span class="badge ${st.cls}">${st.label}</span></td>
       <td><button class="btn btn-sm" onclick="event.stopPropagation();edit會員(members.find(x=>x.id==='${m.id}'))">編輯</button></td>
     </tr>`;
@@ -1516,9 +1486,9 @@ function nextMo(){calMo++;if(calMo>11){calMo=0;calY++;}renderCal();}
 // ── CSV EXPORT ───────────────────────────────────────────
 function exportCSV(activeOnly=false){
   const list = activeOnly ? members.filter(m=>m.exp&&天Until(m.exp)>=0) : members;
-  const header=['姓名','YouTube會員名稱','電話','Email','生日','會員等級','方案','加入日期','到期日','收件方式','宅配地址','超商門市','備註'];
+  const header=['姓名','YouTube會員名稱','電話','Email','生日','會員等級','方案','加入日期','到期日','地址','備註'];
   const rows=list.map(m=>{
-    return [m.name,m.memberName,m.phone,m.email,m.bday,m.level,m.plan,m.join,m.exp,m.shipType,m.address,m.convenience,m.note].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`);
+    return [m.name,m.memberName,m.phone,m.email,m.bday,m.level,m.plan,m.join,m.exp,m.address,m.note].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`);
   });
   const csv=[header,...rows].map(r=>r.join(',')).join('\n');
   const a=document.createElement('a');
@@ -1572,7 +1542,7 @@ function renderApps(list) {
         <div>電話：${a.phone||'—'}</div>
         ${a.email ? '<div>Email：'+a.email+'</div>' : '<div>Email：—</div>'}
         ${a.bday ? '<div>生日：'+a.bday+'</div>' : '<div>生日：—</div>'}
-        <div style="grid-column:1/-1">收件：${a.shipType||'不需要'}${a.address?' · '+a.address:''}${a.convenience?' · '+a.convenience:''}</div>
+        <div style="grid-column:1/-1">收件：${a.address||'未填'}</div>
         ${a.reason ? '<div style="grid-column:1/-1">訂閱原因：'+a.reason+'</div>' : ''}
       </div>
       ${a.screenshot ? `<div style="margin-bottom:.8rem"><a href="${a.screenshot}" target="_blank" style="font-size:.75rem;color:var(--purple);letter-spacing:.05em">📷 查看訂閱截圖 ↗</a></div>` : ''}
@@ -1771,8 +1741,8 @@ function importCSV(input) {
     const colMap = {
       '姓名': 'name', 'YouTube會員名稱': 'memberName', '電話': 'phone',
       'Email': 'email', '生日': 'bday', '會員等級': 'level', '方案': 'plan',
-      '加入日期': 'join', '到期日': 'exp', '收件方式': 'shipType',
-      '宅配地址': 'address', '超商門市': 'convenience', '備註': 'note',
+      '加入日期': 'join', '到期日': 'exp',
+      '地址': 'address', '備註': 'note',
     };
     const idxMap = {};
     header.forEach((h, i) => { if (colMap[h]) idxMap[colMap[h]] = i; });
