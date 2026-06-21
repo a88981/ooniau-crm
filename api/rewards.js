@@ -66,7 +66,7 @@ module.exports = async function handler(req, res) {
       const props = {};
       if (redeemed     !== undefined) props['已兌換']   = { checkbox: redeemed };
       if (redeemedAt   !== undefined) props['兌換日期'] = { date: redeemedAt ? { start: redeemedAt } : null };
-      if (rewardItem   !== undefined) props['兌換內容'] = { select: { name: rewardItem } };
+      if (rewardItem   !== undefined) props['兌換內容'] = rewardItem ? { select: { name: rewardItem } } : { select: null };
       if (illustration !== undefined) props['指定插圖'] = { rich_text: [{ text:{ content: illustration } }] };
       if (note         !== undefined) props['備註']     = { rich_text: [{ text:{ content: note } }] };
       const r = await fetch(`https://api.notion.com/v1/pages/${id}`, {
