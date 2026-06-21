@@ -1,6 +1,6 @@
 {
   "routes": [
-    { "src": "/member", "dest": "/member.html" },
+    { "src": "/member", "dest": "/public/member.html" },
     { "src": "/api/(.*)", "dest": "/api/$1" }
   ]
 }
