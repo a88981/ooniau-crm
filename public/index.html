@@ -18,7 +18,7 @@
   --lv4:#A07800;--lv4bg:#FFF8D6;
   --lv5:#7050A0;--lv5bg:#F0EBF8;
 }
-html,body{height:100%;font-family:'Noto Sans TC',sans-serif;font-size:14px;color:var(--pd);background:#F8F7F5}
+html,body{height:100%;font-family:'Noto Sans TC',sans-serif;font-size:18px;color:var(--pd);background:#F8F7F5}
 .app{display:flex;height:100vh;overflow:hidden}
 
 /* ── SIDEBAR ─────────────────────────── */
@@ -252,6 +252,7 @@ tr:hover td{background:#FEFBF2}
       <div class="ni" onclick="go('members',this)">  <span>◎</span>會員列表</div>
       <div class="ni" onclick="go('reminders',this)"><span>◇</span>提醒中心</div>
       <div class="ni" onclick="go('calendar',this)"> <span>△</span>節日日曆</div>
+      <div class="ni" onclick="go('review',this)">   <span>◉</span>審核申請 <span id="review-badge" style="display:none;background:#E24B4A;color:#fff;font-size:.55rem;padding:1px 6px;border-radius:10px;margin-left:4px"></span></div>
     </nav>
     <div class="sb-foot">🐈‍⬛ Ooniau 暖暖</div>
   </div>
@@ -343,6 +344,19 @@ tr:hover td{background:#FEFBF2}
           <div id="ep-list"><div class="loading"><div class="spinner"></div></div></div>
         </div>
       </div>
+    </div>
+
+    <!-- 審核申請 -->
+    <div id="view-review" class="view">
+      <div class="ptop">
+        <div><div class="plabel">Review</div><div class="ptitle">審核申請</div></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn f-on" onclick="filterApps('待審核',this)">待審核</button>
+          <button class="btn" onclick="filterApps('已核准',this)">已核准</button>
+          <button class="btn" onclick="filterApps('已拒絕',this)">已拒絕</button>
+        </div>
+      </div>
+      <div id="app-list"><div class="loading"><div class="spinner"></div>載入中</div></div>
     </div>
 
   </div>
@@ -1015,8 +1029,79 @@ function exportCSV(){
   a.click(); showToast('✦ CSV 匯出成功');
 }
 
+
+// ── APPLICATIONS ──────────────────────────────────────────
+let currentAppFilter = '待審核';
+
+async function loadApplications(status) {
+  currentAppFilter = status || '待審核';
+  const el = document.getElementById('app-list');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div>載入中</div>';
+  try {
+    const list = await apiFetch('/api/applications?status=' + encodeURIComponent(currentAppFilter));
+    renderApps(list);
+    const pending = status === '待審核' ? list.length : null;
+    if (pending !== null) {
+      const badge = document.getElementById('review-badge');
+      if (pending > 0) { badge.style.display = 'inline'; badge.textContent = pending; }
+      else { badge.style.display = 'none'; }
+    }
+  } catch(e) { el.innerHTML = '<div class="empty">載入失敗</div>'; }
+}
+
+function renderApps(list) {
+  const el = document.getElementById('app-list');
+  if (!list.length) { el.innerHTML = '<div class="empty">目前無申請</div>'; return; }
+  el.innerHTML = list.map(a => {
+    const statusCls = a.status === '待審核' ? 'b-soon' : a.status === '已核准' ? 'b-ok' : 'b-exp';
+    return `<div style="background:#fff;border:0.5px solid var(--gold-dim);border-radius:4px;padding:1.2rem 1.4rem;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem">
+        <div>
+          <div style="font-size:.82rem;font-weight:500;color:var(--pd);margin-bottom:3px">${a.name} <span style="font-size:.7rem;color:var(--tm)">@ ${a.memberName}</span></div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            ${lvBadge(a.level)}
+            <span class="badge ${a.plan === '年繳' ? 'b-yr' : 'b-once'}">${a.plan}</span>
+            <span class="badge ${statusCls}">${a.status}</span>
+          </div>
+        </div>
+        <div style="font-size:.68rem;color:var(--th)">${a.createdAt.slice(0,10)}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.72rem;color:var(--tm);margin-bottom:.8rem">
+        <div>綠界訂閱日期：${a.joinDate||'—'}</div>
+        <div>電話：${a.phone||'—'}</div>
+        <div>收件：${a.shipType||'不需要'}${a.address?' · '+a.address:''}${a.convenience?' · '+a.convenience:''}</div>
+        ${a.reason ? '<div style="grid-column:1/-1">訂閱原因：'+a.reason+'</div>' : ''}
+      </div>
+      ${a.screenshot ? `<div style="margin-bottom:.8rem"><a href="${a.screenshot}" target="_blank"><img src="${a.screenshot}" style="max-height:120px;border-radius:3px;border:0.5px solid var(--gold-dim)" alt="截圖"></a></div>` : ''}
+      ${a.status === '待審核' ? `<div style="display:flex;gap:8px">
+        <button class="btn btn-del btn-sm" onclick="reviewApp('${a.id}','reject')">拒絕</button>
+        <button class="btn btn-green btn-sm" onclick="reviewApp('${a.id}','approve')">核准</button>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+function filterApps(status, el) {
+  document.querySelectorAll('#view-review .filter-row .btn, #view-review .ptop .btn').forEach(b => b.classList.remove('f-on'));
+  el.classList.add('f-on');
+  loadApplications(status);
+}
+
+async function reviewApp(id, action) {
+  const label = action === 'approve' ? '核准' : '拒絕';
+  if (!confirm(`確定要${label}這筆申請？`)) return;
+  try {
+    await apiFetch(`/api/applications?id=${id}`, { method: 'PATCH', body: { action } });
+    showToast(action === 'approve' ? '✦ 已核准，會員資料已更新' : '已拒絕');
+    loadApplications(currentAppFilter);
+    loadAll();
+  } catch(e) { showToast('⚠ 操作失敗'); }
+}
+
 // ── INIT ─────────────────────────────────────────────────
 loadAll();
+// 載入後更新審核 badge
+fetch("/api/applications?status=%E5%BE%85%E5%AF%A9%E6%A0%B8").then(r=>r.json()).then(list=>{const b=document.getElementById("review-badge");if(list.length>0){b.style.display="inline";b.textContent=list.length;}}).catch(()=>{});
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden) loadAll(); });
 </script>
 </body>

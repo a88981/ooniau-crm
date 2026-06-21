@@ -88,12 +88,44 @@ module.exports = async function handler(req, res) {
       '備註':     { rich_text: {} },
     });
 
+    const applicationsId = await createDB(pageId, 'Ooniau 暖暖｜會員申請', {
+      '姓名':           { title: {} },
+      'YouTube會員名稱': { rich_text: {} },
+      '電話':           { phone_number: {} },
+      'Email':          { email: {} },
+      '生日':           { date: {} },
+      '會員等級': { select: { options: [
+        { name:'LV.3 里民暖暖包', color:'green'  },
+        { name:'LV.4 肌肉暖暖包', color:'yellow' },
+        { name:'LV.5 真蒸暖暖包', color:'purple' },
+      ]}},
+      '方案類型': { select: { options: [
+        { name:'年繳', color:'purple' },
+        { name:'單月', color:'blue'   },
+      ]}},
+      '訂閱原因': { rich_text: {} },
+      '加入日期':   { date: {} },
+      '收件方式': { select: { options: [
+        { name:'宅配',     color:'green'  },
+        { name:'超商取貨', color:'orange' },
+      ]}},
+      '宅配地址': { rich_text: {} },
+      '超商門市': { rich_text: {} },
+      '截圖網址': { url: {} },
+      '狀態': { select: { options: [
+        { name:'待審核', color:'yellow' },
+        { name:'已核准', color:'green'  },
+        { name:'已拒絕', color:'red'    },
+      ]}},
+    });
+
     return res.status(200).json({
       success: true,
-      NOTION_MEMBERS_DB:  membersId,
-      NOTION_PAYMENTS_DB: paymentsId,
-      NOTION_REWARDS_DB:  rewardsId,
-      message: '請把以上三個 ID 填入 Vercel 環境變數',
+      NOTION_MEMBERS_DB:      membersId,
+      NOTION_PAYMENTS_DB:     paymentsId,
+      NOTION_REWARDS_DB:      rewardsId,
+      NOTION_APPLICATIONS_DB: applicationsId,
+      message: '請把以上四個 ID 填入 Vercel 環境變數',
     });
   } catch(e) { return res.status(500).json({ error: e.message }); }
 }

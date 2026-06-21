@@ -25,7 +25,6 @@ module.exports = async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   try {
     if (req.method === 'GET') {
-      if (!HOLIDAYS_DB || HOLIDAYS_DB === 'placeholder') return res.status(200).json([]);
       const r = await fetch(`https://api.notion.com/v1/databases/${HOLIDAYS_DB}/query`,
         { method:'POST', headers:h, body: JSON.stringify({ page_size:100 }) });
       const d = await r.json();
