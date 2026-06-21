@@ -27,7 +27,7 @@ function pageToMember(p) {
     join:        dt('加入日期'),
     exp:         dt('會員到期日'),
     shipType:    sel('收件方式'),
-    address:     txt('宅配地址'),
+    address:     txt('地址'),
     convenience: txt('超商門市'),
     note:        txt('備註'),
     orderNos:    txt('訂單編號'), // 逗號分隔多筆
@@ -41,12 +41,12 @@ function memberToProps(m) {
   if (m.phone       !== undefined) props['電話']           = { phone_number: m.phone };
   if (m.email       !== undefined) props['Email']          = { email:        m.email || null };
   if (m.bday        !== undefined) props['生日']           = { date:         m.bday   ? { start: m.bday  } : null };
-  if (m.level       !== undefined) props['會員等級']       = { select:       { name: m.level } };
-  if (m.plan        !== undefined) props['方案類型']       = { select:       { name: m.plan  } };
+  if (m.level       !== undefined) props['會員等級']       = m.level ? { select: { name: m.level } } : { select: null };
+  if (m.plan        !== undefined) props['方案類型']       = m.plan ? { select: { name: m.plan } } : { select: null };
   if (m.join        !== undefined) props['加入日期']       = { date:         m.join   ? { start: m.join  } : null };
   if (m.exp         !== undefined) props['會員到期日']     = { date:         m.exp    ? { start: m.exp   } : null };
-  if (m.shipType    !== undefined) props['收件方式']       = { select:       { name: m.shipType } };
-  if (m.address     !== undefined) props['宅配地址']       = { rich_text:   [{ text: { content: m.address } }] };
+  if (m.shipType    !== undefined) props['收件方式']       = m.shipType ? { select: { name: m.shipType } } : { select: null };
+  if (m.address     !== undefined) props['地址']       = { rich_text:   [{ text: { content: m.address } }] };
   if (m.convenience !== undefined) props['超商門市']       = { rich_text:   [{ text: { content: m.convenience } }] };
   if (m.note        !== undefined) props['備註']           = { rich_text:   [{ text: { content: m.note } }] };
   if (m.orderNos    !== undefined) props['訂單編號']       = { rich_text:   [{ text: { content: m.orderNos } }] };
