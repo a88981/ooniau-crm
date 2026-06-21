@@ -146,12 +146,16 @@ tr:hover td{background:#FEFBF2}
 .sub-label{font-size:.6rem;color:var(--tm);letter-spacing:.08em}
 .sub-detail{font-size:.65rem;color:var(--th);margin-top:2px}
 
-/* 繳費歷史 */
-.pay-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:.5px solid var(--gold-dim)}
+/* 獎勵年份分組 */
+.reward-year-group{margin-bottom:.8rem}
+.reward-year-label{font-size:.65rem;font-weight:600;color:var(--th);letter-spacing:.1em;padding:4px 0 6px;border-bottom:.5px solid var(--gold-dim);margin-bottom:4px}
+
+/* 訂閱歷史 */
+.pay-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:.5px solid var(--gold-dim)}
 .pay-item:last-child{border-bottom:none}
-.pay-date{font-size:.68rem;color:var(--tm);width:80px;flex-shrink:0}
-.pay-amt{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;color:var(--pd);flex:1}
-.pay-note{font-size:.64rem;color:var(--th)}
+.pay-period{font-size:.68rem;color:var(--tm);flex-shrink:0}
+.pay-level{font-size:.68rem;color:var(--pd);font-weight:500;flex-shrink:0}
+.pay-note{font-size:.64rem;color:var(--th);flex:1}
 .pay-del{background:none;border:none;cursor:pointer;color:var(--th);font-size:.8rem;padding:2px 4px}
 .pay-del:hover{color:#A32D2D}
 .add-pay-row{display:flex;gap:6px;margin-top:.6rem;flex-wrap:wrap}
@@ -415,13 +419,20 @@ tr:hover td{background:#FEFBF2}
 
     <div class="divider"></div>
 
-    <!-- 繳費歷史 -->
+    <!-- 訂閱歷史 -->
     <div class="dsec">
-      <div class="dsec-label">繳費歷史</div>
+      <div class="dsec-label">訂閱歷史</div>
       <div id="pay-list"><div class="loading"><div class="spinner"></div></div></div>
       <div class="add-pay-row" style="margin-top:.75rem">
-        <input class="fi" id="pay-date" type="date" style="flex:0 0 120px">
-        <input class="fi" id="pay-amt"  type="number" placeholder="金額" style="flex:0 0 90px">
+        <input class="fi" id="pay-date-start" type="date" style="flex:0 0 120px" placeholder="開始日">
+        <input class="fi" id="pay-date-end"   type="date" style="flex:0 0 120px" placeholder="結束日">
+        <select class="fi" id="pay-level" style="flex:0 0 140px">
+          <option value="">選擇階級</option>
+          <option>LV.1 一般暖暖包</option>
+          <option>LV.2 特別暖暖包</option>
+          <option>LV.3 里民暖暖包</option>
+          <option>LV.4 肌肉暖暖包</option>
+        </select>
         <input class="fi" id="pay-note" placeholder="備註（選填）" style="flex:1">
         <button class="btn btn-g btn-sm" onclick="addPayment()">新增</button>
       </div>
@@ -813,24 +824,26 @@ async function loadPayments(memberId){
   }catch(e){ document.getElementById('pay-list').innerHTML='<div class="empty">載入失敗</div>'; }
 }
 function renderPayments(list){
-  if(!list.length){ document.getElementById('pay-list').innerHTML='<div class="empty">尚無繳費記錄</div>'; return; }
+  if(!list.length){ document.getElementById('pay-list').innerHTML='<div class="empty">尚無訂閱記錄</div>'; return; }
   document.getElementById('pay-list').innerHTML=list.map(p=>`
     <div class="pay-item">
-      <span class="pay-date">${p.date||'—'}</span>
-      <span class="pay-amt">$${(p.amount||0).toLocaleString()}</span>
+      <span class="pay-period">${p.dateStart||p.date||'—'} ～ ${p.dateEnd||'—'}</span>
+      <span class="pay-level">${p.level||''}</span>
       <span class="pay-note">${p.note||''}</span>
       <button class="pay-del" onclick="deletePayment('${p.id}')" title="刪除">✕</button>
     </div>`).join('');
 }
 async function addPayment(){
-  const date=document.getElementById('pay-date').value;
-  const amt=document.getElementById('pay-amt').value;
-  if(!date||!amt){showToast('請填寫日期和金額');return;}
+  const dateStart=document.getElementById('pay-date-start').value;
+  const dateEnd=document.getElementById('pay-date-end').value;
+  const level=document.getElementById('pay-level').value;
+  if(!dateStart||!dateEnd||!level){showToast('請填寫開始日、結束日和階級');return;}
   try{
-    const p=await apiFetch('/api/payments',{method:'POST',body:{ memberId:drw會員Id, date, amount:Number(amt), note:document.getElementById('pay-note').value }});
+    const p=await apiFetch('/api/payments',{method:'POST',body:{ memberId:drw會員Id, dateStart, dateEnd, level, note:document.getElementById('pay-note').value }});
     drw會員Payments.unshift(p); renderPayments(drw會員Payments);
-    ['pay-date','pay-amt','pay-note'].forEach(id=>document.getElementById(id).value='');
-    showToast('✦ 繳費記錄已新增');
+    ['pay-date-start','pay-date-end','pay-note'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pay-level').value='';
+    showToast('✦ 訂閱記錄已新增');
   }catch(e){showToast('⚠ 新增失敗');}
 }
 async function deletePayment(id){
@@ -844,20 +857,33 @@ async function deletePayment(id){
 
 // ── REWARDS ──────────────────────────────────────────────
 function calcExpectedRewards(member){
-  const sub=calcSubscribe(member.join);
-  if(!sub||sub.totalMonths<3)return[];
-  const lvInfo=LEVELS[member.level];
-  if(!lvInfo)return[];
-  const rewards=[];
+  const j = new Date(member.join); j.setHours(0,0,0,0);
+  if(!member.join) return [];
+  const lvInfo = LEVELS[member.level];
+  if(!lvInfo) return [];
+  // 上限：到期日 vs 今天，取較早的
+  let ceiling = new Date(TODAY);
+  if(member.exp){
+    const expDate = new Date(member.exp); expDate.setHours(0,0,0,0);
+    if(expDate < ceiling) ceiling = expDate;
+  }
+  // 計算從加入日到上限的月數
+  let yrs = ceiling.getFullYear() - j.getFullYear();
+  let mos = ceiling.getMonth() - j.getMonth();
+  if(ceiling.getDate() < j.getDate()) mos--;
+  if(mos < 0){ yrs--; mos += 12; }
+  const totalMonths = yrs * 12 + mos;
+  if(totalMonths < 3) return [];
+  const rewards = [];
   // 每3個月一筆
-  for(let mo=3; mo<=sub.totalMonths; mo+=3){
-    const trigDate=new Date(member.join);
+  for(let mo=3; mo<=totalMonths; mo+=3){
+    const trigDate = new Date(member.join);
     trigDate.setMonth(trigDate.getMonth()+mo);
     rewards.push({ milestone:`${mo}個月`, type:'3個月獎勵', triggerDate:trigDate.toISOString().slice(0,10) });
   }
   // 每12個月週邊
-  for(let mo=12; mo<=sub.totalMonths; mo+=12){
-    const trigDate=new Date(member.join);
+  for(let mo=12; mo<=totalMonths; mo+=12){
+    const trigDate = new Date(member.join);
     trigDate.setMonth(trigDate.getMonth()+mo);
     rewards.push({ milestone:`${mo}個月(週邊)`, type:'12個月獎勵', triggerDate:trigDate.toISOString().slice(0,10) });
   }
@@ -877,23 +903,35 @@ function renderRewards(list, memberId){
   if(!list.length){ document.getElementById('reward-list').innerHTML='<div class="empty">尚無獎勵記錄，點「同步獎勵」產生</div>'; return; }
   const m=members.find(x=>x.id===memberId)||{};
   const lvInfo=LEVELS[m.level]||{};
-  document.getElementById('reward-list').innerHTML=list.map(r=>`
-    <div class="reward-item${r.redeemed?' redeemed':''}">
-      <div class="reward-badge-wrap">
-        <div class="reward-milestone">${r.milestone.replace('個月(週邊)','').replace('個月','')}<span style="font-size:.6rem">mo</span></div>
-        <div class="reward-milestone-label">${r.type==='12個月獎勵'?'週邊':'訂閱'}</div>
-      </div>
-      <div class="reward-info">
-        <div class="reward-type">${r.type==='12個月獎勵'?'🏆 專屬週邊獎勵':'🎁 '+(r.rewardItem||lvInfo.reward3||'訂閱獎勵')}</div>
-        <div class="reward-sub">觸發日期 ${r.triggerDate||'—'} ${r.redeemed?'· 已兌換 '+r.redeemedAt:''}</div>
-        ${r.illustration?`<div class="reward-illus">指定插圖：${r.illustration}</div>`:''}
-      </div>
-      <div class="reward-actions">
-        ${r.redeemed
-          ? `<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><span class="badge b-redeemed">已兌換</span><button class="btn btn-sm" onclick="editReward('${r.id}','${m.level||''}')">編輯</button></div>`
-          : `<button class="btn btn-sm btn-green" onclick="openRedeemModal('${r.id}','${m.level||''}')">兌換</button>`
-        }
-      </div>
+  // 依年份分組
+  const byYear={};
+  list.forEach(r=>{
+    const yr=r.triggerDate?r.triggerDate.slice(0,4):'未知';
+    if(!byYear[yr]) byYear[yr]=[];
+    byYear[yr].push(r);
+  });
+  const years=Object.keys(byYear).sort((a,b)=>b-a);
+  document.getElementById('reward-list').innerHTML=years.map(yr=>`
+    <div class="reward-year-group">
+      <div class="reward-year-label">${yr}</div>
+      ${byYear[yr].map(r=>`
+      <div class="reward-item${r.redeemed?' redeemed':''}">
+        <div class="reward-badge-wrap">
+          <div class="reward-milestone">${r.milestone.replace('個月(週邊)','').replace('個月','')}<span style="font-size:.6rem">mo</span></div>
+          <div class="reward-milestone-label">${r.type==='12個月獎勵'?'週邊':'訂閱'}</div>
+        </div>
+        <div class="reward-info">
+          <div class="reward-type">${r.type==='12個月獎勵'?'🏆 專屬週邊獎勵':'🎁 '+(r.rewardItem||lvInfo.reward3||'訂閱獎勵')}</div>
+          <div class="reward-sub">觸發日期 ${r.triggerDate||'—'} ${r.redeemed?'· 已兌換 '+r.redeemedAt:''}</div>
+          ${r.illustration?`<div class="reward-illus">指定插圖：${r.illustration}</div>`:''}
+        </div>
+        <div class="reward-actions">
+          ${r.redeemed
+            ? `<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><span class="badge b-redeemed">已兌換</span><button class="btn btn-sm" onclick="editReward('${r.id}','${m.level||''}')">編輯</button></div>`
+            : `<button class="btn btn-sm btn-green" onclick="openRedeemModal('${r.id}','${m.level||''}')">兌換</button>`
+          }
+        </div>
+      </div>`).join('')}
     </div>`).join('');
 }
 
