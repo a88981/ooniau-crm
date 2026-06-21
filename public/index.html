@@ -634,12 +634,15 @@ function expStatus(s){
 }
 function initials(n){ return(n||'??').slice(0,2); }
 function showToast(msg,dur=2500){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),dur); }
-function calcSubscribe(joinStr){
+function calcSubscribe(joinStr, expStr){
   if(!joinStr)return null;
   const j=new Date(joinStr); j.setHours(0,0,0,0);
-  let yrs=TODAY.getFullYear()-j.getFullYear();
-  let mos=TODAY.getMonth()-j.getMonth();
-  let 天=TODAY.getDate()-j.getDate();
+  // 上限：到期日 vs 今天取較早
+  let ceil=new Date(TODAY);
+  if(expStr){ const e=new Date(expStr); e.setHours(0,0,0,0); if(e<ceil) ceil=e; }
+  let yrs=ceil.getFullYear()-j.getFullYear();
+  let mos=ceil.getMonth()-j.getMonth();
+  let 天=ceil.getDate()-j.getDate();
   if(天<0){ mos--; }
   if(mos<0){ yrs--; mos+=12; }
   const total=yrs*12+mos;
@@ -678,7 +681,7 @@ function openDrw(m){
   document.getElementById('d-name').textContent=m.name||'—';
   document.getElementById('d-yt').textContent=m.memberName?`@ ${m.memberName}`:'';
   // 累積訂閱
-  const sub=calcSubscribe(m.join);
+  const sub=calcSubscribe(m.join, m.exp);
   if(sub){
     const numEl=document.getElementById('d-sub-num');
     if(sub.years>0){ numEl.textContent=sub.years; document.getElementById('d-sub-label').textContent=`年 ${sub.months} 個月`; }
@@ -703,6 +706,9 @@ function openDrw(m){
   if(m.note) document.getElementById('d-note').textContent=m.note;
   document.getElementById('drw-bg').classList.add('open');
   document.getElementById('drw').classList.add('open');
+  // 預設帶入會員等級到訂閱記錄表單
+  const lvSel = document.getElementById('pay-level');
+  if(lvSel) lvSel.value = m.level || '';
   loadPayments(m.id);
   loadRewards(m.id);
 }
@@ -797,7 +803,7 @@ function render會員(list){
   if(!list.length){tb.innerHTML=`<tr><td colspan="9"><div class="empty">找不到會員</div></td></tr>`;return;}
   tb.innerHTML=list.map((m,i)=>{
     const st=expStatus(m.exp);
-    const sub=calcSubscribe(m.join);
+    const sub=calcSubscribe(m.join, m.exp);
     const subStr=sub?( sub.years>0?`${sub.years}年${sub.months}個月`:`${sub.totalMonths}個月` ):'—';
     return`<tr style="cursor:pointer" onclick="openDrw(members.find(x=>x.id==='${m.id}'))">
       <td><div class="mrow"><div class="av ${avList[i%5]}">${initials(m.name)}</div><div><div class="mname">${m.name}</div></div></div></td>
@@ -847,7 +853,7 @@ async function addPayment(){
   }catch(e){showToast('⚠ 新增失敗');}
 }
 async function deletePayment(id){
-  if(!confirm('刪除這筆繳費記錄？'))return;
+  if(!confirm('刪除這筆訂閱記錄？'))return;
   try{
     await apiFetch(`/api/payments?id=${id}`,{method:'DELETE'});
     drw會員Payments=drw會員Payments.filter(p=>p.id!==id); renderPayments(drw會員Payments);
@@ -942,7 +948,8 @@ async function syncRewards(){
   if(!expected.length){showToast('訂閱未滿3個月，暫無獎勵');return;}
   const existing=drw會員Rewards.map(r=>r.milestone);
   const missing=expected.filter(e=>!existing.includes(e.milestone));
-  if(!missing.length){showToast('獎勵已是最新，無需同步');return;}
+  const alreadyRedeemed=expected.filter(e=>existing.includes(e.milestone)&&drw會員Rewards.find(r=>r.milestone===e.milestone&&r.redeemed));
+  if(!missing.length){showToast(`獎勵已是最新${alreadyRedeemed.length?'（已兌換 '+alreadyRedeemed.length+' 筆）':''}，無需同步`);return;}
   const lvInfo=LEVELS[m.level]||{};
   try{
     for(const rw of missing){
@@ -990,7 +997,7 @@ function editReward(rewardId, level) {
 async function cancelRedeem(id) {
   if (!confirm('確定要取消這筆兌換記錄？')) return;
   try {
-    const updated = await apiFetch('/api/rewards?id=' + id, { method: 'PATCH', body: { redeemed: false, redeemedAt: '', rewardItem: '', illustration: '', note: '' } });
+    const updated = await apiFetch('/api/rewards?id=' + id, { method: 'PATCH', body: { redeemed: false, redeemedAt: '' } });
     drw會員Rewards = drw會員Rewards.map(r => r.id === id ? updated : r);
     allRewards = allRewards.map(r => r.id === id ? updated : r);
     renderRewards(drw會員Rewards, drw會員Id);
@@ -1009,10 +1016,10 @@ function openRedeemModal(rewardId, level){
     itemWrap.style.display='none'; illusWrap.style.display='none';
   } else {
     itemWrap.style.display='block';
-    const sel=document.getElementById('rw-item');
-    sel.innerHTML=(lvInfo.items||['相印小卡']).map(i=>`<option value="${i}">${i}</option>`).join('');
+    const rwList=document.getElementById('rw-item-list');
+    rwList.innerHTML=(lvInfo.items||['相印小卡']).map(i=>`<option value="${i}">`).join('');
+    document.getElementById('rw-item').value='';
     illusWrap.style.display=lvInfo.hasIllus?'block':'none';
-    sel.onchange=()=>{ illusWrap.style.display=(lvInfo.hasIllus&&!['相印小卡','半小時占卜'].includes(sel.value)||lvInfo.hasIllus)?'block':'none'; };
   }
   document.getElementById('rw-id').value=rewardId;
   document.getElementById('rw-illus').value='';
@@ -1051,7 +1058,9 @@ function build提醒(){
   });
   allRewards.filter(r=>!r.redeemed).forEach(r=>{
     const m=members.find(x=>x.id===r.memberId)||{};
-    list.push({type:'reward',icon:'🎁',title:`${m.name||'—'} 獎勵待兌換`,sub:`${r.milestone} · ${r.rewardItem||r.type}`,天:-1,ic:'rg',urgent:false,id:r.memberId,isReward:true});
+    const trigD=r.triggerDate?天Until(r.triggerDate):9999;
+    const overdue=r.triggerDate&&trigD<0;
+    list.push({type:'reward',icon:'🎁',title:`${m.name||'—'} 獎勵待兌換`,sub:`${r.milestone} · ${r.rewardItem||r.type}${r.triggerDate?' · 觸發 '+r.triggerDate:''}`,天:trigD,ic:'rg',urgent:overdue,id:r.memberId,isReward:true,overdue});
   });
   holi天.forEach(h=>{ const d=天Until(h.date); if(d>=0&&d<=90) list.push({type:'holiday',icon:'◈',title:h.name,sub:`${h.type}${h.note?' · '+h.note:''}`,天:d,ic:'rh',urgent:false}); });
   return list.sort((a,b)=>{ if(a.isReward&&!b.isReward)return 1; if(!a.isReward&&b.isReward)return -1; return a.天-b.天; });
@@ -1067,8 +1076,12 @@ function render提醒(type){
       <div class="rico ${r.ic}">${r.icon}</div>
       <div class="rbody"><div class="rtitle">${r.title}</div><div class="rsub">${r.sub}</div></div>
       <div style="text-align:right">${r.isReward
-        ?`<span style="font-size:1.2rem">🎁</span>`
-        :`<span class="rdbig${r.urgent?' red':''}">${r.天}</span><span class="rdsm">天</span>`
+        ? r.overdue
+          ? `<span class="rdbig red">${Math.abs(r.天)}</span><span class="rdsm">天前</span>`
+          : r.天<9999
+            ? `<span class="rdbig">${r.天}</span><span class="rdsm">天後</span>`
+            : `<span style="font-size:1.2rem">🎁</span>`
+        : `<span class="rdbig${r.urgent?' red':''}">${r.天}</span><span class="rdsm">天</span>`
       }</div>
     </div>`).join('');
 }
@@ -1139,7 +1152,7 @@ async function saveHoliday(){
 function exportCSV(){
   const header=['姓名','YouTube會員名稱','電話','Email','生日','會員等級','方案','加入日期','到期日','累積訂閱(月)','收件方式','宅配地址','超商門市','備註'];
   const rows=members.map(m=>{
-    const sub=calcSubscribe(m.join);
+    const sub=calcSubscribe(m.join, m.exp);
     return [m.name,m.memberName,m.phone,m.email,m.bday,m.level,m.plan,m.join,m.exp,sub?sub.totalMonths:'',m.shipType,m.address,m.convenience,m.note].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`);
   });
   const csv=[header,...rows].map(r=>r.join(',')).join('\n');
