@@ -614,6 +614,10 @@ function go(v,el){
   document.querySelectorAll('.ni').forEach(x=>x.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
   el.classList.add('active');
+  if(v==='members')renderMembers(members);
+  if(v==='reminders')renderReminders(curFilter);
+  if(v==='calendar')renderCal();
+  if(v==='review')loadApplications('待審核');
 }
 
 // ── MODAL / DRAWER ───────────────────────────────────────
