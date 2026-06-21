@@ -1,6 +1,5 @@
 {
-  "routes": [
-    { "src": "/member", "dest": "/public/member.html" },
-    { "src": "/api/(.*)", "dest": "/api/$1" }
+  "rewrites": [
+    { "source": "/member", "destination": "/public/member.html" }
   ]
 }
