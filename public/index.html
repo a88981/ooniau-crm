@@ -420,6 +420,7 @@ tr:hover td{background:#FEFBF2}
       <div class="drow"><span class="dkey">電話</span><span class="dval" id="d-phone">—</span></div>
       <div class="drow"><span class="dkey">Email</span><span class="dval" id="d-email">—</span></div>
       <div class="drow"><span class="dkey">生日</span><span class="dval" id="d-bday">—</span></div>
+      <div class="drow"><span class="dkey">訂單編號</span><span class="dval" id="d-order" style="font-size:.68rem;color:var(--tm)">—</span></div>
     </div>
 
     <!-- 會員資格 -->
@@ -505,6 +506,10 @@ tr:hover td{background:#FEFBF2}
     <div class="f2">
       <div class="fr"><label class="fl">電話</label><input class="fi" id="nm-phone" placeholder="09xx-xxx-xxx"></div>
       <div class="fr"><label class="fl">Email</label><input class="fi" id="nm-email" placeholder="選填"></div>
+    </div>
+    <div class="f2">
+      <div class="fr"><label class="fl">訂單編號</label><input class="fi" id="nm-order" placeholder="多筆用逗號分隔，例：12345,67890"></div>
+      <div class="fr"></div>
     </div>
     <div class="f2">
       <div class="fr"><label class="fl">生日</label><input class="fi" id="nm-bday" type="date"></div>
@@ -840,6 +845,7 @@ function refreshDrwInfo(m){
   emailEl.title=m.email?'點擊複製 Email':'';
   emailEl.onclick=m.email?()=>{navigator.clipboard.writeText(m.email).then(()=>showToast('✦ Email 已複製'));}:null;
   document.getElementById('d-bday').textContent=m.bday||'—';
+  const orderEl=document.getElementById('d-order'); if(orderEl) orderEl.textContent=m.orderNos||'—';
   document.getElementById('d-level').innerHTML=lvBadge(m.level);
   document.getElementById('d-plan').innerHTML=planBadge(m.plan);
   document.getElementById('d-join').textContent=m.join||'—';
@@ -884,6 +890,7 @@ function edit會員(m){
   document.getElementById('nm-note').value=m.note||'';
   document.getElementById('nm-addr').value=m.address||'';
   document.getElementById('nm-cvs').value=m.convenience||'';
+  document.getElementById('nm-order').value=m.orderNos||'';
   selShip(m.shipType||'');
   document.getElementById('nm-del').style.display='inline-flex';
   document.getElementById('nm-submit').textContent='儲存';
@@ -913,7 +920,7 @@ function cancel會員Modal(){ reset會員Modal(); closeM('add-member'); }
 function reset會員Modal(){
   document.getElementById('member-modal-title').textContent='新增會員';
   document.getElementById('nm-id').value='';
-  ['nm-name','nm-yt','nm-phone','nm-email','nm-bday','nm-join','nm-exp','nm-note','nm-addr','nm-cvs'].forEach(id=>document.getElementById(id).value='');
+  ['nm-name','nm-yt','nm-phone','nm-email','nm-bday','nm-join','nm-exp','nm-note','nm-addr','nm-cvs','nm-order'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('nm-level').value='LV.3 里民暖暖包';
   document.getElementById('nm-plan').value='年繳';
   document.getElementById('nm-del').style.display='none';
@@ -924,7 +931,7 @@ async function save會員(){
   const name=document.getElementById('nm-name').value.trim();
   if(!name){showToast('請填寫姓名');return;}
   const id=document.getElementById('nm-id').value;
-  const payload={ name, memberName:document.getElementById('nm-yt').value, phone:document.getElementById('nm-phone').value, email:document.getElementById('nm-email').value, bday:document.getElementById('nm-bday').value, level:document.getElementById('nm-level').value, plan:document.getElementById('nm-plan').value, join:document.getElementById('nm-join').value, exp:document.getElementById('nm-exp').value, shipType:document.getElementById('nm-ship').value, address:document.getElementById('nm-addr').value, convenience:document.getElementById('nm-cvs').value, note:document.getElementById('nm-note').value };
+  const payload={ name, memberName:document.getElementById('nm-yt').value, phone:document.getElementById('nm-phone').value, email:document.getElementById('nm-email').value, bday:document.getElementById('nm-bday').value, level:document.getElementById('nm-level').value, plan:document.getElementById('nm-plan').value, join:document.getElementById('nm-join').value, exp:document.getElementById('nm-exp').value, shipType:document.getElementById('nm-ship').value, address:document.getElementById('nm-addr').value, convenience:document.getElementById('nm-cvs').value, note:document.getElementById('nm-note').value, orderNos:document.getElementById('nm-order').value };
   const btn=document.getElementById('nm-submit'); btn.disabled=true; btn.textContent='儲存中…';
   try{
     if(id){
