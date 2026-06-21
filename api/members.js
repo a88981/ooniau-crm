@@ -44,7 +44,7 @@ function memberToProps(m) {
   if (m.plan        !== undefined) props['方案類型']       = { select:       { name: m.plan  } };
   if (m.join        !== undefined) props['加入日期']       = { date:         m.join   ? { start: m.join  } : null };
   if (m.exp         !== undefined) props['會員到期日']     = { date:         m.exp    ? { start: m.exp   } : null };
-  if (m.shipType    !== undefined) props['收件方式']       = { select:       { name: m.shipType } };
+  if (m.shipType !== undefined && m.shipType !== '') props['收件方式'] = { select: { name: m.shipType } };
   if (m.address     !== undefined) props['宅配地址']       = { rich_text:   [{ text: { content: m.address } }] };
   if (m.convenience !== undefined) props['超商門市']       = { rich_text:   [{ text: { content: m.convenience } }] };
   if (m.note        !== undefined) props['備註']           = { rich_text:   [{ text: { content: m.note } }] };
