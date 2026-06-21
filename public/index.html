@@ -528,10 +528,8 @@ tr:hover td{background:#FEFBF2}
     <input type="hidden" id="rw-id">
     <div class="fr" id="rw-item-wrap">
       <label class="fl">兌換項目</label>
-      <select class="fi" id="rw-item">
-        <option value="相印小卡">相印小卡</option>
-        <option value="半小時占卜">半小時占卜</option>
-      </select>
+      <input class="fi" id="rw-item" list="rw-item-list" placeholder="可選或手填">
+      <datalist id="rw-item-list"></datalist>
     </div>
     <div class="fr" id="rw-illus-wrap" style="display:none">
       <label class="fl">指定插圖（填寫哪張）</label>
@@ -569,7 +567,8 @@ tr:hover td{background:#FEFBF2}
     </div>
     <div class="fr" id="ar-item-wrap">
       <label class="fl">兌換項目</label>
-      <select class="fi" id="ar-item"></select>
+      <input class="fi" id="ar-item" list="ar-item-list" placeholder="可選或手填">
+      <datalist id="ar-item-list"></datalist>
     </div>
     <div class="fr" id="ar-illus-wrap" style="display:none">
       <label class="fl">指定插圖</label>
@@ -937,8 +936,9 @@ function editReward(rewardId, level) {
     itemWrap.style.display = 'none'; illusWrap.style.display = 'none';
   } else {
     itemWrap.style.display = 'block';
-    const sel = document.getElementById('rw-item');
-    sel.innerHTML = (lvInfo.items || ['相印小卡']).map(i => '<option value="' + i + '"' + (rw.rewardItem===i?' selected':'') + '>' + i + '</option>').join('');
+    const rwItemList = document.getElementById('rw-item-list');
+    rwItemList.innerHTML = (lvInfo.items || ['相印小卡']).map(i => `<option value="${i}">`).join('');
+    document.getElementById('rw-item').value = rw.rewardItem || '';
     illusWrap.style.display = lvInfo.hasIllus ? 'block' : 'none';
   }
   document.getElementById('rw-id').value = rewardId;
@@ -1193,9 +1193,10 @@ function openAddRewardModal() {
   document.getElementById('ar-note').value = '';
   document.getElementById('ar-illus').value = '';
   // 填兌換項目選項
-  const sel = document.getElementById('ar-item');
+  const arItemList = document.getElementById('ar-item-list');
   const items = lvInfo.items || ['相印小卡'];
-  sel.innerHTML = items.map(i => `<option value="${i}">${i}</option>`).join('');
+  arItemList.innerHTML = items.map(i => `<option value="${i}">`).join('');
+  document.getElementById('ar-item').value = '';
   // 顯示/隱藏插圖欄
   document.getElementById('ar-illus-wrap').style.display = lvInfo.hasIllus ? 'block' : 'none';
   document.getElementById('ar-item-wrap').style.display = 'block';
