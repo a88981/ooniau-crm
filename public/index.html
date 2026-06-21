@@ -1547,10 +1547,14 @@ function renderApps(list) {
         ${a.reason ? '<div style="grid-column:1/-1">訂閱原因：'+a.reason+'</div>' : ''}
       </div>
       ${a.screenshot ? `<div style="margin-bottom:.8rem"><a href="${a.screenshot}" target="_blank" style="font-size:.75rem;color:var(--purple);letter-spacing:.05em">📷 查看訂閱截圖 ↗</a></div>` : ''}
-      ${a.status === '待審核' ? `<div style="display:flex;gap:8px">
+      ${a.status === '待審核'
+        ? `<div style="display:flex;gap:8px">
         <button class="btn btn-del btn-sm" id="reject-btn-${a.id}" onclick="handleReview(this,'${a.id}','reject')">拒絕</button>
         <button class="btn btn-green btn-sm" id="approve-btn-${a.id}" onclick="handleReview(this,'${a.id}','approve')">核准</button>
-      </div>` : ''}
+      </div>`
+        : a.status === '已拒絕'
+        ? `<button class="btn btn-del btn-sm" onclick="deleteApp('${a.id}')">刪除</button>`
+        : ''}
     </div>`;
   }).join('') + more;
 }
@@ -1561,6 +1565,14 @@ function filterApps(status, el) {
   loadApplications(status);
 }
 
+async function deleteApp(id) {
+  if(!confirm('確定刪除這筆已拒絕的申請？')) return;
+  try {
+    await apiFetch(`/api/applications?id=${id}`, { method: 'DELETE' });
+    showToast('已刪除');
+    loadApplications(currentAppFilter);
+  } catch(e) { showToast('⚠ 刪除失敗'); }
+}
 async function handleReview(btn, id, action) {
   const rejectBtn = document.getElementById(`reject-btn-${id}`);
   const approveBtn = document.getElementById(`approve-btn-${id}`);
