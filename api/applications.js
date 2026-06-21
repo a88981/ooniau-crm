@@ -26,6 +26,7 @@ function pageToApp(p) {
     address:     pr['宅配地址']?.rich_text?.[0]?.plain_text || '',
     convenience: pr['超商門市']?.rich_text?.[0]?.plain_text || '',
     screenshot:  pr['截圖網址']?.url || '',
+    orderNos:    pr['訂單編號']?.rich_text?.[0]?.plain_text || '',
     status:      pr['狀態']?.select?.name || '待審核',
     createdAt:   p.created_time || '',
   };
@@ -61,7 +62,7 @@ module.exports = async function handler(req, res) {
 
     // POST：新增申請
     if (req.method === 'POST') {
-      const { name, memberName, phone, email, bday, level, plan, reason, joinDate, shipType, address, convenience, screenshot } = req.body;
+      const { name, memberName, phone, email, bday, level, plan, reason, joinDate, shipType, address, convenience, screenshot, orderNos } = req.body;
       const r = await fetch('https://api.notion.com/v1/pages', {
         method: 'POST', headers: h,
         body: JSON.stringify({
@@ -76,8 +77,9 @@ module.exports = async function handler(req, res) {
             '方案類型':       { select: { name: plan } },
             '訂閱原因':       { rich_text: [{ text: { content: reason || '' } }] },
             '加入日期':       { date: joinDate ? { start: joinDate } : null },
-            '宅配地址':       { rich_text: [{ text: { content: address || '' } }] },
+            '地址':           { rich_text: [{ text: { content: address || '' } }] },
             '截圖網址':       { url: screenshot || null },
+            '訂單編號':       { rich_text: [{ text: { content: orderNos || '' } }] },
             '狀態':           { select: { name: '待審核' } },
           },
         }),
@@ -135,9 +137,7 @@ module.exports = async function handler(req, res) {
                 '會員到期日': { date: { start: expDate } },
                 '方案類型':   { select: { name: app.plan } },
                 '會員等級':   { select: { name: app.level } },
-                ...(app.shipType ? { '收件方式': { select: { name: app.shipType } } } : {}),
-                ...(app.address ? { '宅配地址': { rich_text: [{ text: { content: app.address } }] } } : {}),
-                ...(app.convenience ? { '超商門市': { rich_text: [{ text: { content: app.convenience } }] } } : {}),
+                ...(app.orderNos ? { '訂單編號': { rich_text: [{ text: { content: app.orderNos } }] } } : {}),
               },
             }),
           });
@@ -157,9 +157,8 @@ module.exports = async function handler(req, res) {
                 '方案類型':       { select: { name: app.plan } },
                 '加入日期':       { date: { start: app.joinDate } },
                 '會員到期日':     { date: { start: expDate } },
-                ...(app.shipType ? { '收件方式': { select: { name: app.shipType } } } : {}),
-                '宅配地址':       { rich_text: [{ text: { content: app.address || '' } }] },
-                '超商門市':       { rich_text: [{ text: { content: app.convenience || '' } }] },
+                '地址':           { rich_text: [{ text: { content: app.address || '' } }] },
+                '訂單編號':       { rich_text: [{ text: { content: app.orderNos || '' } }] },
               },
             }),
           });
