@@ -880,6 +880,43 @@ async function syncRewards(){
 }
 
 let redeemRewardId=null, redeem會員Level=null;
+
+function editReward(rewardId, level) {
+  const rw = drwMemberRewards.find(r => r.id === rewardId);
+  if (!rw) return;
+  redeemRewardId = rewardId;
+  redeem會員Level = level;
+  const lvInfo = LEVELS[level] || {};
+  const is12 = rw.type === '12個月獎勵';
+  document.getElementById('reward-modal-title').textContent = '編輯兌換記錄';
+  const itemWrap = document.getElementById('rw-item-wrap');
+  const illusWrap = document.getElementById('rw-illus-wrap');
+  if (is12) {
+    itemWrap.style.display = 'none'; illusWrap.style.display = 'none';
+  } else {
+    itemWrap.style.display = 'block';
+    const sel = document.getElementById('rw-item');
+    sel.innerHTML = (lvInfo.items || ['相印小卡']).map(i => '<option value="' + i + '"' + (rw.rewardItem===i?' selected':'') + '>' + i + '</option>').join('');
+    illusWrap.style.display = lvInfo.hasIllus ? 'block' : 'none';
+  }
+  document.getElementById('rw-id').value = rewardId;
+  document.getElementById('rw-illus').value = rw.illustration || '';
+  document.getElementById('rw-note').value = rw.note || '';
+  const foot = document.querySelector('#modal-reward .mdfoot');
+  foot.innerHTML = '<button class="btn btn-del" onclick="cancelRedeem('' + rewardId + '')">取消兌換</button><button class="btn" onclick="closeM(\'reward\')">關閉</button><button class="btn btn-g" onclick="confirmRedeem()">儲存</button>';
+  openM('reward');
+}
+
+async function cancelRedeem(id) {
+  if (!confirm('確定要取消這筆兌換記錄？')) return;
+  try {
+    const updated = await apiFetch('/api/rewards?id=' + id, { method: 'PATCH', body: { redeemed: false, redeemedAt: '', rewardItem: '', illustration: '', note: '' } });
+    drwMemberRewards = drwMemberRewards.map(r => r.id === id ? updated : r);
+    allRewards = allRewards.map(r => r.id === id ? updated : r);
+    renderRewards(drwMemberRewards, drwMemberId);
+    renderDash(); closeM('reward'); showToast('已取消兌換');
+  } catch(e) { showToast('⚠ 操作失敗'); }
+}
 function openRedeemModal(rewardId, level){
   redeemRewardId=rewardId; redeem會員Level=level;
   const rw=drw會員Rewards.find(r=>r.id===rewardId);
