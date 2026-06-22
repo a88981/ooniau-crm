@@ -275,7 +275,7 @@ function renderResult({member, rewards}){
       if(rw && rw.redeemed) state='redeemed';
       else if(i<=subMosCount) state='earned';
       else state='future';
-      const label = state==='redeemed'?'已兌換':state==='earned'&&hasGift?'待兌換':'—';
+      const label = state==='redeemed'?'已兌換':state==='earned'&&hasGift?'待兌換':state==='earned'?'已累積':'—';
       const borderStyle = is12?'border-style:dashed;border-color:var(--purple)':'';
       const ico = is12?'🏆':hasGift?'🎁':'';
       html += `<div class="stamp"><div class="s-circle ${state}" style="${borderStyle}"><span class="s-num ${state}">${i}</span>${ico?`<span class="s-ico">${ico}</span>`:''}</div><div class="s-lbl ${state}">${label}</div></div>`;
