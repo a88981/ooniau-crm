@@ -343,7 +343,9 @@ tr:hover td{background:#FEFBF2}
         <button class="btn" id="remind-btn-urgent" onclick="filterR('urgent',this)">⚠ 7天內到期</button>
         <button class="btn" id="remind-btn-soon" onclick="filterR('soon',this)">◇ 30天內到期</button>
         <button class="btn" id="remind-btn-birthday" onclick="filterR('birthday',this)">🎂 生日</button>
-        <button class="btn" id="remind-btn-reward" onclick="filterR('reward',this)">🎁 福利待兌換</button>
+        <button class="btn" id="remind-btn-reward-monthly" onclick="filterR('reward-monthly',this)">🔮 占卜福利</button>
+        <button class="btn" id="remind-btn-reward-sub" onclick="filterR('reward-sub',this)">🎁 三個月福利</button>
+        <button class="btn" id="remind-btn-reward-year" onclick="filterR('reward-year',this)">🏆 週邊福利</button>
 <button class="btn" id="remind-btn-activity" onclick="filterR('activity',this)">🎪 活動福利</button>
         <button class="btn" id="remind-btn-holiday" onclick="filterR('holiday',this)">◈ 節日</button>
       </div>
@@ -1467,11 +1469,13 @@ function build提醒(){
   });
   Object.entries(pendingByMember).forEach(([memberId, rewards])=>{
     const m=members.find(x=>x.id===memberId)||{};
-    // 分成訂閱福利、生日禮、活動福利三組
+    // 分成各類福利群組
     const groups = {
-      reward:   rewards.filter(r=>r.type!=='里民禮物'),
-      birthday: rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&r.milestone.includes('生日')),
-      activity: rewards.filter(r=>r.type==='里民禮物'&&(!r.milestone||!r.milestone.includes('生日'))),
+      'reward-monthly': rewards.filter(r=>r.type==='每月占卜'),
+      'reward-sub':     rewards.filter(r=>r.type==='3個月獎勵'),
+      'reward-year':    rewards.filter(r=>r.type==='12個月獎勵'),
+      birthday:         rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&r.milestone.includes('生日')),
+      activity:         rewards.filter(r=>r.type==='里民禮物'&&(!r.milestone||!r.milestone.includes('生日'))),
     };
     Object.entries(groups).forEach(([gType, gRewards])=>{
       if(!gRewards.length) return;
@@ -1482,9 +1486,10 @@ function build提醒(){
       const sub = gRewards.length === 1
         ? `${gRewards[0].milestone} · ${gRewards[0].rewardItem||gRewards[0].type}${gRewards[0].triggerDate?' · 觸發 '+gRewards[0].triggerDate:''}`
         : `${gRewards.length} 筆待兌換 · 最早觸發 ${earliest?.triggerDate||'—'}`;
-      const rIcon = gType==='activity' ? '🎪' : gType==='birthday' ? '🎂' : '🎁';
-      const rLabel = gType==='activity'?'活動':gType==='birthday'?'生日禮':'訂閱';
-      list.push({type:gType==='birthday'?'birthday':gType,icon:rIcon,title:`${m.name||'—'} ${rLabel}福利待兌換${countLabel}`,sub,天:trigD,ic:gType==='birthday'?'rb':'rg',urgent:overdue,id:memberId,isReward:true,overdue});
+      const rIcon = gType==='activity'?'🎪':gType==='birthday'?'🎂':gType==='reward-monthly'?'🔮':gType==='reward-year'?'🏆':'🎁';
+      const rLabel = gType==='activity'?'活動':gType==='birthday'?'生日禮':gType==='reward-monthly'?'占卜':gType==='reward-year'?'週邊':'三個月';
+      const pushType = gType==='birthday'?'birthday':gType;
+      list.push({type:pushType,icon:rIcon,title:`${m.name||'—'} ${rLabel}福利待兌換${countLabel}`,sub,天:trigD,ic:gType==='birthday'?'rb':'rg',urgent:overdue,id:memberId,isReward:true,overdue});
     });
   });
   holi天.forEach(h=>{ const d=天Until(h.date); if(d>=0&&d<=90) list.push({type:'holiday',icon:'◈',title:h.name,sub:`${h.date} · ${h.type}${h.note?' · '+h.note:''}`,天:d,ic:'rh',urgent:false}); });
