@@ -198,33 +198,37 @@ body{font-family:'Noto Sans TC',sans-serif;font-size:16px;color:var(--pd);backgr
       <!-- 宅配欄位 -->
       <div id="ship-home-fields" style="display:block">
         <div class="fr">
-          <label class="fl">郵遞區號 <span class="req">*</span>（前3碼 + 後3碼）</label>
-          <div style="display:flex;align-items:center;gap:8px">
-            <input class="fi" id="f-zip1" placeholder="前3碼" maxlength="3" style="width:90px" oninput="this.value=this.value.replace(/\D/g,'');if(this.value.length===3)document.getElementById('f-zip2').focus()">
-            <span style="color:var(--th)">—</span>
-            <input class="fi" id="f-zip2" placeholder="後3碼" maxlength="3" style="width:90px" oninput="this.value=this.value.replace(/\D/g,'')">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <div style="flex:0 0 auto">
+              <label class="fl">郵遞區號 <span class="req">*</span></label>
+              <div style="display:flex;align-items:center;gap:4px">
+                <input class="fi" id="f-zip1" placeholder="前3" maxlength="3" style="width:52px;padding:10px 6px;text-align:center" oninput="this.value=this.value.replace(/\D/g,'');if(this.value.length===3)document.getElementById('f-zip2').focus()">
+                <span style="color:var(--th)">—</span>
+                <input class="fi" id="f-zip2" placeholder="後3" maxlength="3" style="width:52px;padding:10px 6px;text-align:center" oninput="this.value=this.value.replace(/\D/g,'')">
+              </div>
+            </div>
+            <div style="flex:1">
+              <label class="fl">地址 <span class="req">*</span></label>
+              <div style="display:flex;gap:6px">
+                <select class="fi" id="f-city" onchange="updateDistricts()" style="flex:0 0 100px">
+                  <option value="">縣市</option>
+                  <option>台北市</option><option>新北市</option><option>桃園市</option>
+                  <option>台中市</option><option>台南市</option><option>高雄市</option>
+                  <option>基隆市</option><option>新竹市</option><option>嘉義市</option>
+                  <option>新竹縣</option><option>苗栗縣</option><option>彰化縣</option>
+                  <option>南投縣</option><option>雲林縣</option><option>嘉義縣</option>
+                  <option>屏東縣</option><option>宜蘭縣</option><option>花蓮縣</option>
+                  <option>台東縣</option><option>澎湖縣</option><option>金門縣</option>
+                  <option>連江縣</option>
+                </select>
+                <select class="fi" id="f-district" style="flex:0 0 90px">
+                  <option value="">區域</option>
+                </select>
+                <input class="fi" id="f-addr" placeholder="路段、門牌號" style="flex:1">
+              </div>
+            </div>
           </div>
           <div class="err-msg" id="e-zip">請填寫完整郵遞區號</div>
-        </div>
-        <div class="fr">
-          <label class="fl">宅配地址 <span class="req">*</span></label>
-          <div style="display:flex;gap:6px;margin-bottom:6px">
-            <select class="fi" id="f-city" onchange="updateDistricts()" style="flex:1">
-              <option value="">縣市</option>
-              <option>台北市</option><option>新北市</option><option>桃園市</option>
-              <option>台中市</option><option>台南市</option><option>高雄市</option>
-              <option>基隆市</option><option>新竹市</option><option>嘉義市</option>
-              <option>新竹縣</option><option>苗栗縣</option><option>彰化縣</option>
-              <option>南投縣</option><option>雲林縣</option><option>嘉義縣</option>
-              <option>屏東縣</option><option>宜蘭縣</option><option>花蓮縣</option>
-              <option>台東縣</option><option>澎湖縣</option><option>金門縣</option>
-              <option>連江縣</option>
-            </select>
-            <select class="fi" id="f-district" style="flex:1">
-              <option value="">區域</option>
-            </select>
-          </div>
-          <input class="fi" id="f-addr" placeholder="路段、門牌號">
           <div class="err-msg" id="e-addr">請填寫完整地址</div>
         </div>
       </div>
@@ -235,7 +239,8 @@ body{font-family:'Noto Sans TC',sans-serif;font-size:16px;color:var(--pd);backgr
     <!-- 訂單編號 -->
     <div class="card">
       <div class="sec-title">綠界訂單編號 <span class="req">*</span></div>
-      <input class="fi" id="f-order" placeholder="請輸入綠界付款成功的訂單編號">
+      <input class="fi" id="f-order" placeholder="請輸入最新一筆的綠界訂單編號">
+      <div style="font-size:.72rem;color:var(--th);margin-top:4px">請填寫最新一筆的訂單編號，可在綠界付款成功通知信件中找到</div>
       <div class="err-msg" id="e-order">請填寫訂單編號</div>
     </div>
 
@@ -252,11 +257,12 @@ body{font-family:'Noto Sans TC',sans-serif;font-size:16px;color:var(--pd);backgr
       <a href="https://imgur.com/upload" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:linear-gradient(135deg,#FFF9E6,#FFFBF0);border:1px solid var(--gold);border-radius:40px;font-size:.82rem;color:var(--pd);text-decoration:none;margin-bottom:1rem;letter-spacing:.08em">📷 前往 Imgur 上傳截圖 ↗</a>
       <div class="link-hint" style="margin-top:.6rem">
         <strong>方法二：Google 雲端硬碟分享</strong><br>
-        1. 開啟 Google 雲端硬碟，上傳截圖<br>
+        1. 點下方按鈕前往 Google 雲端硬碟，上傳截圖<br>
         2. 對檔案按右鍵 →「共用」→「複製連結」<br>
         3. 將權限設為「知道連結的任何人」<br>
         4. 複製連結貼到下方欄位
       </div>
+      <a href="https://drive.google.com" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:linear-gradient(135deg,#FFF9E6,#FFFBF0);border:1px solid var(--gold);border-radius:40px;font-size:.82rem;color:var(--pd);text-decoration:none;margin-bottom:1rem;letter-spacing:.08em">☁️ 前往 Google 雲端硬碟 ↗</a>
       <div class="fr">
         <label class="fl">圖片網址 <span class="req">*</span></label>
         <input class="fi" id="f-screenshot" placeholder="https://i.imgur.com/xxxxxx.jpg 或 Google 雲端硬碟連結">
