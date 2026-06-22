@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ooniau 暖暖｜會員獎勵查詢</title>
+<title>Ooniau 暖暖｜會員福利查詢</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐈‍⬛</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -94,30 +94,30 @@ html,body{min-height:100%;font-family:'Noto Sans TC',sans-serif;font-size:16px;c
   <div class="brand">
     <div class="brand-en">Ooniau Member</div>
     <div class="brand-name">暖暖</div>
-    <div class="brand-sub">會員獎勵查詢</div>
+    <div class="brand-sub">會員福利查詢</div>
   </div>
 
   <div class="query-card">
-    <div class="query-title">查詢你的獎勵</div>
+    <div class="query-title">查詢你的福利</div>
 
     <!-- Tab 切換 -->
     <div class="tab-row">
-      <button class="tab active" onclick="switchTab('order')">訂單編號</button>
-      <button class="tab" onclick="switchTab('phone')">手機號碼</button>
-    </div>
-
-    <!-- 訂單編號 -->
-    <div class="tab-panel active" id="tab-order">
-      <input class="fi" id="order-input" type="text" placeholder="請輸入綠界訂單編號"
-        onkeydown="if(event.key==='Enter')query()" oninput="hideErr()">
-      <div class="hint">訂單編號請查看綠界付款成功通知信件<br>每年訂閱可能有不同訂單編號，任一筆皆可查詢</div>
+      <button class="tab active" onclick="switchTab('phone')">手機號碼</button>
+      <button class="tab" onclick="switchTab('order')">訂單編號</button>
     </div>
 
     <!-- 手機號碼 -->
-    <div class="tab-panel" id="tab-phone">
+    <div class="tab-panel active" id="tab-phone">
       <input class="fi" id="phone-input" type="tel" placeholder="請輸入登記的手機號碼"
         onkeydown="if(event.key==='Enter')query()" oninput="hideErr()">
       <div class="hint">請輸入加入會員時填寫的手機號碼</div>
+    </div>
+
+    <!-- 訂單編號 -->
+    <div class="tab-panel" id="tab-order">
+      <input class="fi" id="order-input" type="text" placeholder="請輸入綠界訂單編號"
+        onkeydown="if(event.key==='Enter')query()" oninput="hideErr()">
+      <div class="hint">訂單編號請查看綠界付款成功通知信件<br>每年訂閱可能有不同訂單編號，任一筆皆可查詢</div>
     </div>
 
     <button class="btn" id="query-btn" onclick="query()">查詢</button>
@@ -141,12 +141,12 @@ html,body{min-height:100%;font-family:'Noto Sans TC',sans-serif;font-size:16px;c
     </div>
 
     <div class="stats-row">
-      <div class="stat-box"><div class="stat-num" id="s-total">0</div><div class="stat-lbl">總獎勵</div></div>
+      <div class="stat-box"><div class="stat-num" id="s-total">0</div><div class="stat-lbl">總福利</div></div>
       <div class="stat-box"><div class="stat-num" id="s-redeemed" style="color:#3B6D11">0</div><div class="stat-lbl">已兌換</div></div>
       <div class="stat-box"><div class="stat-num" id="s-pending" style="color:#A07800">0</div><div class="stat-lbl">待兌換</div></div>
     </div>
 
-    <div class="section-title">獎勵明細</div>
+    <div class="section-title">福利明細</div>
     <div id="reward-list"></div>
   </div>
 
@@ -154,7 +154,7 @@ html,body{min-height:100%;font-family:'Noto Sans TC',sans-serif;font-size:16px;c
 </div>
 
 <script>
-let curTab = 'order';
+let curTab = 'phone';
 
 function switchTab(tab) {
   curTab = tab;
@@ -235,13 +235,13 @@ function renderResult({member, rewards}){
   document.getElementById('s-pending').textContent = total - redeemed;
 
   if(!rewards.length){
-    document.getElementById('reward-list').innerHTML = '<div class="empty">目前尚無獎勵記錄</div>';
+    document.getElementById('reward-list').innerHTML = '<div class="empty">目前尚無福利記錄</div>';
   } else {
     document.getElementById('reward-list').innerHTML = rewards.map(r => {
       const isActivity = r.type === '里民禮物';
       const is12 = r.type === '12個月獎勵';
       const icon = isActivity ? '🎪' : is12 ? '🏆' : '🎁';
-      const typeLabel = isActivity ? `🎪 ${r.milestone}` : is12 ? '🏆 專屬週邊獎勵' : `🎁 ${r.rewardItem||'訂閱獎勵'}`;
+      const typeLabel = isActivity ? `🎪 ${r.milestone}` : is12 ? '🏆 專屬週邊福利' : `🎁 ${r.rewardItem||'訂閱福利'}`;
       const moLabel = isActivity ? '活動' : is12 ? '週邊' : '訂閱';
       const moNum = isActivity ? icon : r.milestone.replace('個月(週邊)','').replace('個月','');
       return `<div class="reward-item${r.redeemed?' redeemed':''}">
@@ -251,7 +251,7 @@ function renderResult({member, rewards}){
         </div>
         <div class="reward-info">
           <div class="reward-type">${typeLabel}</div>
-          <div class="reward-sub">觸發日期 ${r.triggerDate||'—'}${r.redeemed?' · 已兌換 '+r.redeemedAt:''}</div>
+          <div class="reward-sub">${r.triggerDate?'📅 '+r.triggerDate:'觸發日期未設定'} ${r.redeemed?'· ✓ 已兌換 '+r.redeemedAt:''}</div>
           ${r.note?`<div class="reward-sub" style="margin-top:2px;color:var(--th)">${r.note}</div>`:''}
         </div>
         <div class="reward-status">
