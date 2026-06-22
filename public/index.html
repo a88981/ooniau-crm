@@ -436,6 +436,7 @@ tr:hover td{background:#FEFBF2}
     <!-- 收件資訊 -->
     <div class="dsec" id="d-ship-sec">
       <div class="dsec-label">收件資訊</div>
+      <div class="drow"><span class="dkey">地址</span><span class="dval" id="d-address"></span></div>
     </div>
 
     <!-- 備註 -->
@@ -839,6 +840,7 @@ function refreshDrwInfo(m){
   const daysStr=m.exp?`<span style="font-size:.62rem;color:var(--th);margin-left:4px">${m.exp}</span>`:'';
   document.getElementById('d-status').innerHTML=`<span class="badge ${st.cls}">${st.label}</span>${daysStr}`;
   const addrEl=document.getElementById('d-address'); if(addrEl) addrEl.textContent=m.address||'';
+  const shipSec=document.getElementById('d-ship-sec'); if(shipSec) shipSec.style.display=m.address?'block':'none';
   document.getElementById('d-note-sec').style.display=m.note?'block':'none';
   document.getElementById('d-note').textContent=m.note||'';
   const lvSel = document.getElementById('pay-level');
