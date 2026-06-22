@@ -1267,7 +1267,7 @@ function renderRewards(list, memberId){
         <div class="reward-actions">
           ${r.redeemed
             ? `<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><span class="badge b-redeemed">已兌換</span><button class="btn btn-sm" onclick="editReward('${r.id}','${m.level||''}')">編輯</button><button class="btn btn-sm btn-del" onclick="deleteReward('${r.id}')">刪除</button></div>`
-            : `<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><button class="btn btn-sm btn-green" onclick="openRedeemModal('${r.id}','${(m.level||'')}',${JSON.stringify((r.allIds||[r.id]).join(','))})">兌換${r.count>1?' ('+r.count+'項)':''}</button><button class="btn btn-sm btn-del" onclick="deleteReward('${r.id}')">刪除</button></div>`
+            : `<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><button class="btn btn-sm btn-green" onclick="openRedeemModal(this.getAttribute('data-id'),this.getAttribute('data-lv'),this.getAttribute('data-aids'))" data-id="${r.id}" data-lv="${m.level||''}" data-aids="${(r.allIds||[r.id]).join('|')}">兌換${r.count>1?' ('+r.count+'項)':''}</button><button class="btn btn-sm btn-del" onclick="deleteReward('${r.id}')">刪除</button></div>`
           }
         </div>
       </div>`).join('')}
@@ -1376,7 +1376,7 @@ function openRedeemModal(rewardId, level, allIdsStr=''){
   }
   document.getElementById('rw-id').value=rewardId;
   document.getElementById('rw-redeemedAt').value='';
-  document.getElementById('rw-allids').value=allIdsStr||rewardId;
+  document.getElementById('rw-allids').value=allIdsStr||rewardId; // | 分隔
   document.getElementById('rw-illus').value='';
   document.getElementById('rw-note').value='';
   // 確保 footer 是正常兌換的按鈕
@@ -1400,7 +1400,7 @@ async function confirmRedeem(){
   btns.forEach(b=>b.disabled=true);
   try{
     const allIdsStr = document.getElementById('rw-allids')?.value || id;
-    const ids = allIdsStr.split(',').filter(Boolean);
+    const ids = allIdsStr.split('|').filter(Boolean);
     // 批次兌換所有同類型
     const updates = await Promise.all(ids.map(rid =>
       apiFetch(`/api/rewards?id=${rid}`,{method:'PATCH',body:{ redeemed:true, redeemedAt:today, rewardItem:item, illustration:illus, note }})
