@@ -1204,6 +1204,17 @@ function calcExpectedRewards(member){
         rewards.push({ milestone:`${mo}個月占卜`, type:'每月占卜', triggerDate:trigDate.toISOString().slice(0,10) });
     }
   }
+  // 每年生日禮（從加入年到今年各一筆）
+  const joinYear = joinDate.getFullYear();
+  const thisYear = TODAY.getFullYear();
+  for(let y=joinYear; y<=thisYear; y++){
+    rewards.push({
+      milestone: `${y}生日禮`,
+      type: '里民禮物',
+      triggerDate: TODAY.toISOString().slice(0,10),
+    });
+  }
+
   if(!rewards.length) return [];
   return rewards;
 }
