@@ -184,7 +184,7 @@ async function query(){
   document.getElementById('result').style.display = 'none';
 
   try{
-    const param = `phone=${encodeURIComponent(val)}`;
+    const param = `phone=${encodeURIComponent(val)}&_=${Date.now()}`;
     const r = await fetch(`/api/member-query?${param}`);
     const data = await r.json();
 
