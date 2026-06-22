@@ -216,7 +216,7 @@ function renderResult({member, rewards}){
       const isActivity = r.type === '里民禮物';
       const is12 = r.type === '12個月獎勵';
       const icon = isActivity ? '🎪' : is12 ? '🏆' : '🎁';
-      const lvMap = {'LV.3 里民暖暖包':'相印小卡或半小時占卜','LV.4 肌肉暖暖包':'實體拍立得','LV.5 真蒸暖暖包':'親簽拍立得'};
+      const lvMap = {'LV.3 里民暖暖包':'相印小卡/半小時占卜','LV.4 肌肉暖暖包':'實體拍立得','LV.5 真蒸暖暖包':'親簽拍立得'};
       const defaultItem = lvMap[member.level] || r.rewardItem || '訂閱福利';
       const typeLabel = isActivity ? `🎪 ${r.milestone}` : is12 ? '🏆 專屬週邊福利' : `🎁 ${r.redeemed ? r.rewardItem : defaultItem}`;
       const moLabel = isActivity ? '活動' : is12 ? '週邊' : '訂閱';
