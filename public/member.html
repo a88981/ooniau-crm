@@ -252,4 +252,19 @@ function renderResult({member, rewards}){
         </div>
         <div class="reward-status">
           ${r.redeemed
-            ? `<span
+            ? `<span class="badge" style="background:#F2F2F2;color:#888">已兌換</span>`
+            : `<span class="badge" style="background:#FFF8D6;color:#A07800">待兌換</span>`}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function showErr(msg){ const e=document.getElementById('err-msg'); e.textContent=msg; e.style.display='block'; }
+function hideErr(){ document.getElementById('err-msg').style.display='none'; }
+</script>
+</body>
+</html>
