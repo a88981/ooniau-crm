@@ -262,7 +262,7 @@ function renderResult({member, rewards}){
   const monthlyRewards = rewards.filter(r=>r.type==='每月占卜');
   const subRewards = rewards.filter(r=>r.type==='3個月獎勵'||r.type==='12個月獎勵');
 
-  function buildStamps(totalSlots, giftSlots, rewardList, subMosCount){
+  function buildStamps(totalSlots, giftSlots, rewardList, subMosCount, allPending=false){
     let html='';
     for(let i=1;i<=totalSlots;i++){
       const is12 = i===12;
@@ -290,7 +290,7 @@ function renderResult({member, rewards}){
   if(member.level==='LV.4 肌肉暖暖包'||member.level==='LV.5 真蒸暖暖包'){
     const mTitle = member.level==='LV.5 真蒸暖暖包'?'一小時占卜':'半小時占卜';
     const mDone = monthlyRewards.filter(r=>r.redeemed).length;
-    cardsHtml += `<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">每月占卜</div><div class="sc-sub">${member.level} · ${mTitle} · 已訂閱 ${subMos2} 個月</div></div><div class="sc-count">${mDone} / ${subMos2} 已兌換</div></div><div class="stamps">${buildStamps(12,[],monthlyRewards,subMos2)}</div><div class="sc-legend"><div class="leg"><div class="leg-c future"></div>尚未累積</div><div class="leg"><div class="leg-c earned"></div>待兌換</div><div class="leg"><div class="leg-c redeemed"></div>已兌換</div></div></div>`;
+    cardsHtml += `<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">每月占卜</div><div class="sc-sub">${member.level} · ${mTitle} · 已訂閱 ${subMos2} 個月</div></div><div class="sc-count">${mDone} / ${subMos2} 已兌換</div></div><div class="stamps">${buildStamps(12,[],monthlyRewards,subMos2)}</div><div class="sc-legend"><div class="leg"><div class="leg-c future"></div>尚未累積</div><div class="leg"><div class="leg-c earned"></div>累積中</div><div class="leg"><div class="leg-c redeemed"></div>已兌換</div></div></div>`;
   }
   document.getElementById('reward-list').innerHTML = cardsHtml || '<div class="empty">目前尚無福利記錄</div>';
 
