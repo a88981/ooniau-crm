@@ -543,6 +543,7 @@ tr:hover td{background:#FEFBF2}
     <div class="mdtitle" id="reward-modal-title">設定兌換內容</div>
     <input type="hidden" id="rw-id">
     <input type="hidden" id="rw-redeemedAt">
+    <input type="hidden" id="rw-allids">
     <div class="fr" id="rw-item-wrap">
       <label class="fl">兌換項目</label>
       <input class="fi" id="rw-item" list="rw-item-list" placeholder="可選或手填">
@@ -1266,7 +1267,7 @@ function renderRewards(list, memberId){
         <div class="reward-actions">
           ${r.redeemed
             ? `<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><span class="badge b-redeemed">已兌換</span><button class="btn btn-sm" onclick="editReward('${r.id}','${m.level||''}')">編輯</button><button class="btn btn-sm btn-del" onclick="deleteReward('${r.id}')">刪除</button></div>`
-            : `<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><button class="btn btn-sm btn-green" onclick="openRedeemModal('${r.id}','${m.level||''}')">兌換</button><button class="btn btn-sm btn-del" onclick="deleteReward('${r.id}')">刪除</button></div>`
+            : `<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><button class="btn btn-sm btn-green" onclick="openRedeemModal('${r.id}','${(m.level||'')}',${JSON.stringify((r.allIds||[r.id]).join(','))})">兌換${r.count>1?' ('+r.count+'項)':''}</button><button class="btn btn-sm btn-del" onclick="deleteReward('${r.id}')">刪除</button></div>`
           }
         </div>
       </div>`).join('')}
@@ -1349,7 +1350,7 @@ async function cancelRedeem(id) {
     renderDash(); closeM('reward'); showToast('已取消兌換');
   } catch(e) { btns.forEach(b=>b.disabled=false); showToast('⚠ 操作失敗'); }
 }
-function openRedeemModal(rewardId, level){
+function openRedeemModal(rewardId, level, allIdsStr=''){
   redeemRewardId=rewardId; redeem會員Level=level;
   const rw=drw會員Rewards.find(r=>r.id===rewardId);
   const lvInfo=LEVELS[level]||{};
@@ -1375,6 +1376,7 @@ function openRedeemModal(rewardId, level){
   }
   document.getElementById('rw-id').value=rewardId;
   document.getElementById('rw-redeemedAt').value='';
+  document.getElementById('rw-allids').value=allIdsStr||rewardId;
   document.getElementById('rw-illus').value='';
   document.getElementById('rw-note').value='';
   // 確保 footer 是正常兌換的按鈕
@@ -1397,11 +1399,16 @@ async function confirmRedeem(){
   const btns = foot ? foot.querySelectorAll('button') : [];
   btns.forEach(b=>b.disabled=true);
   try{
-    const updated=await apiFetch(`/api/rewards?id=${id}`,{method:'PATCH',body:{ redeemed:true, redeemedAt:today, rewardItem:item, illustration:illus, note }});
-    drw會員Rewards=drw會員Rewards.map(r=>r.id===id?updated:r);
-    allRewards=allRewards.map(r=>r.id===id?updated:r);
+    const allIdsStr = document.getElementById('rw-allids')?.value || id;
+    const ids = allIdsStr.split(',').filter(Boolean);
+    // 批次兌換所有同類型
+    const updates = await Promise.all(ids.map(rid =>
+      apiFetch(`/api/rewards?id=${rid}`,{method:'PATCH',body:{ redeemed:true, redeemedAt:today, rewardItem:item, illustration:illus, note }})
+    ));
+    updates.forEach(u=>{ drw會員Rewards=drw會員Rewards.map(r=>r.id===u.id?u:r); allRewards=allRewards.map(r=>r.id===u.id?u:r); });
     renderRewards(drw會員Rewards, drw會員Id);
-    renderDash(); closeM('reward'); showToast('✦ 已標記兌換');
+    renderDash(); closeM('reward');
+    showToast(`✦ 已標記兌換${ids.length>1?' ('+ids.length+'項)':''}`);
   }catch(e){ btns.forEach(b=>b.disabled=false); showToast('⚠ 更新失敗'); }
 }
 
