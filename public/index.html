@@ -808,8 +808,8 @@ function openDrw(m){
 }
 function refreshDrwInfo(m){
   if(!m) return;
-  document.getElementById('d-name').textContent=m.name||'—';
-  document.getElementById('d-yt').textContent=m.memberName?`@ ${m.memberName}`:'';
+  document.getElementById('d-name').textContent=m.memberName||m.name||'—';
+  document.getElementById('d-yt').textContent=m.memberName?m.name:'';
   const sub=calcSubscribe(m.join, m.exp);
   const numEl=document.getElementById('d-sub-num');
   if(sub && sub.totalMonths >= 0){
@@ -974,7 +974,7 @@ function render會員(list){
     const subStr=sub&&sub.totalMonths>=0?( sub.years>0?`${sub.years}年${sub.months}個月`:`${sub.totalMonths}個月` ):'—';
     const avIdx = m.id ? m.id.charCodeAt(0) % 5 : i % 5;
     return`<tr style="cursor:pointer" onclick="openDrw(members.find(x=>x.id==='${m.id}'))">
-      <td><div class="mrow"><div class="av ${avList[avIdx % 5]}">${initials(m.name)}</div><div><div class="mname">${m.name}</div></div></div></td>
+      <td><div class="mrow"><div class="av ${avList[avIdx % 5]}">${initials(m.memberName||m.name)}</div><div><div class="mname">${m.memberName||m.name}</div>${m.memberName?`<div class="myt">${m.name}</div>`:''}</div></div></td>
       <td style="font-size:.7rem;color:var(--tm)">${m.memberName||'—'}</td>
       <td>${lvBadge(m.level)}</td>
       <td>${planBadge(m.plan)}</td>
