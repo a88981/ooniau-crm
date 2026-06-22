@@ -72,18 +72,18 @@ html,body{min-height:100%;font-family:'Noto Sans TC',sans-serif;font-size:16px;c
 .sc-title{font-family:'Noto Serif TC',serif;font-size:.85rem;font-weight:400;color:var(--pd);letter-spacing:.04em}
 .sc-sub{font-size:.6rem;color:var(--tm);margin-top:2px}
 .sc-count{font-size:.62rem;color:var(--th);white-space:nowrap}
-.stamps{display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
+.stamps{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
 .stamp{display:flex;flex-direction:column;align-items:center;gap:3px}
 .s-circle{width:100%;aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.5px solid;gap:0}
 .s-circle.future{background:#F5F4F2;border-color:#D3D1C7}
 .s-circle.earned{background:#FFF9E6;border-color:var(--gold)}
 .s-circle.redeemed{background:var(--lv5bg);border-color:var(--purple)}
-.s-num{font-weight:700;font-size:11px;line-height:1}
-.s-ico{font-size:8px;line-height:1}
+.s-num{font-weight:700;font-size:15px;line-height:1}
+.s-ico{font-size:11px;line-height:1}
 .s-num.future{color:#C8C6BE}
 .s-num.earned{color:var(--lv4)}
 .s-num.redeemed{color:var(--purple)}
-.s-lbl{font-size:7px;text-align:center;line-height:1.2}
+.s-lbl{font-size:9px;text-align:center;line-height:1.2}
 .s-lbl.future{color:#B4B2A9}
 .s-lbl.earned{color:var(--lv4)}
 .s-lbl.redeemed{color:var(--purple)}
@@ -291,7 +291,7 @@ function renderResult({member, rewards}){
   }
   const sub3Done = subRewards.filter(r=>r.type==='3個月獎勵'&&r.redeemed).length;
   const sub3Total = subRewards.filter(r=>r.type==='3個月獎勵').length;
-  cardsHtml += `<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">訂閱福利</div><div class="sc-sub">${member.level} · ${lvInfo2.every3} · 已訂閱 ${subMos2} 個月</div></div><div class="sc-count">${sub3Done} / ${sub3Total} 已兌換</div></div><div class="stamps">${buildStamps(12,[3,6,9,12],subRewards,subMos2)}</div>${lvInfo2.note?`<div class="sc-note" style="margin-bottom:6px">💡 ${lvInfo2.note}</div>`:''}<hr class="sc-divider"><div class="sc-note">🏆 連續訂閱一年不間斷，獲得【${lvInfo2.year}】</div><div class="sc-legend"><div class="leg"><div class="leg-c future"></div>尚未累積</div><div class="leg"><div class="leg-c earned"></div>累積中</div><div class="leg"><div class="leg-c redeemed"></div>已兌換</div></div></div>`;
+  cardsHtml += `<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">訂閱福利</div><div class="sc-sub">${member.level} · ${lvInfo2.every3} · 已訂閱 ${subMos2} 個月</div></div><div class="sc-count">${sub3Done} / ${sub3Total} 已兌換</div></div><div class="stamps">${buildStamps(12,[3,6,9,12],subRewards,subMos2)}</div>${lvInfo2.note ? '<div class="sc-note" style="margin-bottom:6px">💡 ' + lvInfo2.note + '</div>' : ''}<hr class="sc-divider"><div class="sc-note">🏆 連續訂閱一年不間斷，獲得【${lvInfo2.year}】</div><div class="sc-legend"><div class="leg"><div class="leg-c future"></div>尚未累積</div><div class="leg"><div class="leg-c earned"></div>累積中</div><div class="leg"><div class="leg-c redeemed"></div>已兌換</div></div></div>`;
 
   document.getElementById('reward-list').innerHTML = cardsHtml || '<div class="empty">目前尚無福利記錄</div>';
 
