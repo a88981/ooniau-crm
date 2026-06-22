@@ -295,6 +295,9 @@ function renderResult({member, rewards}){
 
   document.getElementById('reward-list').innerHTML = cardsHtml || '<div class="empty">目前尚無福利記錄</div>';
 
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth', block:'start'});
+
 }
 
 function showErr(msg){ const e=document.getElementById('err-msg'); e.textContent=msg; e.style.display='block'; }
