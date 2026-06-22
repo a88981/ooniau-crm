@@ -294,17 +294,35 @@ function renderResult({member, rewards}){
   }
   // 里民禮品卡（最後）
   const activityRewards = rewards.filter(r=>r.type==='里民禮物');
+  const joinYear = member.join ? parseInt(member.join.slice(0,4)) : new Date().getFullYear();
+  const thisYear = new Date().getFullYear();
+  // 每年一個生日禮格子（從加入年到今年）
+  const bdaySlots = [];
+  for(let y=joinYear; y<=thisYear; y++) bdaySlots.push(y);
+  // 其他里民禮物（非生日）
+  const otherActivity = activityRewards.filter(r=>!r.milestone||!r.milestone.includes('生日'));
+  const totalSlots = Math.max(bdaySlots.length + otherActivity.length, 6);
   let activityHtml = '<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">里民禮品</div><div class="sc-sub">生日禮品 · 節日禮品 · 活動禮品</div></div></div><div class="stamps" style="grid-template-columns:repeat(6,1fr)">';
-  const actSlots = Math.max(activityRewards.length, 6);
-  for(let i=0;i<actSlots;i++){
-    const r = activityRewards[i];
-    if(r){
-      const state = r.redeemed ? 'redeemed' : 'earned';
-      const label = r.redeemed ? '已兌換' : r.milestone||'待兌換';
-      activityHtml += `<div class="stamp"><div class="s-circle ${state}"><span style="font-size:18px">🐈‍⬛</span></div><div class="s-lbl ${state}">${label}</div></div>`;
-    } else {
-      activityHtml += '<div class="stamp"><div class="s-circle future"><span style="font-size:18px">🐈‍⬛</span></div><div class="s-lbl future">—</div></div>';
-    }
+  
+  // 先排生日禮
+  bdaySlots.forEach(y=>{
+    const r = activityRewards.find(r=>r.milestone&&r.milestone.includes('生日')&&r.milestone.includes(String(y)));
+    const state = r ? (r.redeemed?'redeemed':'earned') : 'future';
+    const label = r ? (r.redeemed?'已兌換':'待兌換') : '待領取';
+    activityHtml += `<div class="stamp"><div class="s-circle ${state}"><span style="font-size:18px">🐈‍⬛</span></div><div class="s-lbl ${state}" style="font-size:8px">${y}<br>生日禮</div></div>`;
+  });
+  
+  // 其他活動禮
+  otherActivity.forEach(r=>{
+    const state = r.redeemed ? 'redeemed' : 'earned';
+    const label = r.redeemed ? '已兌換' : '待兌換';
+    activityHtml += `<div class="stamp"><div class="s-circle ${state}"><span style="font-size:18px">🐈‍⬛</span></div><div class="s-lbl ${state}">${label}</div></div>`;
+  });
+
+  // 補灰色到至少6格
+  const filled = bdaySlots.length + otherActivity.length;
+  for(let i=filled; i<6; i++){
+    activityHtml += '<div class="stamp"><div class="s-circle future"><span style="font-size:18px">🐈‍⬛</span></div><div class="s-lbl future">—</div></div>';
   }
   activityHtml += '</div></div>';
   cardsHtml += activityHtml;
