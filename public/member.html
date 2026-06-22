@@ -114,8 +114,8 @@ html,body{min-height:100%;font-family:'Noto Sans TC',sans-serif;font-size:16px;c
 
     <!-- Tab 切換 -->
     <!-- 手機號碼 -->
-    <input class="fi" id="phone-input" type="tel" placeholder="請輸入登記的手機號碼"
-      onkeydown="if(event.key==='Enter')query()" oninput="hideErr()">
+    <input class="fi" id="phone-input" type="tel" placeholder="請輸入登記的手機號碼" maxlength="10"
+      onkeydown="if(event.key==='Enter')query()" oninput="this.value=this.value.replace(/[^0-9]/g,'');hideErr()">
     <div class="hint">請輸入加入會員時填寫的手機號碼</div>
 
     <button class="btn" id="query-btn" onclick="query()">查詢</button>
