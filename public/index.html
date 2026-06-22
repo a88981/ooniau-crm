@@ -879,13 +879,8 @@ function autoCalcExp(){
   const exp = d.toISOString().slice(0,10);
   if(exp <= join) return;
   const isEdit = !!document.getElementById('nm-id').value;
-  if(isEdit){
-    // 編輯模式：有到期日才詢問
-    const curExp = document.getElementById('nm-exp').value;
-    if(curExp && confirm(`要同步更新到期日為 ${exp} 嗎？`)){
-      document.getElementById('nm-exp').value = exp;
-    }
-  } else {
+  if(!isEdit){
+    // 新增模式才自動帶入到期日，編輯模式不動
     document.getElementById('nm-exp').value = exp;
   }
 }
