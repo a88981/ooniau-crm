@@ -235,9 +235,11 @@ function renderResult({member, rewards}){
       const is12 = r.type === '12個月獎勵';
       const icon = isActivity ? '🎪' : is12 ? '🏆' : '🎁';
       const lvMap = {'LV.3 里民暖暖包':'相印小卡/半小時占卜','LV.4 肌肉暖暖包':'實體拍立得','LV.5 真蒸暖暖包':'親簽拍立得'};
+      const monthlyMap = {'LV.4 肌肉暖暖包':'半小時占卜','LV.5 真蒸暖暖包':'一小時占卜'};
       const defaultItem = lvMap[member.level] || r.rewardItem || '訂閱福利';
+      const monthlyItem = monthlyMap[member.level] || r.rewardItem || '占卜';
       const countLabel = r.count > 1 ? ` × ${r.count} 項` : '';
-      const typeLabel = (isActivity ? `🎪 ${r.milestone}` : is12 ? '🏆 專屬週邊福利' : r.type==='每月占卜' ? `🔮 ${defaultItem}` : `🎁 ${r.redeemed ? r.rewardItem : defaultItem}`) + countLabel;
+      const typeLabel = (isActivity ? `🎪 ${r.milestone}` : is12 ? '🏆 專屬週邊福利' : r.type==='每月占卜' ? `🔮 ${r.redeemed ? r.rewardItem : monthlyItem}` : `🎁 ${r.redeemed ? r.rewardItem : defaultItem}`) + countLabel;
       const moLabel = isActivity ? '活動' : is12 ? '週邊' : '訂閱';
       const moNum = isActivity ? icon : r.milestone.replace('個月(週邊)','').replace('個月','');
       return `<div class="reward-item${r.redeemed?' redeemed':''}">
