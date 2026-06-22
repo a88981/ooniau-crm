@@ -30,13 +30,6 @@ html,body{min-height:100%;font-family:'Noto Sans TC',sans-serif;font-size:16px;c
 .query-card{background:#fff;border:.5px solid var(--gold-b);border-radius:6px;padding:1.8rem;margin-bottom:1.5rem}
 .query-title{font-family:'Noto Serif TC',serif;font-size:.9rem;font-weight:300;color:var(--pm);letter-spacing:.08em;margin-bottom:1.2rem}
 
-/* Tab 切換 */
-.tab-row{display:flex;gap:0;margin-bottom:1rem;border:.5px solid var(--gold-b);border-radius:4px;overflow:hidden}
-.tab{flex:1;padding:8px;text-align:center;font-size:.72rem;letter-spacing:.08em;color:var(--tm);cursor:pointer;background:#fff;border:none;transition:all .18s}
-.tab.active{background:linear-gradient(135deg,#FFF9E6,#FFFBF0);color:var(--pd);font-weight:500}
-.tab-panel{display:none}
-.tab-panel.active{display:block}
-
 .fi{width:100%;padding:10px 14px;border:.5px solid var(--gold-b);border-radius:3px;font-family:'Noto Sans TC',sans-serif;font-size:.85rem;color:var(--pd);background:#fff;outline:none;transition:border-color .18s;letter-spacing:.04em}
 .fi:focus{border-color:var(--ps)}
 .fi::placeholder{color:var(--th)}
@@ -101,24 +94,10 @@ html,body{min-height:100%;font-family:'Noto Sans TC',sans-serif;font-size:16px;c
     <div class="query-title">查詢你的福利</div>
 
     <!-- Tab 切換 -->
-    <div class="tab-row">
-      <button class="tab active" onclick="switchTab('phone')">手機號碼</button>
-      <button class="tab" onclick="switchTab('order')">訂單編號</button>
-    </div>
-
     <!-- 手機號碼 -->
-    <div class="tab-panel active" id="tab-phone">
-      <input class="fi" id="phone-input" type="tel" placeholder="請輸入登記的手機號碼"
-        onkeydown="if(event.key==='Enter')query()" oninput="hideErr()">
-      <div class="hint">請輸入加入會員時填寫的手機號碼</div>
-    </div>
-
-    <!-- 訂單編號 -->
-    <div class="tab-panel" id="tab-order">
-      <input class="fi" id="order-input" type="text" placeholder="請輸入綠界訂單編號"
-        onkeydown="if(event.key==='Enter')query()" oninput="hideErr()">
-      <div class="hint">訂單編號請查看綠界付款成功通知信件<br>每年訂閱可能有不同訂單編號，任一筆皆可查詢</div>
-    </div>
+    <input class="fi" id="phone-input" type="tel" placeholder="請輸入登記的手機號碼"
+      onkeydown="if(event.key==='Enter')query()" oninput="hideErr()">
+    <div class="hint">請輸入加入會員時填寫的手機號碼</div>
 
     <button class="btn" id="query-btn" onclick="query()">查詢</button>
     <div class="err" id="err-msg"></div>
@@ -154,18 +133,6 @@ html,body{min-height:100%;font-family:'Noto Sans TC',sans-serif;font-size:16px;c
 </div>
 
 <script>
-let curTab = 'phone';
-
-function switchTab(tab) {
-  curTab = tab;
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelector(`.tab[onclick*="${tab}"]`).classList.add('active');
-  document.getElementById('tab-'+tab).classList.add('active');
-  hideErr();
-  document.getElementById('result').style.display = 'none';
-}
-
 function 天Until(s){
   if(!s) return 9999;
   const d=new Date(s); d.setHours(0,0,0,0);
@@ -186,9 +153,8 @@ function lvBadge(lv){
 }
 
 async function query(){
-  const isOrder = curTab === 'order';
-  const val = document.getElementById(isOrder ? 'order-input' : 'phone-input').value.trim();
-  if(!val){ showErr(isOrder ? '請輸入訂單編號' : '請輸入手機號碼'); return; }
+  const val = document.getElementById('phone-input').value.trim();
+  if(!val){ showErr('請輸入手機號碼'); return; }
 
   const btn = document.getElementById('query-btn');
   btn.disabled = true;
@@ -197,7 +163,7 @@ async function query(){
   document.getElementById('result').style.display = 'none';
 
   try{
-    const param = isOrder ? `orderNo=${encodeURIComponent(val)}` : `phone=${encodeURIComponent(val)}`;
+    const param = `phone=${encodeURIComponent(val)}`;
     const r = await fetch(`/api/member-query?${param}`);
     const data = await r.json();
 
