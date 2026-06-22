@@ -148,7 +148,7 @@ tr:hover td{background:#FEFBF2}
 .sub-label{font-size:.6rem;color:var(--tm);letter-spacing:.08em}
 .sub-detail{font-size:.65rem;color:var(--th);margin-top:2px}
 
-/* 獎勵年份分組 */
+/* 福利年份分組 */
 .reward-year-group{margin-bottom:.8rem}
 .reward-year-label{font-size:.65rem;font-weight:600;color:var(--th);letter-spacing:.1em;padding:4px 0 6px;border-bottom:.5px solid var(--gold-dim);margin-bottom:4px}
 
@@ -163,7 +163,7 @@ tr:hover td{background:#FEFBF2}
 .add-pay-row{display:flex;gap:6px;margin-top:.6rem;flex-wrap:wrap}
 .add-pay-row .fi{flex:1;min-width:80px;padding:5px 8px;font-size:.72rem}
 
-/* 獎勵 */
+/* 福利 */
 .reward-item{padding:.75rem .9rem;border:.5px solid var(--gold-dim);border-radius:4px;margin-bottom:6px;display:flex;align-items:flex-start;gap:10px}
 .reward-item.redeemed{opacity:.55;background:#FAFAFA}
 .reward-badge-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;width:56px}
@@ -282,12 +282,12 @@ tr:hover td{background:#FEFBF2}
         <div class="stat" style="cursor:pointer" onclick="go('members',document.getElementById('nav-members'));setTimeout(()=>setMFilter('all',document.querySelector('#view-members .filter-row .btn')),50)"><div class="stn" id="s-total">—</div><div class="stl">有效 / 全部</div></div>
         <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('birthday',document.getElementById('remind-btn-birthday')),50)"><div class="stn" style="color:#D4A800" id="s-bday">—</div><div class="stl">本週生日</div></div>
         <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('urgent',document.getElementById('remind-btn-urgent')),50)"><div class="stn" style="color:#A32D2D" id="s-exp7">—</div><div class="stl">7天內到期</div></div>
-        <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('reward',document.getElementById('remind-btn-reward')),50)"><div class="stn" style="color:var(--purple)" id="s-reward">—</div><div class="stl">獎勵待兌換</div></div>
+        <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('reward',document.getElementById('remind-btn-reward')),50)"><div class="stn" style="color:var(--purple)" id="s-reward">—</div><div class="stl">福利待兌換</div></div>
       </div>
       <div class="dash-grid-3">
         <div class="panel"><div class="pl">即將生日</div><div id="dash-bday"><div class="loading"><div class="spinner"></div></div></div></div>
         <div class="panel"><div class="pl">即將到期</div><div id="dash-exp"><div class="loading"><div class="spinner"></div></div></div></div>
-        <div class="panel"><div class="pl">待兌換獎勵</div><div id="dash-reward"><div class="loading"><div class="spinner"></div></div></div></div>
+        <div class="panel"><div class="pl">待兌換福利</div><div id="dash-reward"><div class="loading"><div class="spinner"></div></div></div></div>
       </div>
     </div>
 
@@ -300,7 +300,7 @@ tr:hover td{background:#FEFBF2}
           <button class="btn" onclick="exportCSV(true)">↓ 匯出有效</button>
           <button class="btn" onclick="document.getElementById('csv-import-input').click()">↑ 匯入 CSV</button>
           <input type="file" id="csv-import-input" accept=".csv" style="display:none" onchange="importCSV(this)">
-          <button class="btn" onclick="openEventRewardModal()">🎁 活動獎勵</button>
+          <button class="btn" onclick="openEventRewardModal()">🎁 活動福利</button>
           <button class="btn btn-g" onclick="openAdd會員()">＋ 新增會員</button>
         </div>
       </div>
@@ -343,8 +343,8 @@ tr:hover td{background:#FEFBF2}
         <button class="btn" id="remind-btn-urgent" onclick="filterR('urgent',this)">⚠ 7天內到期</button>
         <button class="btn" id="remind-btn-soon" onclick="filterR('soon',this)">◇ 30天內到期</button>
         <button class="btn" id="remind-btn-birthday" onclick="filterR('birthday',this)">🎂 生日</button>
-        <button class="btn" id="remind-btn-reward" onclick="filterR('reward',this)">🎁 獎勵待兌換</button>
-<button class="btn" id="remind-btn-activity" onclick="filterR('activity',this)">🎪 活動獎勵</button>
+        <button class="btn" id="remind-btn-reward" onclick="filterR('reward',this)">🎁 福利待兌換</button>
+<button class="btn" id="remind-btn-activity" onclick="filterR('activity',this)">🎪 活動福利</button>
         <button class="btn" id="remind-btn-holiday" onclick="filterR('holiday',this)">◈ 節日</button>
       </div>
       <div class="rlist" id="r-list"><div class="loading"><div class="spinner"></div>載入中</div></div>
@@ -369,7 +369,7 @@ tr:hover td{background:#FEFBF2}
             <div class="leg"><div class="d dp" style="width:6px;height:6px"></div>生日</div>
             <div class="leg"><div class="d dg" style="width:6px;height:6px"></div>節日</div>
             <div class="leg"><div class="d dr" style="width:6px;height:6px"></div>到期</div>
-            <div class="leg"><div class="d" style="width:6px;height:6px;background:var(--green)"></div>獎勵</div>
+            <div class="leg"><div class="d" style="width:6px;height:6px;background:var(--green)"></div>福利</div>
           </div>
         </div>
         <div class="epanel">
@@ -468,15 +468,15 @@ tr:hover td{background:#FEFBF2}
 
     <div class="divider"></div>
 
-    <!-- 獎勵記錄 -->
+    <!-- 福利記錄 -->
     <div class="dsec">
-      <div class="dsec-label" style="cursor:pointer" onclick="toggleSec('reward-sec')">獎勵兌換 <span id="reward-sec-arrow" style="font-size:.6rem">▼</span></div>
+      <div class="dsec-label" style="cursor:pointer" onclick="toggleSec('reward-sec')">福利兌換 <span id="reward-sec-arrow" style="font-size:.6rem">▼</span></div>
       <div id="reward-sec">
       <div id="reward-list"><div class="loading"><div class="spinner"></div></div></div>
       <div style="margin-top:.6rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-        <button class="btn btn-sm btn-g" id="sync-rewards-btn" onclick="syncRewards()">↻ 同步獎勵</button>
+        <button class="btn btn-sm btn-g" id="sync-rewards-btn" onclick="syncRewards()">↻ 同步福利</button>
         <button class="btn btn-sm" onclick="openAddRewardModal()">＋ 手動新增</button>
-        <span style="font-size:.58rem;color:var(--th)">根據加入日期自動產生應有的獎勵筆數</span>
+        <span style="font-size:.58rem;color:var(--th)">根據加入日期自動產生應有的福利筆數</span>
       </div>
       </div>
     </div>
@@ -536,7 +536,7 @@ tr:hover td{background:#FEFBF2}
   </div>
 </div>
 
-<!-- Modal 獎勵兌換設定 -->
+<!-- Modal 福利兌換設定 -->
 <div class="mdbg" id="modal-reward">
   <div class="md" style="width:380px">
     <div class="mdtitle" id="reward-modal-title">設定兌換內容</div>
@@ -559,17 +559,17 @@ tr:hover td{background:#FEFBF2}
   </div>
 </div>
 
-<!-- Modal 手動新增獎勵 -->
+<!-- Modal 手動新增福利 -->
 <div class="mdbg" id="modal-add-reward">
   <div class="md" style="width:380px">
-    <div class="mdtitle">手動新增獎勵</div>
+    <div class="mdtitle">手動新增福利</div>
     <div class="fr">
       <label class="fl">獎勵類型</label>
       <input class="fi" id="ar-type" list="ar-type-list" placeholder="可選或手填" oninput="arTypeChange()">
       <datalist id="ar-type-list">
         <option value="3個月獎勵">
-        <option value="6個月獎勵">
-        <option value="9個月獎勵">
+        <option value="6個月福利">
+        <option value="9個月福利">
         <option value="12個月獎勵">
         <option value="生日禮">
         <option value="不定期禮物">
@@ -617,10 +617,10 @@ tr:hover td{background:#FEFBF2}
   </div>
 </div>
 
-<!-- Modal 活動獎勵 -->
+<!-- Modal 活動福利 -->
 <div class="mdbg" id="modal-event-reward">
   <div class="md" style="width:420px">
-    <div class="mdtitle">活動獎勵 — 一鍵新增</div>
+    <div class="mdtitle">活動福利 — 一鍵新增</div>
     <div class="fr" style="align-items:center">
       <label class="fl">活動名稱</label>
       <input class="fi" id="ev-name" placeholder="例如：端午節、週年慶" oninput="updateEvPreview()">
@@ -964,7 +964,7 @@ function renderDash(){
   const rw=allPending.slice(0,4);
   const rwMore = allPending.length > 4 ? `<div style="text-align:right;margin-top:4px"><span style="font-size:.65rem;color:var(--purple);cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('reward',document.getElementById('remind-btn-reward')),50)">查看全部 ${allPending.length} 筆 →</span></div>` : '';
   document.getElementById('dash-reward').innerHTML=(rw.length?rw.map(r=>{const m=members.find(x=>x.id===r.memberId)||{};const typeLabel = r.type==='里民禮物'?'🎪 活動':r.type==='12個月獎勵'?'🏆 週邊':'🎁 訂閱';
-return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${r.memberId}'))"><div class="ri-dot rg">${r.type==='里民禮物'?'🎪':r.type==='12個月獎勵'?'🏆':'🎁'}</div><div class="ri-info"><div class="ri-name">${m.name||'—'}</div><div class="ri-sub">${typeLabel} · ${r.milestone} · ${r.rewardItem||''}</div></div></div>`;}).join(''):'<div class="empty">無待兌換獎勵</div>')+rwMore;
+return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${r.memberId}'))"><div class="ri-dot rg">${r.type==='里民禮物'?'🎪':r.type==='12個月獎勵'?'🏆':'🎁'}</div><div class="ri-info"><div class="ri-name">${m.name||'—'}</div><div class="ri-sub">${typeLabel} · ${r.milestone} · ${r.rewardItem||''}</div></div></div>`;}).join(''):'<div class="empty">無待兌換福利</div>')+rwMore;
 }
 
 // ── 會員列表 TABLE ────────────────────────────────────────
@@ -1137,38 +1137,37 @@ async function deletePayment(id, silent=false, delBtn=null){
 
 // ── REWARDS ──────────────────────────────────────────────
 function addMonthsSafe(base, months) {
-  return new Date(base.getFullYear(), base.getMonth() + months, 1);
+  // 保留原始日期（如 1/4 + 3個月 = 4/4），月底溢出時用當月最後一天
+  const d = new Date(base.getFullYear(), base.getMonth() + months, base.getDate());
+  // 如果日期溢出（例如 1/31 + 1個月溢出到 3/3），退回到月底
+  if(d.getMonth() !== (base.getMonth() + months) % 12) {
+    d.setDate(0); // 退回到上個月最後一天
+  }
+  return d;
 }
 function calcExpectedRewards(member){
   if(!member.join) return [];
   const j = new Date(member.join); j.setHours(0,0,0,0);
   const lvInfo = LEVELS[member.level];
   if(!lvInfo) return [];
-  // 上限：到期日 vs 今天，取較早的
-  let ceiling = new Date(TODAY);
-  if(member.exp){
-    const expDate = new Date(member.exp); expDate.setHours(0,0,0,0);
-    if(expDate < ceiling) ceiling = expDate;
-  }
-  // 計算從加入日到上限的月數
-  let yrs = ceiling.getFullYear() - j.getFullYear();
-  let mos = ceiling.getMonth() - j.getMonth();
-  if(ceiling.getDate() < j.getDate()) mos--;
-  if(mos < 0){ yrs--; mos += 12; }
-  const totalMonths = yrs * 12 + mos;
-  if(totalMonths < 3) return [];
+  // 以觸發日是否已到今天來判斷（繳款日當天即可發福利）
   const rewards = [];
   const joinDate = new Date(member.join);
-  // 每3個月一筆
-  for(let mo=3; mo<=totalMonths; mo+=3){
-    const trigDate = addMonthsSafe(joinDate, mo);
-    rewards.push({ milestone:`${mo}個月`, type:'3個月獎勵', triggerDate:trigDate.toISOString().slice(0,10) });
+  // 先算最大可能月數（到今天最多幾個月）
+  let maxMos = (TODAY.getFullYear() - j.getFullYear()) * 12 + (TODAY.getMonth() - j.getMonth()) + 1;
+  // 觸發日 = 加入日 + (N-1)個月，即第N次繳款日
+  // 例：1/4加入，3個月福利在3/4（第三次繳款）觸發
+  for(let mo=3; mo<=maxMos; mo+=3){
+    const trigDate = addMonthsSafe(joinDate, mo-1);
+    if(trigDate <= TODAY)
+      rewards.push({ milestone:`${mo}個月`, type:'3個月獎勵', triggerDate:trigDate.toISOString().slice(0,10) });
   }
-  // 每12個月週邊
-  for(let mo=12; mo<=totalMonths; mo+=12){
-    const trigDate = addMonthsSafe(joinDate, mo);
-    rewards.push({ milestone:`${mo}個月(週邊)`, type:'12個月獎勵', triggerDate:trigDate.toISOString().slice(0,10) });
+  for(let mo=12; mo<=maxMos; mo+=12){
+    const trigDate = addMonthsSafe(joinDate, mo-1);
+    if(trigDate <= TODAY)
+      rewards.push({ milestone:`${mo}個月(週邊)`, type:'12個月獎勵', triggerDate:trigDate.toISOString().slice(0,10) });
   }
+  if(!rewards.length) return [];
   return rewards;
 }
 
@@ -1184,7 +1183,7 @@ async function loadRewards(memberId){
 }
 
 function renderRewards(list, memberId){
-  if(!list.length){ document.getElementById('reward-list').innerHTML='<div class="empty">尚無獎勵記錄，點「同步獎勵」產生</div>'; return; }
+  if(!list.length){ document.getElementById('reward-list').innerHTML='<div class="empty">尚無福利記錄，點「同步福利」產生</div>'; return; }
   const m=members.find(x=>x.id===memberId)||{};
   const lvInfo=LEVELS[m.level]||{};
   // 依年份分組
@@ -1207,7 +1206,7 @@ function renderRewards(list, memberId){
           }
         </div>
         <div class="reward-info">
-          <div class="reward-type">${r.type==='里民禮物'?'🎪 '+r.milestone:r.type==='12個月獎勵'?'🏆 專屬週邊獎勵':'🎁 '+(r.rewardItem||lvInfo.reward3||'訂閱獎勵')}</div>
+          <div class="reward-type">${r.type==='里民禮物'?'🎪 '+r.milestone:r.type==='12個月獎勵'?'🏆 專屬週邊福利':'🎁 '+(r.rewardItem||lvInfo.reward3||'訂閱福利')}</div>
           <div class="reward-sub">觸發日期 ${r.triggerDate||'—'} ${r.redeemed?'· 已兌換 '+r.redeemedAt:''}</div>
           ${r.illustration?`<div class="reward-illus">指定插圖：${r.illustration}</div>`:''}
         </div>
@@ -1227,11 +1226,11 @@ async function syncRewards(){
   const syncBtn = document.getElementById('sync-rewards-btn');
   if(syncBtn) syncBtn.disabled = true;
   const expected=calcExpectedRewards(m);
-  if(!expected.length){showToast('訂閱未滿3個月，暫無獎勵');if(syncBtn)syncBtn.disabled=false;return;}
+  if(!expected.length){showToast('訂閱未滿3個月，暫無福利');if(syncBtn)syncBtn.disabled=false;return;}
   const existing=drw會員Rewards.map(r=>r.milestone);
   const missing=expected.filter(e=>!existing.includes(e.milestone));
   const alreadyRedeemed=expected.filter(e=>existing.includes(e.milestone)&&drw會員Rewards.find(r=>r.milestone===e.milestone&&r.redeemed));
-  if(!missing.length){showToast(`獎勵已是最新${alreadyRedeemed.length?'（已兌換 '+alreadyRedeemed.length+' 筆）':''}，無需同步`);if(syncBtn)syncBtn.disabled=false;return;}
+  if(!missing.length){showToast(`福利已是最新${alreadyRedeemed.length?'（已兌換 '+alreadyRedeemed.length+' 筆）':''}，無需同步`);if(syncBtn)syncBtn.disabled=false;return;}
   const lvInfo=LEVELS[m.level]||{};
   try{
     const created = await Promise.all(missing.map(rw => {
@@ -1303,13 +1302,13 @@ function openRedeemModal(rewardId, level){
   const lvInfo=LEVELS[level]||{};
   const is12=(rw&&rw.type==='12個月獎勵');
   const isActivity = rw && rw.type === '里民禮物';
-  document.getElementById('reward-modal-title').textContent=is12?'兌換週邊獎勵':isActivity?`兌換活動獎勵：${rw.milestone}`:'兌換訂閱獎勵';
+  document.getElementById('reward-modal-title').textContent=is12?'兌換週邊福利':isActivity?`兌換活動福利：${rw.milestone}`:'兌換訂閱福利';
   const itemWrap=document.getElementById('rw-item-wrap');
   const illusWrap=document.getElementById('rw-illus-wrap');
   if(is12){
     itemWrap.style.display='none'; illusWrap.style.display='none';
   } else if(isActivity){
-    // 活動獎勵：直接帶入已設定的禮物，不讓重選
+    // 活動福利：直接帶入已設定的禮物，不讓重選
     itemWrap.style.display='block';
     document.getElementById('rw-item-list').innerHTML='';
     document.getElementById('rw-item').value=rw.rewardItem||'';
@@ -1365,7 +1364,7 @@ function build提醒(){
     const ex=天Until(m.exp);
     if(m.exp&&ex>=0&&ex<=30){ const urg=ex<=7; list.push({type:urg?'urgent':'soon',icon:urg?'⚠':'◇',title:`${m.name} 會員即將到期`,sub:`${m.plan||''} · ${m.exp}`,天:ex,ic:urg?'re':'rh',urgent:urg,id:m.id}); }
   });
-  // 同一會員多筆獎勵合併
+  // 同一會員多筆福利合併
   const pendingByMember = {};
   allRewards.filter(r=>!r.redeemed).forEach(r=>{
     if(!pendingByMember[r.memberId]) pendingByMember[r.memberId]=[];
@@ -1373,7 +1372,7 @@ function build提醒(){
   });
   Object.entries(pendingByMember).forEach(([memberId, rewards])=>{
     const m=members.find(x=>x.id===memberId)||{};
-    // 分成訂閱獎勵和活動獎勵兩組
+    // 分成訂閱福利和活動福利兩組
     const groups = {
       reward:   rewards.filter(r=>r.type!=='里民禮物'),
       activity: rewards.filter(r=>r.type==='里民禮物'),
@@ -1388,15 +1387,15 @@ function build提醒(){
         ? `${gRewards[0].milestone} · ${gRewards[0].rewardItem||gRewards[0].type}${gRewards[0].triggerDate?' · 觸發 '+gRewards[0].triggerDate:''}`
         : `${gRewards.length} 筆待兌換 · 最早觸發 ${earliest?.triggerDate||'—'}`;
       const rIcon = gType==='activity' ? '🎪' : '🎁';
-      list.push({type:gType,icon:rIcon,title:`${m.name||'—'} ${gType==='activity'?'活動':'訂閱'}獎勵待兌換${countLabel}`,sub,天:trigD,ic:'rg',urgent:overdue,id:memberId,isReward:true,overdue});
+      list.push({type:gType,icon:rIcon,title:`${m.name||'—'} ${gType==='activity'?'活動':'訂閱'}福利待兌換${countLabel}`,sub,天:trigD,ic:'rg',urgent:overdue,id:memberId,isReward:true,overdue});
     });
   });
   holi天.forEach(h=>{ const d=天Until(h.date); if(d>=0&&d<=90) list.push({type:'holiday',icon:'◈',title:h.name,sub:`${h.date} · ${h.type}${h.note?' · '+h.note:''}`,天:d,ic:'rh',urgent:false}); });
   return list.sort((a,b)=>{
-    // 非獎勵排前面
+    // 非福利排前面
     if(!a.isReward && b.isReward) return -1;
     if(a.isReward && !b.isReward) return 1;
-    // 都是獎勵：逾期的排後面
+    // 都是福利：逾期的排後面
     if(a.isReward && b.isReward){
       if(a.overdue && !b.overdue) return 1;
       if(!a.overdue && b.overdue) return -1;
@@ -1478,7 +1477,7 @@ function showDay(d,ds){
   holi天.filter(h=>h.date===ds).forEach(h=>{html+=`<div class="epi"><div class="epidot" style="background:#D4A800"></div><div><div class="epiname">${h.name}</div><div class="epitype">${h.note||h.type}</div></div></div>`;});
   members.filter(m=>m.bday&&m.bday.length>=10&&m.bday.slice(0,4)!=='0001'&&m.bday.slice(5)===ds.slice(5)).forEach(m=>{html+=`<div class="epi"><div class="epidot" style="background:#9080C0"></div><div><div class="epiname">${m.name} 🎂</div><div class="epitype">${m.level}</div></div></div>`;});
   members.filter(m=>m.exp===ds).forEach(m=>{html+=`<div class="epi"><div class="epidot" style="background:#E24B4A"></div><div><div class="epiname">${m.name} 到期</div><div class="epitype">${m.plan||''}</div></div></div>`;});
-  allRewards.filter(r=>r.triggerDate===ds&&!r.redeemed).forEach(r=>{ const m=members.find(x=>x.id===r.memberId)||{}; html+=`<div class="epi" style="cursor:${m.id?'pointer':'default'}" onclick="${m.id?`openDrw(members.find(x=>x.id==='${m.id}'))`:''}" ><div class="epidot" style="background:var(--green)"></div><div><div class="epiname">${m.name||'—'} 獎勵觸發</div><div class="epitype">${r.milestone} · ${r.rewardItem||r.type}</div></div></div>`; });
+  allRewards.filter(r=>r.triggerDate===ds&&!r.redeemed).forEach(r=>{ const m=members.find(x=>x.id===r.memberId)||{}; html+=`<div class="epi" style="cursor:${m.id?'pointer':'default'}" onclick="${m.id?`openDrw(members.find(x=>x.id==='${m.id}'))`:''}" ><div class="epidot" style="background:var(--green)"></div><div><div class="epiname">${m.name||'—'} 福利觸發</div><div class="epitype">${r.milestone} · ${r.rewardItem||r.type}</div></div></div>`; });
   if(!html) html='<div class="empty" style="padding:.4rem 0">這天無事項</div>';
   document.getElementById('ep-list').innerHTML=html;
 }
@@ -1620,21 +1619,21 @@ function toggleSec(id){
   try { localStorage.setItem('drw_sec_'+id, isOpen ? '0' : '1'); } catch(e){}
 }
 
-// ── 刪除獎勵 ─────────────────────────────────────────────
+// ── 刪除福利 ─────────────────────────────────────────────
 async function deleteReward(id){
   const rw = drw會員Rewards.find(r=>r.id===id);
-  if(!confirm(`確定刪除「${rw?.milestone||'這筆'}」獎勵記錄？`)) return;
+  if(!confirm(`確定刪除「${rw?.milestone||'這筆'}」福利記錄？`)) return;
   try{
     await apiFetch(`/api/rewards?id=${id}`,{method:'DELETE'});
     drw會員Rewards = drw會員Rewards.filter(r=>r.id!==id);
     allRewards = allRewards.filter(r=>r.id!==id);
     renderRewards(drw會員Rewards, drw會員Id);
     renderDash(); render提醒(curFilter);
-    showToast('已刪除獎勵');
+    showToast('已刪除福利');
   }catch(e){ showToast('⚠ 刪除失敗'); }
 }
 
-// ── 手動新增獎勵 ──────────────────────────────────────────
+// ── 手動新增福利 ──────────────────────────────────────────
 function openAddRewardModal() {
   const m = members.find(x => x.id === drw會員Id);
   if (!m) return;
@@ -1666,8 +1665,8 @@ function arTypeChange() {
   document.getElementById('ar-illus-wrap').style.display = 'none';
   // 自動帶入里程碑
   const milestoneMap = {
-    '3個月獎勵': '3個月', '6個月獎勵': '6個月',
-    '9個月獎勵': '9個月', '12個月獎勵': '12個月',
+    '3個月獎勵': '3個月', '6個月福利': '6個月',
+    '9個月福利': '9個月', '12個月獎勵': '12個月',
   };
   if (milestoneMap[type]) {
     document.getElementById('ar-milestone').value = milestoneMap[type];
@@ -1694,8 +1693,8 @@ async function confirmAddReward() {
   const illustration = (!is12 && lvInfo.hasIllus) ? document.getElementById('ar-illus').value.trim() : '';
   if (!type) { showToast('請填寫獎勵類型'); return; }
   if (!milestone) { showToast('請填寫里程碑'); return; }
-  // 若 type 是訂閱獎勵但 milestone 格式不是「N個月」，提示但不阻擋
-  if((type==='3個月獎勵'||type==='6個月獎勵'||type==='9個月獎勵')&&!milestone.endsWith('個月')){
+  // 若 type 是訂閱福利但 milestone 格式不是「N個月」，提示但不阻擋
+  if((type==='3個月獎勵'||type==='6個月福利'||type==='9個月福利')&&!milestone.endsWith('個月')){
     if(!confirm(`里程碑「${milestone}」格式與自動同步不同（建議用「N個月」格式），仍要繼續嗎？`)) return;
   }
   if (!triggerDate) { showToast('請選擇觸發日期'); return; }
@@ -1712,7 +1711,7 @@ async function confirmAddReward() {
     renderRewards(drw會員Rewards, drw會員Id);
     renderDash(); renderCal();
     closeM('add-reward');
-    showToast('✦ 已新增獎勵');
+    showToast('✦ 已新增福利');
   } catch(e) { showToast('⚠ 新增失敗'); }
   finally { if(submitBtn) submitBtn.disabled = false; }
 }
@@ -1847,7 +1846,7 @@ async function confirmImportCSV() {
 }
 
 
-// ── 活動獎勵 ─────────────────────────────────────────────
+// ── 活動福利 ─────────────────────────────────────────────
 let lastEventReward = null;
 function openEventRewardModal() {
   document.getElementById('ev-name').value = '';
@@ -1896,7 +1895,7 @@ function updateEvPreview() {
       const nameStr = names.length <= 5 ? names.join('、') : names.slice(0,5).join('、') + ` 等 ${names.length} 人`;
       return { label: `${lv.split(' ')[0]} ${eligible.length} 人 → ${gift}`, nameStr };
     });
-  el.innerHTML = `將新增 <b style="color:var(--pd)">${total}</b> 筆獎勵：`
+  el.innerHTML = `將新增 <b style="color:var(--pd)">${total}</b> 筆福利：`
     + lines.map(l => `<div style="margin-top:4px">・${l.label}</div>${l.nameStr?`<div style="margin-top:2px;color:var(--tm);font-size:.68rem">　${l.nameStr}</div>`:''}`).join('');
 }
 
@@ -1925,9 +1924,9 @@ async function confirmEventReward() {
   // 檢查已有相同 milestone 的會員
   const alreadyHas = targets.filter(m => allRewards.some(r => r.memberId === m.id && r.milestone === name));
   const realTargets = targets.filter(m => !allRewards.some(r => r.memberId === m.id && r.milestone === name));
-  let confirmMsg = `確定為 ${realTargets.length} 位有效會員新增「${name}」活動獎勵？`;
-  if (alreadyHas.length) confirmMsg += `\n（${alreadyHas.length} 位已有此活動獎勵，將略過）`;
-  if (!realTargets.length) { showToast(`所有會員已有「${name}」獎勵`); return; }
+  let confirmMsg = `確定為 ${realTargets.length} 位有效會員新增「${name}」活動福利？`;
+  if (alreadyHas.length) confirmMsg += `\n（${alreadyHas.length} 位已有此活動福利，將略過）`;
+  if (!realTargets.length) { showToast(`所有會員已有「${name}」福利`); return; }
   if (!confirm(confirmMsg)) return;
 
   const btn = document.getElementById('ev-submit-btn');
@@ -1962,7 +1961,7 @@ async function confirmEventReward() {
     renderDash(); render提醒(curFilter); renderCal();
     if(drw會員Id) loadRewards(drw會員Id);
     const evFailMsg = fail ? `，${fail} 筆失敗${failNames.length?'（'+failNames.slice(0,3).join('、')+(failNames.length>3?'…':'')+')':''}` : '';
-    showToast(`✦ 已為 ${success} 位會員新增「${name}」獎勵${evFailMsg}`, fail ? 4000 : 2500);
+    showToast(`✦ 已為 ${success} 位會員新增「${name}」福利${evFailMsg}`, fail ? 4000 : 2500);
   } finally {
     btn.disabled = false; btn.textContent = '確認新增';
   }
