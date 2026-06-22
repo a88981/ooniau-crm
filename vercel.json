@@ -1,10 +1,10 @@
 {
   "rewrites": [
-    { "source": "/member", "destination": "/member.html" }
+    { "source": "/member", "destination": "/public/member.html" }
   ],
   "headers": [
     {
-      "source": "/(.*).html",
+      "source": "/public/(.*).html",
       "headers": [
         { "key": "Content-Type", "value": "text/html; charset=utf-8" }
       ]
