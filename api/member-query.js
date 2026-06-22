@@ -74,6 +74,7 @@ module.exports = async function handler(req, res) {
       join:       pr['加入日期']?.date?.start || '',
       exp:        pr['會員到期日']?.date?.start || '',
       orderNos:   pr['訂單編號']?.rich_text?.[0]?.plain_text || '',
+      address:    pr['地址']?.rich_text?.[0]?.plain_text || '',
       bday:       pr['生日']?.date?.start || '',
     };
 
