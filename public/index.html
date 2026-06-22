@@ -544,6 +544,10 @@ tr:hover td{background:#FEFBF2}
     <input type="hidden" id="rw-id">
     <input type="hidden" id="rw-redeemedAt">
     <input type="hidden" id="rw-allids">
+    <div class="fr" id="rw-count-wrap" style="display:none">
+      <label class="fl">兌換數量</label>
+      <select class="fi" id="rw-count"></select>
+    </div>
     <div class="fr" id="rw-item-wrap">
       <label class="fl">兌換項目</label>
       <input class="fi" id="rw-item" list="rw-item-list" placeholder="可選或手填">
@@ -1377,6 +1381,19 @@ function openRedeemModal(rewardId, level, allIdsStr=''){
   document.getElementById('rw-id').value=rewardId;
   document.getElementById('rw-redeemedAt').value='';
   document.getElementById('rw-allids').value=allIdsStr||rewardId; // | 分隔
+  // 數量選擇
+  const ids = (allIdsStr||rewardId).split('|').filter(Boolean);
+  const countWrap = document.getElementById('rw-count-wrap');
+  const countSel = document.getElementById('rw-count');
+  if(countWrap && countSel){
+    if(ids.length > 1){
+      countSel.innerHTML = Array.from({length:ids.length},(_,i)=>`<option value="${i+1}">${i+1} 項</option>`).join('');
+      countSel.value = ids.length;
+      countWrap.style.display = 'block';
+    } else {
+      countWrap.style.display = 'none';
+    }
+  }
   document.getElementById('rw-illus').value='';
   document.getElementById('rw-note').value='';
   // 確保 footer 是正常兌換的按鈕
@@ -1400,7 +1417,11 @@ async function confirmRedeem(){
   btns.forEach(b=>b.disabled=true);
   try{
     const allIdsStr = document.getElementById('rw-allids')?.value || id;
-    const ids = allIdsStr.split('|').filter(Boolean);
+    const allIdsList = allIdsStr.split('|').filter(Boolean);
+    const countSel = document.getElementById('rw-count');
+    const countWrap = document.getElementById('rw-count-wrap');
+    const count = (countSel && countWrap && countWrap.style.display!=='none') ? parseInt(countSel.value)||allIdsList.length : allIdsList.length;
+    const ids = allIdsList.slice(0, count);
     // 批次兌換所有同類型
     const updates = await Promise.all(ids.map(rid =>
       apiFetch(`/api/rewards?id=${rid}`,{method:'PATCH',body:{ redeemed:true, redeemedAt:today, rewardItem:item, illustration:illus, note }})
