@@ -76,7 +76,7 @@ html,body{min-height:100%;font-family:'Noto Sans TC',sans-serif;font-size:16px;c
 .stamp{display:flex;flex-direction:column;align-items:center;gap:3px}
 .s-circle{width:100%;aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.5px solid;gap:0}
 .s-circle.future{background:#F5F4F2;border-color:#D3D1C7}
-.s-circle.earned{background:#FFF9E6;border-color:var(--gold)}
+.s-circle.earned{background:#FFF9E6;border-color:var(--gold);border-style:dashed}
 .s-circle.redeemed{background:var(--lv5bg);border-color:var(--purple)}
 .s-num{font-weight:700;font-size:15px;line-height:1}
 .s-ico{font-size:11px;line-height:1}
@@ -284,6 +284,23 @@ function renderResult({member, rewards}){
   }
 
   let cardsHtml = '';
+  // 里民禮品卡
+  const activityRewards = rewards.filter(r=>r.type==='里民禮物');
+  let activityHtml = '<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">里民禮品</div><div class="sc-sub">生日禮品 · 節日禮品 · 活動禮品</div></div></div><div class="stamps" style="grid-template-columns:repeat(6,1fr)">';
+  const actSlots = Math.max(activityRewards.length, 6);
+  for(let i=0;i<actSlots;i++){
+    const r = activityRewards[i];
+    if(r){
+      const state = r.redeemed ? 'redeemed' : 'earned';
+      const label = r.redeemed ? '已兌換' : r.milestone||'待兌換';
+      activityHtml += `<div class="stamp"><div class="s-circle ${state}"><span class="s-num ${state}" style="font-size:11px;text-align:center;padding:0 2px">${r.milestone||'🎪'}</span></div><div class="s-lbl ${state}">${label}</div></div>`;
+    } else {
+      activityHtml += '<div class="stamp"><div class="s-circle future"><span class="s-num future" style="font-size:16px">○</span></div><div class="s-lbl future">—</div></div>';
+    }
+  }
+  activityHtml += '</div></div>';
+  cardsHtml += activityHtml;
+
   const sub3Done = subRewards.filter(r=>r.type==='3個月獎勵'&&r.redeemed).length;
   const sub3Total = subRewards.filter(r=>r.type==='3個月獎勵').length;
   cardsHtml += `<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">訂閱福利</div><div class="sc-sub">${member.level} · ${lvInfo2.every3} · 已訂閱 ${subMos2} 個月</div></div><div class="sc-count">${sub3Done} / ${sub3Total} 已兌換</div></div><div class="stamps">${buildStamps(12,[3,6,9,12],subRewards,subMos2)}</div>${lvInfo2.note ? '<div class="sc-note" style="margin-bottom:6px">💡 ' + lvInfo2.note + '</div>' : ''}<hr class="sc-divider"><div class="sc-note">🎁 每滿 3 個月不間斷，獲得【${lvInfo2.every3}】</div><div class="sc-note" style="margin-top:6px">🏆 連續訂閱一年不間斷，獲得【${lvInfo2.year}】</div><div class="sc-legend"><div class="leg"><div class="leg-c future"></div>尚未累積</div><div class="leg"><div class="leg-c earned"></div>累積中</div><div class="leg"><div class="leg-c redeemed"></div>已兌換</div></div></div>`;
