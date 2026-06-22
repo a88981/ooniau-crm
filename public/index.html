@@ -1544,6 +1544,7 @@ function renderApps(list) {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.72rem;color:var(--tm);margin-bottom:.8rem">
         <div>綠界訂閱日期：${a.joinDate||'—'}</div>
         <div>電話：${a.phone||'—'}</div>
+        <div>訂單編號：${a.orderNos||'—'}</div>
         ${a.email ? '<div>Email：'+a.email+'</div>' : '<div>Email：—</div>'}
         ${a.bday ? '<div>生日：'+a.bday+'</div>' : '<div>生日：—</div>'}
         <div>地址：${a.address||'—'}</div>
