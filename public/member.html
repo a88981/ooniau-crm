@@ -284,15 +284,14 @@ function renderResult({member, rewards}){
   }
 
   let cardsHtml = '';
+  const sub3Done = subRewards.filter(r=>r.type==='3個月獎勵'&&r.redeemed).length;
+  const sub3Total = subRewards.filter(r=>r.type==='3個月獎勵').length;
+  cardsHtml += `<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">訂閱福利</div><div class="sc-sub">${member.level} · ${lvInfo2.every3} · 已訂閱 ${subMos2} 個月</div></div><div class="sc-count">${sub3Done} / ${sub3Total} 已兌換</div></div><div class="stamps">${buildStamps(12,[3,6,9,12],subRewards,subMos2)}</div>${lvInfo2.note ? '<div class="sc-note" style="margin-bottom:6px">💡 ' + lvInfo2.note + '</div>' : ''}<hr class="sc-divider"><div class="sc-note">🎁 每滿 3 個月不間斷，獲得【${lvInfo2.every3}】</div><div class="sc-note" style="margin-top:6px">🏆 連續訂閱一年不間斷，獲得【${lvInfo2.year}】</div><div class="sc-legend"><div class="leg"><div class="leg-c future"></div>尚未累積</div><div class="leg"><div class="leg-c earned"></div>累積中</div><div class="leg"><div class="leg-c redeemed"></div>已兌換</div></div></div>`;
   if(member.level==='LV.4 肌肉暖暖包'||member.level==='LV.5 真蒸暖暖包'){
     const mTitle = member.level==='LV.5 真蒸暖暖包'?'一小時占卜':'半小時占卜';
     const mDone = monthlyRewards.filter(r=>r.redeemed).length;
     cardsHtml += `<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">每月占卜</div><div class="sc-sub">${member.level} · ${mTitle} · 已訂閱 ${subMos2} 個月</div></div><div class="sc-count">${mDone} / ${subMos2} 已兌換</div></div><div class="stamps">${buildStamps(12,[],monthlyRewards,subMos2)}</div><div class="sc-legend"><div class="leg"><div class="leg-c future"></div>尚未累積</div><div class="leg"><div class="leg-c earned"></div>待兌換</div><div class="leg"><div class="leg-c redeemed"></div>已兌換</div></div></div>`;
   }
-  const sub3Done = subRewards.filter(r=>r.type==='3個月獎勵'&&r.redeemed).length;
-  const sub3Total = subRewards.filter(r=>r.type==='3個月獎勵').length;
-  cardsHtml += `<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">訂閱福利</div><div class="sc-sub">${member.level} · ${lvInfo2.every3} · 已訂閱 ${subMos2} 個月</div></div><div class="sc-count">${sub3Done} / ${sub3Total} 已兌換</div></div><div class="stamps">${buildStamps(12,[3,6,9,12],subRewards,subMos2)}</div>${lvInfo2.note ? '<div class="sc-note" style="margin-bottom:6px">💡 ' + lvInfo2.note + '</div>' : ''}<hr class="sc-divider"><div class="sc-note">🏆 連續訂閱一年不間斷，獲得【${lvInfo2.year}】</div><div class="sc-legend"><div class="leg"><div class="leg-c future"></div>尚未累積</div><div class="leg"><div class="leg-c earned"></div>累積中</div><div class="leg"><div class="leg-c redeemed"></div>已兌換</div></div></div>`;
-
   document.getElementById('reward-list').innerHTML = cardsHtml || '<div class="empty">目前尚無福利記錄</div>';
 
   document.getElementById('result').style.display = 'block';
