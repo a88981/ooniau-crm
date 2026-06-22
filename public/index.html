@@ -1206,8 +1206,8 @@ function renderRewards(list, memberId){
           }
         </div>
         <div class="reward-info">
-          <div class="reward-type">${r.type==='里民禮物'?'🎪 '+r.milestone:r.type==='12個月獎勵'?'🏆 專屬週邊福利':'🎁 '+(r.rewardItem||lvInfo.reward3||'訂閱福利')}</div>
-          <div class="reward-sub">觸發日期 ${r.triggerDate||'—'} ${r.redeemed?'· 已兌換 '+r.redeemedAt:''}</div>
+          <div class="reward-type">${r.type==='里民禮物'?'🎪 '+r.milestone:r.type==='12個月獎勵'?'🏆 專屬週邊福利':'🎁 '+(r.redeemed?r.rewardItem:lvInfo.reward3||r.rewardItem||'訂閱福利')}</div>
+          <div class="reward-sub">${r.triggerDate?'📅 '+r.triggerDate:''} ${r.redeemed?'· ✓ '+r.redeemedAt:''}</div>
           ${r.illustration?`<div class="reward-illus">指定插圖：${r.illustration}</div>`:''}
         </div>
         <div class="reward-actions">
