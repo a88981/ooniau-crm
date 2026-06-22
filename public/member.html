@@ -86,7 +86,7 @@ html,body{min-height:100%;font-family:'Noto Sans TC',sans-serif;font-size:16px;c
 <div class="page">
   <div class="brand">
     <div class="brand-en">Ooniau Member</div>
-    <div class="brand-name">暖暖</div>
+    <div class="brand-name">暖暖綠界暖暖包</div>
     <div class="brand-sub">會員福利查詢</div>
   </div>
 
@@ -115,6 +115,7 @@ html,body{min-height:100%;font-family:'Noto Sans TC',sans-serif;font-size:16px;c
       </div>
       <div class="info-row"><span class="info-key">生日</span><span class="info-val" id="m-bday">—</span></div>
       <div class="info-row"><span class="info-key">加入日期</span><span class="info-val" id="m-join">—</span></div>
+      <div class="info-row"><span class="info-key">訂閱月數</span><span class="info-val" id="m-submonth">—</span></div>
       <div class="info-row"><span class="info-key">到期日</span><span class="info-val" id="m-exp">—</span></div>
       <div class="info-row"><span class="info-key">狀態</span><span class="info-val" id="m-status">—</span></div>
     </div>
@@ -190,6 +191,14 @@ function renderResult({member, rewards}){
     `<span class="badge ${member.plan==='年繳'?'b-yr':'b-once'}">${member.plan||'—'}</span>` +
     `<span class="badge ${st.cls}">${st.label}</span>`;
   document.getElementById('m-bday').textContent = member.bday || '—';
+  // 計算已訂閱第幾個月（第N次繳款）
+  if(member.join){
+    const j = new Date(member.join); j.setHours(0,0,0,0);
+    const today = new Date(); today.setHours(0,0,0,0);
+    let mos = (today.getFullYear()-j.getFullYear())*12 + (today.getMonth()-j.getMonth());
+    if(today.getDate() >= j.getDate()) mos++;
+    document.getElementById('m-submonth').textContent = `第 ${mos} 個月`;
+  }
   document.getElementById('m-join').textContent = member.join || '—';
   document.getElementById('m-exp').textContent = member.exp || '—';
   document.getElementById('m-status').innerHTML = `<span class="badge ${st.cls}">${st.label}</span>`;
@@ -217,7 +226,7 @@ function renderResult({member, rewards}){
         </div>
         <div class="reward-info">
           <div class="reward-type">${typeLabel}</div>
-          <div class="reward-sub">${r.triggerDate?'📅 '+r.triggerDate:'觸發日期未設定'} ${r.redeemed?'· ✓ 已兌換 '+r.redeemedAt:''}</div>
+          <div class="reward-sub">${r.triggerDate?'📅 '+r.triggerDate:''} ${r.redeemed?'· ✓ '+r.redeemedAt:''}</div>
           ${r.note?`<div class="reward-sub" style="margin-top:2px;color:var(--th)">${r.note}</div>`:''}
         </div>
         <div class="reward-status">
