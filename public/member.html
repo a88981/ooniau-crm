@@ -67,15 +67,34 @@ html,body{min-height:100%;font-family:'Noto Sans TC',sans-serif;font-size:16px;c
 
 .section-title{font-size:.56rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
 .section-title::after{content:'';flex:1;height:.5px;background:var(--gold-dim)}
-.reward-item{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;padding:.9rem 1rem;margin-bottom:6px;display:flex;align-items:flex-start;gap:10px}
-.reward-item.redeemed{opacity:.55;background:#FAFAFA}
-.reward-badge{width:48px;flex-shrink:0;text-align:center}
-.reward-mo{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--purple);line-height:1}
-.reward-mo-lbl{font-size:.5rem;color:var(--th);letter-spacing:.06em;margin-top:2px}
-.reward-info{flex:1}
-.reward-type{font-size:.76rem;font-weight:500;color:var(--pd);margin-bottom:2px}
-.reward-sub{font-size:.63rem;color:var(--tm)}
-.reward-status{flex-shrink:0}
+.stamp-card{background:#fff;border:.5px solid var(--gold-b);border-radius:12px;padding:1.2rem;margin-bottom:12px}
+.sc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem}
+.sc-title{font-family:'Noto Serif TC',serif;font-size:.85rem;font-weight:400;color:var(--pd);letter-spacing:.04em}
+.sc-sub{font-size:.6rem;color:var(--tm);margin-top:2px}
+.sc-count{font-size:.62rem;color:var(--th);white-space:nowrap}
+.stamps{display:grid;grid-template-columns:repeat(12,1fr);gap:4px}
+.stamp{display:flex;flex-direction:column;align-items:center;gap:3px}
+.s-circle{width:100%;aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.5px solid;gap:0}
+.s-circle.future{background:#F5F4F2;border-color:#D3D1C7}
+.s-circle.earned{background:#FFF9E6;border-color:var(--gold)}
+.s-circle.redeemed{background:var(--lv5bg);border-color:var(--purple)}
+.s-num{font-weight:700;font-size:11px;line-height:1}
+.s-ico{font-size:8px;line-height:1}
+.s-num.future{color:#C8C6BE}
+.s-num.earned{color:var(--lv4)}
+.s-num.redeemed{color:var(--purple)}
+.s-lbl{font-size:7px;text-align:center;line-height:1.2}
+.s-lbl.future{color:#B4B2A9}
+.s-lbl.earned{color:var(--lv4)}
+.s-lbl.redeemed{color:var(--purple)}
+.sc-note{font-size:.62rem;color:var(--tm);margin-top:.6rem;padding:.4rem .6rem;background:var(--gold-dim);border-radius:6px;line-height:1.5}
+.sc-divider{border:none;border-top:.5px solid var(--gold-dim);margin:.6rem 0}
+.sc-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:.5rem}
+.leg{display:flex;align-items:center;gap:4px;font-size:.6rem;color:var(--th)}
+.leg-c{width:10px;height:10px;border-radius:50%;border:1.5px solid}
+.leg-c.future{background:#F5F4F2;border-color:#D3D1C7}
+.leg-c.earned{background:#FFF9E6;border-color:var(--gold)}
+.leg-c.redeemed{background:var(--lv5bg);border-color:var(--purple)}
 .empty{text-align:center;padding:2rem;font-size:.72rem;color:var(--th);letter-spacing:.1em}
 .spinner{display:inline-block;width:16px;height:16px;border:1.5px solid var(--gold-dim);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -227,42 +246,58 @@ function renderResult({member, rewards}){
     return {...g.items[0], count:g.items.length, milestone:g.items[0].milestone};
   });
 
-  if(!mergedRewards.length){
-    document.getElementById('reward-list').innerHTML = '<div class="empty">目前尚無福利記錄</div>';
-  } else {
-    document.getElementById('reward-list').innerHTML = mergedRewards.map(r => {
-      const isActivity = r.type === '里民禮物';
-      const is12 = r.type === '12個月獎勵';
-      const icon = isActivity ? '🎪' : is12 ? '🏆' : '🎁';
-      const lvMap = {'LV.3 里民暖暖包':'相印小卡/半小時占卜','LV.4 肌肉暖暖包':'實體拍立得','LV.5 真蒸暖暖包':'親簽拍立得'};
-      const monthlyMap = {'LV.4 肌肉暖暖包':'半小時占卜','LV.5 真蒸暖暖包':'一小時占卜'};
-      const defaultItem = lvMap[member.level] || r.rewardItem || '訂閱福利';
-      const monthlyItem = monthlyMap[member.level] || r.rewardItem || '占卜';
-      const countLabel = r.count > 1 ? ` × ${r.count} 項` : '';
-      const typeLabel = (isActivity ? `🎪 ${r.milestone}` : is12 ? '🏆 專屬週邊福利' : r.type==='每月占卜' ? `🔮 ${r.redeemed ? r.rewardItem : monthlyItem}` : `🎁 ${r.redeemed ? r.rewardItem : defaultItem}`) + countLabel;
-      const moLabel = isActivity ? '活動' : is12 ? '週邊' : '訂閱';
-      const moNum = isActivity ? icon : r.milestone.replace('個月(週邊)','').replace('個月','');
-      return `<div class="reward-item${r.redeemed?' redeemed':''}">
-        <div class="reward-badge">
-          <div class="reward-mo">${moNum}</div>
-          <div class="reward-mo-lbl">${moLabel}</div>
-        </div>
-        <div class="reward-info">
-          <div class="reward-type">${typeLabel}</div>
-          <div class="reward-sub">${r.triggerDate?'📅 '+r.triggerDate:''} ${r.redeemed?'· ✓ '+r.redeemedAt:''}</div>
-          ${r.note?`<div class="reward-sub" style="margin-top:2px;color:var(--th)">${r.note}</div>`:''}
-        </div>
-        <div class="reward-status">
-          ${r.redeemed
-            ? `<span class="badge" style="background:#F2F2F2;color:#888">已兌換</span>`
-            : `<span class="badge" style="background:#FFF8D6;color:#A07800">待兌換</span>`}
-        </div>
-      </div>`;
-    }).join('');
+  // 等級對應福利說明
+  const lvRewards = {
+    'LV.3 里民暖暖包': { every3: '相印小卡／占卜30分鐘', year: '3階：15公分立牌', note: '選擇兌換占卜者可累積時數，一次兌換使用。例如累積 2 次 30 分鐘，可合併預約 1 小時占卜。' },
+    'LV.4 肌肉暖暖包': { every3: '實體拍立得', year: '4階：親簽簽名板' },
+    'LV.5 真蒸暖暖包': { every3: '親簽拍立得', year: '5階：15公分立牌 ＆ 親簽簽名板 ＆ 直式掛軸' },
+  };
+  const lvInfo2 = lvRewards[member.level] || { every3: '訂閱福利', year: '週邊' };
+
+  const subMos2 = member.join ? (()=>{
+    const j=new Date(member.join); j.setHours(0,0,0,0);
+    const t=new Date(); t.setHours(0,0,0,0);
+    let m=(t.getFullYear()-j.getFullYear())*12+(t.getMonth()-j.getMonth());
+    if(t.getDate()>=j.getDate()) m++;
+    return Math.min(m,12);
+  })() : 0;
+
+  const monthlyRewards = rewards.filter(r=>r.type==='每月占卜');
+  const subRewards = rewards.filter(r=>r.type==='3個月獎勵'||r.type==='12個月獎勵');
+
+  function buildStamps(totalSlots, giftSlots, rewardList, subMosCount){
+    let html='';
+    for(let i=1;i<=totalSlots;i++){
+      const is12 = i===12;
+      const hasGift = giftSlots.includes(i);
+      const rw = rewardList.find(r=>{
+        const mo = parseInt(r.milestone);
+        return mo===i || (is12 && r.type==='12個月獎勵');
+      });
+      let state;
+      if(rw && rw.redeemed) state='redeemed';
+      else if(i<=subMosCount) state='earned';
+      else state='future';
+      const label = state==='redeemed'?'已兌換':state==='earned'&&hasGift?'待兌換':'—';
+      const borderStyle = is12?'border-style:dashed;border-color:var(--purple)':'';
+      const ico = is12?'🏆':hasGift?'🎁':'';
+      html += `<div class="stamp"><div class="s-circle ${state}" style="${borderStyle}"><span class="s-num ${state}">${i}</span>${ico?`<span class="s-ico">${ico}</span>`:''}</div><div class="s-lbl ${state}">${label}</div></div>`;
+    }
+    return html;
   }
 
-  document.getElementById('result').style.display = 'block';
-  document.getElementById('result').scrollIntoView({behavior:'smooth', block:'start'});
+  let cardsHtml = '';
+  if(member.level==='LV.4 肌肉暖暖包'||member.level==='LV.5 真蒸暖暖包'){
+    const mTitle = member.level==='LV.5 真蒸暖暖包'?'一小時占卜':'半小時占卜';
+    const mDone = monthlyRewards.filter(r=>r.redeemed).length;
+    cardsHtml += `<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">每月占卜</div><div class="sc-sub">${member.level} · ${mTitle} · 已訂閱 ${subMos2} 個月</div></div><div class="sc-count">${mDone} / ${subMos2} 已兌換</div></div><div class="stamps">${buildStamps(12,[],monthlyRewards,subMos2)}</div><div class="sc-legend"><div class="leg"><div class="leg-c future"></div>尚未累積</div><div class="leg"><div class="leg-c earned"></div>待兌換</div><div class="leg"><div class="leg-c redeemed"></div>已兌換</div></div></div>`;
+  }
+  const sub3Done = subRewards.filter(r=>r.type==='3個月獎勵'&&r.redeemed).length;
+  const sub3Total = subRewards.filter(r=>r.type==='3個月獎勵').length;
+  cardsHtml += `<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">訂閱福利</div><div class="sc-sub">${member.level} · ${lvInfo2.every3} · 已訂閱 ${subMos2} 個月</div></div><div class="sc-count">${sub3Done} / ${sub3Total} 已兌換</div></div><div class="stamps">${buildStamps(12,[3,6,9,12],subRewards,subMos2)}</div>${lvInfo2.note?`<div class="sc-note" style="margin-bottom:6px">💡 ${lvInfo2.note}</div>`:''}<hr class="sc-divider"><div class="sc-note">🏆 連續訂閱一年不間斷，獲得【${lvInfo2.year}】</div><div class="sc-legend"><div class="leg"><div class="leg-c future"></div>尚未累積</div><div class="leg"><div class="leg-c earned"></div>累積中</div><div class="leg"><div class="leg-c redeemed"></div>已兌換</div></div></div>`;
+
+  document.getElementById('reward-list').innerHTML = cardsHtml || '<div class="empty">目前尚無福利記錄</div>';
+
 }
 
 function showErr(msg){ const e=document.getElementById('err-msg'); e.textContent=msg; e.style.display='block'; }
