@@ -280,13 +280,13 @@ tr:hover td{background:#FEFBF2}
       </div>
       <div class="stats">
         <div class="stat" style="cursor:pointer" onclick="go('members',document.getElementById('nav-members'));setTimeout(()=>setMFilter('all',document.querySelector('#view-members .filter-row .btn')),50)"><div class="stn" id="s-total">—</div><div class="stl">有效 / 全部</div></div>
-        <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('birthday',document.getElementById('remind-btn-birthday')),50)"><div class="stn" style="color:#D4A800" id="s-bday">—</div><div class="stl">本週生日</div></div>
+        <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('birthday',document.getElementById('remind-btn-birthday')),50)"><div class="stn" style="color:#D4A800" id="s-bday">—</div><div class="stl">本月生日</div></div>
         <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('urgent',document.getElementById('remind-btn-urgent')),50)"><div class="stn" style="color:#A32D2D" id="s-exp7">—</div><div class="stl">7天內到期</div></div>
         <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('reward',document.getElementById('remind-btn-reward')),50)"><div class="stn" style="color:var(--purple)" id="s-reward">—</div><div class="stl">福利待兌換</div></div>
       </div>
       <div class="dash-grid-3">
-        <div class="panel"><div class="pl">即將生日</div><div id="dash-bday"><div class="loading"><div class="spinner"></div></div></div></div>
-        <div class="panel"><div class="pl">即將到期</div><div id="dash-exp"><div class="loading"><div class="spinner"></div></div></div></div>
+        <div class="panel"><div class="pl">本月壽星</div><div id="dash-bday"><div class="loading"><div class="spinner"></div></div></div></div>
+        <div class="panel"><div class="pl">即將生日</div><div id="dash-exp"><div class="loading"><div class="spinner"></div></div></div></div>
         <div class="panel"><div class="pl">待兌換福利</div><div id="dash-reward"><div class="loading"><div class="spinner"></div></div></div></div>
       </div>
     </div>
@@ -949,19 +949,20 @@ async function delete會員(){
 function renderDash(){
   const activeCount = members.filter(m=>m.exp && 天Until(m.exp)>=0).length;
   document.getElementById('s-total').textContent=`${activeCount} / ${members.length}`;
-  document.getElementById('s-bday').textContent=members.filter(m=>m.bday&&m.exp&&天Until(m.exp)>=0&&天UntilBday(m.bday)<=7).length;
+  document.getElementById('s-bday').textContent=members.filter(m=>m.bday&&m.exp&&天Until(m.exp)>=0&&parseInt(m.bday.slice(5,7))===TODAY.getMonth()+1).length;
   document.getElementById('s-exp7').textContent=members.filter(m=>{const d=天Until(m.exp);return d>=0&&d<=7;}).length;
   const pendingRewards=allRewards.filter(r=>!r.redeemed).length;
   document.getElementById('s-reward').textContent=pendingRewards;
 
   const icons=['🎂','✨','🌸','🎁'];
-  const bd=[...members].filter(m=>m.bday&&m.exp&&天Until(m.exp)>=0).sort((a,b)=>天UntilBday(a.bday)-天UntilBday(b.bday)).slice(0,4);
-  document.getElementById('dash-bday').innerHTML=bd.length?bd.map((m,i)=>{const d=天UntilBday(m.bday);return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${m.id}'))"><div class="ri-dot rb">${icons[i]||'🎂'}</div><div class="ri-info"><div class="ri-name">${m.memberName||m.name}</div><div class="ri-sub">${m.memberName?m.name+' · ':''} ${m.level} · ${m.bday.slice(5).replace('-','/')}</div></div><div class="ri-天"><span class="dn${d<=7?' red':''}">${d}</span><span class="dl">天</span></div></div>`;}).join(''):'<div class="empty">近期無生日</div>';
+  const thisMonth = TODAY.getMonth()+1;
+  const bd=[...members].filter(m=>m.bday&&m.exp&&天Until(m.exp)>=0&&parseInt(m.bday.slice(5,7))===thisMonth).sort((a,b)=>parseInt(a.bday.slice(8))-parseInt(b.bday.slice(8)));
+  document.getElementById('dash-bday').innerHTML=bd.length?bd.map((m,i)=>{const d=天UntilBday(m.bday);return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${m.id}'))"><div class="ri-dot rb">${icons[i]||'🎂'}</div><div class="ri-info"><div class="ri-name">${m.memberName||m.name}</div><div class="ri-sub">${m.memberName?m.name+' · ':''} ${m.level} · ${m.bday.slice(5).replace('-','/')}</div></div><div class="ri-天"><span class="dn${d<=7?' red':''}">${d}</span><span class="dl">天</span></div></div>`;}).join(''):'<div class="empty">本月無壽星</div>';
 
-  const allEx=[...members].filter(m=>m.exp&&天Until(m.exp)>=0).sort((a,b)=>天Until(a.exp)-天Until(b.exp));
-  const ex=allEx.slice(0,4);
-  const exMore = allEx.length > 4 ? `<div style="text-align:right;margin-top:4px"><span style="font-size:.65rem;color:var(--purple);cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('soon',document.getElementById('remind-btn-soon')),50)">查看全部 ${allEx.length} 筆 →</span></div>` : '';
-  document.getElementById('dash-exp').innerHTML=(ex.length?ex.map(m=>{const d=天Until(m.exp);return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${m.id}'))"><div class="ri-dot ${d<=7?'re':'rh'}">${d<=7?'⚠':'◇'}</div><div class="ri-info"><div class="ri-name">${m.memberName||m.name}</div><div class="ri-sub">${m.plan||''} · ${m.exp}</div></div><div class="ri-天"><span class="dn${d<=7?' red':''}">${d}</span><span class="dl">天</span></div></div>`;}).join(''):'<div class="empty">近期無到期</div>')+exMore;
+  const upcoming3Mo=[...members].filter(m=>m.bday&&m.exp&&天Until(m.exp)>=0&&天UntilBday(m.bday)>=0&&天UntilBday(m.bday)<=90).sort((a,b)=>天UntilBday(a.bday)-天UntilBday(b.bday));
+  const bdUpcoming=upcoming3Mo.slice(0,4);
+  const bdMore = upcoming3Mo.length > 4 ? `<div style="text-align:right;margin-top:4px"><span style="font-size:.65rem;color:var(--purple);cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('birthday',document.getElementById('remind-btn-birthday')),50)">查看全部 ${upcoming3Mo.length} 筆 →</span></div>` : '';
+  document.getElementById('dash-exp').innerHTML=(bdUpcoming.length?bdUpcoming.map(m=>{const d=天UntilBday(m.bday);return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${m.id}'))"><div class="ri-dot rb">🎂</div><div class="ri-info"><div class="ri-name">${m.memberName||m.name}</div><div class="ri-sub">${m.level} · ${m.bday.slice(5).replace('-','/')}</div></div><div class="ri-天"><span class="dn${d<=7?' red':''}">${d}</span><span class="dl">天</span></div></div>`;}).join(''):'<div class="empty">近3個月無生日</div>')+bdMore;
 
   const allPending=allRewards.filter(r=>!r.redeemed);
   const rw=allPending.slice(0,4);
@@ -1204,16 +1205,13 @@ function calcExpectedRewards(member){
         rewards.push({ milestone:`${mo}個月占卜`, type:'每月占卜', triggerDate:trigDate.toISOString().slice(0,10) });
     }
   }
-  // 每年生日禮（從加入年到今年各一筆）
-  const joinYear = joinDate.getFullYear();
+  // 每年生日禮（只產生今年那一筆）
   const thisYear = TODAY.getFullYear();
-  for(let y=joinYear; y<=thisYear; y++){
-    rewards.push({
-      milestone: `${y}生日禮`,
-      type: '里民禮物',
-      triggerDate: TODAY.toISOString().slice(0,10),
-    });
-  }
+  rewards.push({
+    milestone: `${thisYear}生日禮`,
+    type: '里民禮物',
+    triggerDate: TODAY.toISOString().slice(0,10),
+  });
 
   if(!rewards.length) return [];
   return rewards;
@@ -1377,7 +1375,7 @@ function openRedeemModal(rewardId, level, allIdsStr=''){
   document.getElementById('reward-modal-title').textContent=is12?'兌換週邊福利':isActivity?`兌換活動福利：${rw.milestone}`:isMonthly?'兌換每月占卜':'兌換訂閱福利';
   const itemWrap=document.getElementById('rw-item-wrap');
   const illusWrap=document.getElementById('rw-illus-wrap');
-  if(is12||isMonthly){
+  if(is12||isMonthly||isActivity){
     itemWrap.style.display='none'; illusWrap.style.display='none';
   } else if(isActivity){
     // 活動福利：直接帶入已設定的禮物，不讓重選
@@ -1469,10 +1467,11 @@ function build提醒(){
   });
   Object.entries(pendingByMember).forEach(([memberId, rewards])=>{
     const m=members.find(x=>x.id===memberId)||{};
-    // 分成訂閱福利和活動福利兩組
+    // 分成訂閱福利、生日禮、活動福利三組
     const groups = {
       reward:   rewards.filter(r=>r.type!=='里民禮物'),
-      activity: rewards.filter(r=>r.type==='里民禮物'),
+      birthday: rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&r.milestone.includes('生日')),
+      activity: rewards.filter(r=>r.type==='里民禮物'&&(!r.milestone||!r.milestone.includes('生日'))),
     };
     Object.entries(groups).forEach(([gType, gRewards])=>{
       if(!gRewards.length) return;
@@ -1483,8 +1482,9 @@ function build提醒(){
       const sub = gRewards.length === 1
         ? `${gRewards[0].milestone} · ${gRewards[0].rewardItem||gRewards[0].type}${gRewards[0].triggerDate?' · 觸發 '+gRewards[0].triggerDate:''}`
         : `${gRewards.length} 筆待兌換 · 最早觸發 ${earliest?.triggerDate||'—'}`;
-      const rIcon = gType==='activity' ? '🎪' : '🎁';
-      list.push({type:gType,icon:rIcon,title:`${m.name||'—'} ${gType==='activity'?'活動':'訂閱'}福利待兌換${countLabel}`,sub,天:trigD,ic:'rg',urgent:overdue,id:memberId,isReward:true,overdue});
+      const rIcon = gType==='activity' ? '🎪' : gType==='birthday' ? '🎂' : '🎁';
+      const rLabel = gType==='activity'?'活動':gType==='birthday'?'生日禮':'訂閱';
+      list.push({type:gType==='birthday'?'birthday':gType,icon:rIcon,title:`${m.name||'—'} ${rLabel}福利待兌換${countLabel}`,sub,天:trigD,ic:gType==='birthday'?'rb':'rg',urgent:overdue,id:memberId,isReward:true,overdue});
     });
   });
   holi天.forEach(h=>{ const d=天Until(h.date); if(d>=0&&d<=90) list.push({type:'holiday',icon:'◈',title:h.name,sub:`${h.date} · ${h.type}${h.note?' · '+h.note:''}`,天:d,ic:'rh',urgent:false}); });
