@@ -546,7 +546,7 @@ tr:hover td{background:#FEFBF2}
     <input type="hidden" id="rw-allids">
     <div class="fr" id="rw-count-wrap" style="display:none">
       <label class="fl">兌換數量</label>
-      <select class="fi" id="rw-count"></select>
+      <input class="fi" id="rw-count" type="number" min="1" style="width:100px">
     </div>
     <div class="fr" id="rw-item-wrap">
       <label class="fl">兌換項目</label>
@@ -1387,8 +1387,9 @@ function openRedeemModal(rewardId, level, allIdsStr=''){
   const countSel = document.getElementById('rw-count');
   if(countWrap && countSel){
     if(ids.length > 1){
-      countSel.innerHTML = Array.from({length:ids.length},(_,i)=>`<option value="${i+1}">${i+1} 項</option>`).join('');
+      countSel.max = ids.length;
       countSel.value = ids.length;
+      countSel.placeholder = `最多 ${ids.length} 項`;
       countWrap.style.display = 'block';
     } else {
       countWrap.style.display = 'none';
