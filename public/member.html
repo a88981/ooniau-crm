@@ -215,16 +215,29 @@ function renderResult({member, rewards}){
   document.getElementById('s-redeemed').textContent = redeemed;
   document.getElementById('s-pending').textContent = total - redeemed;
 
-  if(!rewards.length){
+  // 同類型合併
+  const typeGroups = {};
+  rewards.forEach(r=>{
+    const key = r.type + '_' + (r.redeemed?'1':'0');
+    if(!typeGroups[key]) typeGroups[key]={type:r.type,redeemed:r.redeemed,items:[]};
+    typeGroups[key].items.push(r);
+  });
+  const mergedRewards = Object.values(typeGroups).map(g=>{
+    if(g.items.length===1) return {...g.items[0], count:1};
+    return {...g.items[0], count:g.items.length, milestone:g.items[0].milestone};
+  });
+
+  if(!mergedRewards.length){
     document.getElementById('reward-list').innerHTML = '<div class="empty">目前尚無福利記錄</div>';
   } else {
-    document.getElementById('reward-list').innerHTML = rewards.map(r => {
+    document.getElementById('reward-list').innerHTML = mergedRewards.map(r => {
       const isActivity = r.type === '里民禮物';
       const is12 = r.type === '12個月獎勵';
       const icon = isActivity ? '🎪' : is12 ? '🏆' : '🎁';
       const lvMap = {'LV.3 里民暖暖包':'相印小卡/半小時占卜','LV.4 肌肉暖暖包':'實體拍立得','LV.5 真蒸暖暖包':'親簽拍立得'};
       const defaultItem = lvMap[member.level] || r.rewardItem || '訂閱福利';
-      const typeLabel = isActivity ? `🎪 ${r.milestone}` : is12 ? '🏆 專屬週邊福利' : `🎁 ${r.redeemed ? r.rewardItem : defaultItem}`;
+      const countLabel = r.count > 1 ? ` × ${r.count} 項` : '';
+      const typeLabel = (isActivity ? `🎪 ${r.milestone}` : is12 ? '🏆 專屬週邊福利' : r.type==='每月占卜' ? `🔮 ${defaultItem}` : `🎁 ${r.redeemed ? r.rewardItem : defaultItem}`) + countLabel;
       const moLabel = isActivity ? '活動' : is12 ? '週邊' : '訂閱';
       const moNum = isActivity ? icon : r.milestone.replace('個月(週邊)','').replace('個月','');
       return `<div class="reward-item${r.redeemed?' redeemed':''}">
@@ -239,19 +252,4 @@ function renderResult({member, rewards}){
         </div>
         <div class="reward-status">
           ${r.redeemed
-            ? `<span class="badge" style="background:#F2F2F2;color:#888">已兌換</span>`
-            : `<span class="badge" style="background:#FFF8D6;color:#A07800">待兌換</span>`}
-        </div>
-      </div>`;
-    }).join('');
-  }
-
-  document.getElementById('result').style.display = 'block';
-  document.getElementById('result').scrollIntoView({behavior:'smooth', block:'start'});
-}
-
-function showErr(msg){ const e=document.getElementById('err-msg'); e.textContent=msg; e.style.display='block'; }
-function hideErr(){ document.getElementById('err-msg').style.display='none'; }
-</script>
-</body>
-</html>
+            ? `<span
