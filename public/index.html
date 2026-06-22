@@ -558,6 +558,7 @@ tr:hover td{background:#FEFBF2}
       <input class="fi" id="rw-illus" placeholder="例如：2024年8月暖暖插圖">
     </div>
     <div class="fr"><label class="fl">備註</label><input class="fi" id="rw-note" placeholder="選填"></div>
+    <div class="fr"><label class="fl">兌換日期</label><input class="fi" id="rw-date" type="date"></div>
     <div class="mdfoot">
       <button class="btn" onclick="closeM('reward')">取消</button>
       <button class="btn btn-g" onclick="confirmRedeem()">標記已兌換</button>
@@ -1334,6 +1335,7 @@ function editReward(rewardId, level) {
   }
   document.getElementById('rw-id').value = rewardId;
   document.getElementById('rw-redeemedAt').value = rw.redeemedAt || '';
+  document.getElementById('rw-date').value = rw.redeemedAt || new Date().toISOString().slice(0,10);
   document.getElementById('rw-illus').value = rw.illustration || '';
   document.getElementById('rw-note').value = rw.note || '';
   const foot = document.querySelector('#modal-reward .mdfoot');
@@ -1381,6 +1383,7 @@ function openRedeemModal(rewardId, level, allIdsStr=''){
   }
   document.getElementById('rw-id').value=rewardId;
   document.getElementById('rw-redeemedAt').value='';
+  document.getElementById('rw-date').value=new Date().toISOString().slice(0,10);
   document.getElementById('rw-allids').value=allIdsStr||rewardId; // | 分隔
   // 數量選擇
   const ids = (allIdsStr||rewardId).split('|').filter(Boolean);
@@ -1412,7 +1415,7 @@ async function confirmRedeem(){
   const illus=lvInfo.hasIllus&&!is12?document.getElementById('rw-illus').value:'';
   const note=document.getElementById('rw-note').value;
   const storedAt = document.getElementById('rw-redeemedAt')?.value;
-  const today = storedAt || new Date().toISOString().slice(0,10);
+  const today = document.getElementById('rw-date')?.value || storedAt || new Date().toISOString().slice(0,10);
   // 防重複點擊
   const foot = document.querySelector('#modal-reward .mdfoot');
   const btns = foot ? foot.querySelectorAll('button') : [];
