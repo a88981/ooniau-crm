@@ -1217,9 +1217,37 @@ function renderRewards(list, memberId){
   if(!list.length){ document.getElementById('reward-list').innerHTML='<div class="empty">尚無福利記錄，點「同步福利」產生</div>'; return; }
   const m=members.find(x=>x.id===memberId)||{};
   const lvInfo=LEVELS[m.level]||{};
+  // 每月占卜合併成一筆顯示
+  const monthlyGroups = {};
+  const nonMonthly = [];
+  list.forEach(r=>{
+    if(r.type==='每月占卜'){
+      const key = r.redeemed ? 'monthly_redeemed' : 'monthly_pending';
+      if(!monthlyGroups[key]) monthlyGroups[key]={type:'每月占卜',redeemed:r.redeemed,items:[]};
+      monthlyGroups[key].items.push(r);
+    } else {
+      nonMonthly.push(r);
+    }
+  });
+  // 合併後的清單
+  const mergedList = [...nonMonthly];
+  Object.values(monthlyGroups).forEach(g=>{
+    mergedList.push({
+      id: g.items[0].id,
+      type: '每月占卜',
+      milestone: `${g.items.length}個月占卜`,
+      rewardItem: g.items[0].rewardItem,
+      redeemed: g.redeemed,
+      redeemedAt: g.items[g.items.length-1]?.redeemedAt||'',
+      triggerDate: g.items[0]?.triggerDate||'',
+      count: g.items.length,
+      allIds: g.items.map(x=>x.id),
+    });
+  });
+
   // 依年份分組
   const byYear={};
-  list.forEach(r=>{
+  mergedList.forEach(r=>{
     const yr=r.triggerDate?r.triggerDate.slice(0,4):'未知';
     if(!byYear[yr]) byYear[yr]=[];
     byYear[yr].push(r);
@@ -1237,7 +1265,7 @@ function renderRewards(list, memberId){
           }
         </div>
         <div class="reward-info">
-          <div class="reward-type">${r.type==='里民禮物'?'🎪 '+r.milestone:r.type==='12個月獎勵'?'🏆 專屬週邊福利':r.type==='每月占卜'?'🔮 '+(r.redeemed?r.rewardItem:(lvInfo.monthlyReward||'占卜')):'🎁 '+(r.redeemed?r.rewardItem:lvInfo.reward3||r.rewardItem||'訂閱福利')}</div>
+          <div class="reward-type">${r.type==='里民禮物'?'🎪 '+r.milestone:r.type==='12個月獎勵'?'🏆 專屬週邊福利':r.type==='每月占卜'?'🔮 '+(r.redeemed?r.rewardItem:(lvInfo.monthlyReward||'占卜'))+(r.count>1?' × '+r.count+' 筆':''):'🎁 '+(r.redeemed?r.rewardItem:lvInfo.reward3||r.rewardItem||'訂閱福利')}</div>
           <div class="reward-sub">${r.triggerDate?'📅 '+r.triggerDate:''} ${r.redeemed?'· ✓ '+r.redeemedAt:''}</div>
           ${r.illustration?`<div class="reward-illus">指定插圖：${r.illustration}</div>`:''}
         </div>
