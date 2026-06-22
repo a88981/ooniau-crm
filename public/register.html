@@ -98,7 +98,7 @@ body{font-family:'Noto Sans TC',sans-serif;font-size:16px;color:var(--pd);backgr
     <div class="notice">
       <strong>注意事項</strong><br>
       · 請確認已在綠界完成訂閱後再填寫此表單<br>
-      · 截圖請前往 Imgur 上傳後，複製圖片網址貼入表單<br>
+      · 截圖可上傳至 Imgur 或 Google 雲端硬碟，複製連結貼入表單<br>
       · 暖暖將在收到資料後為你完成建立
     </div>
 
@@ -227,17 +227,24 @@ body{font-family:'Noto Sans TC',sans-serif;font-size:16px;color:var(--pd);backgr
     <div class="card">
       <div class="sec-title">訂單截圖 <span class="req">*</span></div>
       <div class="link-hint">
-        <strong>上傳步驟：</strong><br>
+        <strong>方法一：Imgur 上傳</strong><br>
         1. 點下方按鈕前往 Imgur<br>
         2. 點「New Post」→ 選擇你的截圖上傳<br>
         3. 上傳完成後，對圖片按右鍵 → 複製圖片網址<br>
         4. 將網址貼到下方欄位
       </div>
       <a href="https://imgur.com/upload" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:linear-gradient(135deg,#FFF9E6,#FFFBF0);border:1px solid var(--gold);border-radius:40px;font-size:.82rem;color:var(--pd);text-decoration:none;margin-bottom:1rem;letter-spacing:.08em">📷 前往 Imgur 上傳截圖 ↗</a>
+      <div class="link-hint" style="margin-top:.6rem">
+        <strong>方法二：Google 雲端硬碟分享</strong><br>
+        1. 開啟 Google 雲端硬碟，上傳截圖<br>
+        2. 對檔案按右鍵 →「共用」→「複製連結」<br>
+        3. 將權限設為「知道連結的任何人」<br>
+        4. 複製連結貼到下方欄位
+      </div>
       <div class="fr">
-        <label class="fl">Imgur 圖片網址 <span class="req">*</span></label>
-        <input class="fi" id="f-screenshot" placeholder="https://i.imgur.com/xxxxxx.jpg">
-        <div class="err-msg" id="e-screenshot">請貼上 Imgur 圖片網址</div>
+        <label class="fl">圖片網址 <span class="req">*</span></label>
+        <input class="fi" id="f-screenshot" placeholder="https://i.imgur.com/xxxxxx.jpg 或 Google 雲端硬碟連結">
+        <div class="err-msg" id="e-screenshot">請貼上圖片網址</div>
       </div>
     </div>
 
