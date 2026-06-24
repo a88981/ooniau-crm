@@ -121,10 +121,9 @@ tr:hover td{background:#FEFBF2}
 .myt{font-size:.6rem;color:var(--tm);margin-top:1px}
 
 /* ── DRAWER ──────────────────────────── */
-.drw-bg{display:none;position:fixed;inset:0;background:rgba(45,40,64,.22);z-index:200}
-.drw-bg.open{display:block}
-.drw{position:fixed;top:0;right:-520px;width:500px;height:100vh;background:#fff;border-left:.5px solid var(--gold-b);overflow:auto;transition:right .28s ease;z-index:201}
-.drw.open{right:0}
+.drw-bg{display:none;position:fixed;inset:0;background:rgba(45,40,64,.45);z-index:200;align-items:center;justify-content:center}
+.drw-bg.open{display:flex}
+.drw{position:relative;width:560px;max-width:96vw;max-height:90vh;background:#fff;border:.5px solid var(--gold-b);border-radius:8px;overflow:auto;z-index:201}
 .drw-head{display:flex;justify-content:space-between;align-items:flex-start;padding:1.5rem 1.6rem 1rem;border-bottom:.5px solid var(--gold-dim);position:sticky;top:0;background:#fff;z-index:1}
 .drw-title{font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:300;color:var(--pm);letter-spacing:.06em}
 .drw-yt{font-size:.65rem;color:var(--tm);margin-top:3px}
@@ -476,10 +475,17 @@ tr:hover td{background:#FEFBF2}
     <div class="dsec">
       <div class="dsec-label" style="cursor:pointer" onclick="toggleSec('reward-sec')">福利兌換 <span id="reward-sec-arrow" style="font-size:.6rem">▼</span></div>
       <div id="reward-sec">
+      <div id="bday-gift-panel" style="display:none;flex-wrap:wrap;gap:6px;padding:.6rem 0;border-bottom:.5px solid var(--gold-dim);margin-bottom:.6rem">
+        <button class="btn btn-sm" onclick="addBdayGift('鑰匙圈','第 1 年')">＋ 第1年 鑰匙圈</button>
+        <button class="btn btn-sm" onclick="addBdayGift('壓克力卡','第 2 年')">＋ 第2年 壓克力卡</button>
+        <button class="btn btn-sm" onclick="addBdayGift('方型立牌','第 3 年')">＋ 第3年 方型立牌</button>
+        <button class="btn btn-sm" onclick="addBdayGift('準備中','第 4 年')">＋ 第4年 準備中</button>
+      </div>
       <div id="reward-list"><div class="loading"><div class="spinner"></div></div></div>
       <div style="margin-top:.6rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
         <button class="btn btn-sm btn-g" id="sync-rewards-btn" onclick="syncRewards()">↻ 同步福利</button>
         <button class="btn btn-sm" onclick="openAddRewardModal()">＋ 手動新增</button>
+        <button class="btn btn-sm" onclick="openBdayGiftPanel()" id="bday-gift-btn">🎁 生日禮</button>
         <span style="font-size:.58rem;color:var(--th)">根據加入日期自動產生應有的福利筆數</span>
       </div>
       </div>
@@ -634,13 +640,6 @@ tr:hover td{background:#FEFBF2}
 <!-- Modal 活動福利 -->
 <div class="mdbg" id="modal-event-reward">
   <div class="md" style="width:420px">
-    <div class="mdtitle">生日禮紀念</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.8rem">
-      <button class="btn btn-sm" onclick="addBdayGift('鑰匙圈','第 1 年')">＋ 第1年 鑰匙圈</button>
-      <button class="btn btn-sm" onclick="addBdayGift('壓克力卡','第 2 年')">＋ 第2年 壓克力卡</button>
-      <button class="btn btn-sm" onclick="addBdayGift('方型立牌','第 3 年')">＋ 第3年 方型立牌</button>
-      <button class="btn btn-sm" onclick="addBdayGift('準備中','第 4 年')">＋ 第4年 準備中</button>
-    </div>
     <div class="mdtitle">活動福利 — 一鍵新增</div>
     <div class="fr" style="align-items:center">
       <label class="fl">活動名稱</label>
@@ -880,7 +879,7 @@ function nmUpdateDistricts(){
   }
 }
 
-function closeDrw(){ document.getElementById('drw-bg').classList.remove('open'); document.getElementById('drw').classList.remove('open'); drw會員Id=null; drw會員Payments=[]; drw會員Rewards=[]; }
+function closeDrw(){ document.getElementById('drw-bg').classList.remove('open'); drw會員Id=null; drw會員Payments=[]; drw會員Rewards=[]; }
 function openEditFromDrw(){ const m=members.find(x=>x.id===drw會員Id); if(m){ closeDrw(); edit會員(m); } }
 
 // ── MEMBER MODAL ─────────────────────────────────────────
@@ -2037,6 +2036,11 @@ function updateEvPreview() {
     });
   el.innerHTML = `將新增 <b style="color:var(--pd)">${total}</b> 筆福利：`
     + lines.map(l => `<div style="margin-top:4px">・${l.label}</div>${l.nameStr?`<div style="margin-top:2px;color:var(--tm);font-size:.68rem">　${l.nameStr}</div>`:''}`).join('');
+}
+
+function openBdayGiftPanel(){
+  const panel = document.getElementById('bday-gift-panel');
+  if(panel) panel.style.display = panel.style.display==='none' ? 'flex' : 'none';
 }
 
 async function addBdayGift(name, year){
