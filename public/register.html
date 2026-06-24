@@ -397,7 +397,9 @@ async function submitForm() {
   let cvsStr = '';
   if (selectedShip === '宅配') {
     const zip = document.getElementById('f-zip1').value + '-' + document.getElementById('f-zip2').value;
-    addressStr = zip + ' ' + document.getElementById('f-addr').value.trim();
+    const city = document.getElementById('f-city').value;
+    const dist = document.getElementById('f-district').value;
+    addressStr = [zip, city, dist, document.getElementById('f-addr').value.trim()].filter(Boolean).join(' ');
   }
   if (selectedShip === '超商取貨') {
     cvsStr = '7-ELEVEN ' + document.getElementById('f-cvs').value.trim();
