@@ -1501,7 +1501,8 @@ function build提醒(){
       'reward-sub':     rewards.filter(r=>r.type==='3個月獎勵'),
       'reward-year':    rewards.filter(r=>r.type==='12個月獎勵'),
       birthday:         rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&r.milestone.includes('生日')),
-      activity:         rewards.filter(r=>r.type==='里民禮物'&&(!r.milestone||!r.milestone.includes('生日'))),
+      anniversary:      rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&['鑰匙圈','壓克力卡','方型立牌','準備中'].some(k=>r.milestone.includes(k))),
+      activity:         rewards.filter(r=>r.type==='里民禮物'&&(!r.milestone||(!r.milestone.includes('生日')&&!['鑰匙圈','壓克力卡','方型立牌','準備中'].some(k=>r.milestone.includes(k))))),
     };
     Object.entries(groups).forEach(([gType, gRewards])=>{
       if(!gRewards.length) return;
@@ -1513,7 +1514,7 @@ function build提醒(){
         ? `${gRewards[0].milestone} · ${gRewards[0].rewardItem||gRewards[0].type}${gRewards[0].triggerDate?' · 觸發 '+gRewards[0].triggerDate:''}`
         : `${gRewards.length} 筆待兌換 · 最早觸發 ${earliest?.triggerDate||'—'}`;
       const rIcon = gType==='activity'?'🎪':gType==='birthday'?'🎂':gType==='reward-monthly'?'🔮':gType==='reward-year'?'🏆':'🎁';
-      const rLabel = gType==='activity'?'活動':gType==='birthday'?'生日禮':gType==='reward-monthly'?'占卜':gType==='reward-year'?'週邊':'三個月';
+      const rLabel = gType==='activity'?'活動':gType==='birthday'?'生日禮':gType==='anniversary'?'生日禮紀念':gType==='reward-monthly'?'占卜':gType==='reward-year'?'週邊':'三個月';
       const pushType = gType==='birthday'?'birthday':gType;
       list.push({type:pushType,icon:rIcon,title:`${m.name||'—'} ${rLabel}福利待兌換${countLabel}`,sub,天:trigD,ic:gType==='birthday'?'rb':'rg',urgent:overdue,id:memberId,isReward:true,overdue});
     });
