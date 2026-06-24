@@ -516,26 +516,29 @@ tr:hover td{background:#FEFBF2}
       <div class="fr"><label class="fl">生日</label><input class="fi" id="nm-bday" type="date"></div>
       <div class="fr"><label class="fl">性別</label><select class="fi" id="nm-gender"><option value="">請選擇</option><option>男</option><option>女</option><option>非二元</option></select></div>
       <div class="fr"><label class="fl">備註</label><input class="fi" id="nm-note" placeholder="喜好、特殊需求…"></div>
-      <div class="fr">
-        <label class="fl">地址</label>
-        <div style="display:flex;gap:6px">
-          <select class="fi" id="nm-city" onchange="nmUpdateDistricts()" style="flex:0 0 90px">
-            <option value="">縣市</option>
-            <option>台北市</option><option>新北市</option><option>桃園市</option>
-            <option>台中市</option><option>台南市</option><option>高雄市</option>
-            <option>基隆市</option><option>新竹市</option><option>嘉義市</option>
-            <option>新竹縣</option><option>苗栗縣</option><option>彰化縣</option>
-            <option>南投縣</option><option>雲林縣</option><option>嘉義縣</option>
-            <option>屏東縣</option><option>宜蘭縣</option><option>花蓮縣</option>
-            <option>台東縣</option><option>澎湖縣</option><option>金門縣</option>
-            <option>連江縣</option>
-          </select>
-          <select class="fi" id="nm-district" style="flex:0 0 80px">
-            <option value="">區域</option>
-          </select>
-          <input class="fi" id="nm-addr" placeholder="路段門牌" style="flex:1">
-        </div>
+    </div>
+    <div class="fr">
+      <label class="fl">地址</label>
+      <div style="display:flex;gap:6px;width:100%">
+        <select class="fi" id="nm-city" onchange="nmUpdateDistricts()" style="flex:0 0 90px">
+          <option value="">縣市</option>
+          <option>台北市</option><option>新北市</option><option>桃園市</option>
+          <option>台中市</option><option>台南市</option><option>高雄市</option>
+          <option>基隆市</option><option>新竹市</option><option>嘉義市</option>
+          <option>新竹縣</option><option>苗栗縣</option><option>彰化縣</option>
+          <option>南投縣</option><option>雲林縣</option><option>嘉義縣</option>
+          <option>屏東縣</option><option>宜蘭縣</option><option>花蓮縣</option>
+          <option>台東縣</option><option>澎湖縣</option><option>金門縣</option>
+          <option>連江縣</option>
+        </select>
+        <select class="fi" id="nm-district" style="flex:0 0 90px">
+          <option value="">區域</option>
+        </select>
+        <input class="fi" id="nm-addr" placeholder="路段門牌" style="flex:1">
       </div>
+    </div>
+    <div class="f2">
+
     </div>
     <div class="secdiv">會員資格</div>
     <div class="f3">
