@@ -634,6 +634,13 @@ tr:hover td{background:#FEFBF2}
 <!-- Modal 活動福利 -->
 <div class="mdbg" id="modal-event-reward">
   <div class="md" style="width:420px">
+    <div class="mdtitle">生日禮紀念</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:.8rem">
+      <button class="btn btn-sm" onclick="addBdayGift('鑰匙圈','第 1 年')">＋ 第1年 鑰匙圈</button>
+      <button class="btn btn-sm" onclick="addBdayGift('壓克力卡','第 2 年')">＋ 第2年 壓克力卡</button>
+      <button class="btn btn-sm" onclick="addBdayGift('方型立牌','第 3 年')">＋ 第3年 方型立牌</button>
+      <button class="btn btn-sm" onclick="addBdayGift('準備中','第 4 年')">＋ 第4年 準備中</button>
+    </div>
     <div class="mdtitle">活動福利 — 一鍵新增</div>
     <div class="fr" style="align-items:center">
       <label class="fl">活動名稱</label>
@@ -2030,6 +2037,26 @@ function updateEvPreview() {
     });
   el.innerHTML = `將新增 <b style="color:var(--pd)">${total}</b> 筆福利：`
     + lines.map(l => `<div style="margin-top:4px">・${l.label}</div>${l.nameStr?`<div style="margin-top:2px;color:var(--tm);font-size:.68rem">　${l.nameStr}</div>`:''}`).join('');
+}
+
+async function addBdayGift(name, year){
+  if(!drw會員Id){ showToast('請先開啟會員'); return; }
+  const exists = drw會員Rewards.find(r=>r.type==='里民禮物'&&r.milestone&&r.milestone.includes(name));
+  if(exists){ showToast('此年份生日禮已存在'); return; }
+  try{
+    const rw = await apiFetch('/api/rewards',{ method:'POST', body:{
+      memberId: drw會員Id,
+      type: '里民禮物',
+      milestone: name,
+      triggerDate: new Date().toISOString().slice(0,10),
+      redeemed: false,
+    }});
+    drw會員Rewards.push(rw);
+    allRewards.push(rw);
+    renderRewards(drw會員Rewards, drw會員Id);
+    renderDash(); render提醒(curFilter);
+    showToast(`✦ 已新增 ${year} ${name}`);
+  }catch(e){ showToast('⚠ 新增失敗'); }
 }
 
 async function confirmEventReward() {
