@@ -517,26 +517,7 @@ tr:hover td{background:#FEFBF2}
       <div class="fr"><label class="fl">性別</label><select class="fi" id="nm-gender"><option value="">請選擇</option><option>男</option><option>女</option><option>非二元</option></select></div>
       <div class="fr"><label class="fl">備註</label><input class="fi" id="nm-note" placeholder="喜好、特殊需求…"></div>
     </div>
-    <div class="fr">
-      <label class="fl">地址</label>
-      <div style="display:flex;gap:6px;width:100%">
-        <select class="fi" id="nm-city" onchange="nmUpdateDistricts()" style="flex:0 0 90px">
-          <option value="">縣市</option>
-          <option>台北市</option><option>新北市</option><option>桃園市</option>
-          <option>台中市</option><option>台南市</option><option>高雄市</option>
-          <option>基隆市</option><option>新竹市</option><option>嘉義市</option>
-          <option>新竹縣</option><option>苗栗縣</option><option>彰化縣</option>
-          <option>南投縣</option><option>雲林縣</option><option>嘉義縣</option>
-          <option>屏東縣</option><option>宜蘭縣</option><option>花蓮縣</option>
-          <option>台東縣</option><option>澎湖縣</option><option>金門縣</option>
-          <option>連江縣</option>
-        </select>
-        <select class="fi" id="nm-district" style="flex:0 0 90px">
-          <option value="">區域</option>
-        </select>
-        <input class="fi" id="nm-addr" placeholder="路段門牌" style="flex:1">
-      </div>
-    </div>
+    <div class="fr"><label class="fl">地址</label><input class="fi" id="nm-addr" placeholder="完整地址"></div>
     <div class="f2">
 
     </div>
@@ -911,16 +892,7 @@ function edit會員(m){
   document.getElementById('nm-join').value=m.join||'';
   document.getElementById('nm-exp').value=m.exp||'';
   document.getElementById('nm-note').value=m.note||'';
-  // 拆地址回三欄（格式：縣市 區域 路段門牌）
-  const addrParts = (m.address||'').split(' ');
-  const cities = ['台北市','新北市','桃園市','台中市','台南市','高雄市','基隆市','新竹市','嘉義市','新竹縣','苗栗縣','彰化縣','南投縣','雲林縣','嘉義縣','屏東縣','宜蘭縣','花蓮縣','台東縣','澎湖縣','金門縣','連江縣'];
-  const city = addrParts.find(p=>cities.includes(p))||'';
-  const cityIdx = city ? addrParts.indexOf(city) : -1;
-  document.getElementById('nm-city').value = city;
-  nmUpdateDistricts();
-  const district = cityIdx>=0&&addrParts[cityIdx+1]&&!cities.includes(addrParts[cityIdx+1]) ? addrParts[cityIdx+1] : '';
-  document.getElementById('nm-district').value = district;
-  document.getElementById('nm-addr').value = addrParts.slice(city?(district?cityIdx+2:cityIdx+1):0).join(' ');
+  document.getElementById('nm-addr').value=m.address||'';
   document.getElementById('nm-order').value=m.orderNos||'';
   document.getElementById('nm-gender').value=m.gender||'';
   document.getElementById('nm-del').style.display='inline-flex';
@@ -948,8 +920,7 @@ function reset會員Modal(){
   document.getElementById('nm-id').value='';
   ['nm-name','nm-yt','nm-phone','nm-email','nm-bday','nm-join','nm-exp','nm-note','nm-addr','nm-order'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('nm-gender').value='';
-  document.getElementById('nm-city').value='';
-  document.getElementById('nm-district').innerHTML='<option value="">區域</option>';
+
   document.getElementById('nm-level').value='LV.3 里民暖暖包';
   document.getElementById('nm-plan').value='年繳';
   document.getElementById('nm-del').style.display='none';
@@ -959,7 +930,7 @@ async function save會員(){
   const name=document.getElementById('nm-name').value.trim();
   if(!name){showToast('請填寫姓名');return;}
   const id=document.getElementById('nm-id').value;
-  const payload={ name, memberName:document.getElementById('nm-yt').value, phone:document.getElementById('nm-phone').value, email:document.getElementById('nm-email').value, bday:document.getElementById('nm-bday').value, level:document.getElementById('nm-level').value, plan:document.getElementById('nm-plan').value, join:document.getElementById('nm-join').value, exp:document.getElementById('nm-exp').value, address:[document.getElementById('nm-city').value, document.getElementById('nm-district').value, document.getElementById('nm-addr').value].filter(Boolean).join(' '), note:document.getElementById('nm-note').value, orderNos:document.getElementById('nm-order').value, gender:document.getElementById('nm-gender').value };
+  const payload={ name, memberName:document.getElementById('nm-yt').value, phone:document.getElementById('nm-phone').value, email:document.getElementById('nm-email').value, bday:document.getElementById('nm-bday').value, level:document.getElementById('nm-level').value, plan:document.getElementById('nm-plan').value, join:document.getElementById('nm-join').value, exp:document.getElementById('nm-exp').value, address:document.getElementById('nm-addr').value, note:document.getElementById('nm-note').value, orderNos:document.getElementById('nm-order').value, gender:document.getElementById('nm-gender').value };
   const btn=document.getElementById('nm-submit'); btn.disabled=true; btn.textContent='儲存中…';
   try{
     if(id){
