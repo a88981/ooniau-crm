@@ -327,6 +327,36 @@ function renderResult({member, rewards}){
   activityHtml += '</div></div>';
   cardsHtml += activityHtml;
 
+  // 生日禮紀念卡（固定4格）
+  const anniItems = [
+    { year: '第 1 年', name: '鑰匙圈', img: '/images/HBDGIFT-year1.jpg', key: '鑰匙圈' },
+    { year: '第 2 年', name: '壓克力卡', img: '/images/HBDGIFT-year2.jpg', key: '壓克力卡' },
+    { year: '第 3 年', name: '方型立牌', img: '/images/HBDGIFT-year3.jpg', key: '方型立牌' },
+    { year: '第 4 年', name: '準備中…', img: null, key: '準備中' },
+  ];
+  const anniRewards = rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&(r.milestone.includes('鑰匙圈')||r.milestone.includes('壓克力卡')||r.milestone.includes('方型立牌')||r.milestone.includes('準備中')));
+  
+  let anniHtml = '<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">生日禮紀念</div><div class="sc-sub">每年訂閱週年限定</div></div></div>';
+  anniHtml += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:.5rem">';
+  anniItems.forEach(item=>{
+    const rw = anniRewards.find(r=>r.milestone&&r.milestone.includes(item.key));
+    const owned = rw && rw.redeemed;
+    const yr = owned && rw.redeemedAt ? rw.redeemedAt.slice(0,4) : '';
+    const state = owned ? 'owned' : 'unowned';
+    anniHtml += `<div style="display:flex;flex-direction:column;align-items:center;gap:5px">
+      <div style="width:100%;aspect-ratio:1;border-radius:50%;border:2px solid ${owned?'#9080C0':'#D3D1C7'};background:${owned?'#F0EBF8':'#F5F4F2'};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;${owned?'':'filter:grayscale(1);opacity:.55'}">
+        ${item.img
+          ? `<img src="${item.img}" style="width:60%;height:60%;object-fit:cover;border-radius:50%;${owned?'':'filter:grayscale(1)'}">`
+          : `<span style="font-size:22px;line-height:1">🎁</span>`}
+        <span style="font-size:9px;font-weight:500;color:${owned?'#7050A0':'#B4B2A9'}">${item.year}</span>
+      </div>
+      <div style="font-size:10px;text-align:center;color:${owned?'#7050A0':'#B4B2A9'}">${item.name}</div>
+      <div style="font-size:9px;text-align:center;color:${owned?'#9080C0':'#C8C6BE'}">${owned?(yr?yr+' 兌換':'已擁有'):'未擁有'}</div>
+    </div>`;
+  });
+  anniHtml += '</div></div>';
+  cardsHtml += anniHtml;
+
   document.getElementById('reward-list').innerHTML = cardsHtml || '<div class="empty">目前尚無福利記錄</div>';
 
   document.getElementById('result').style.display = 'block';
