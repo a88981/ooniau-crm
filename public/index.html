@@ -121,9 +121,10 @@ tr:hover td{background:#FEFBF2}
 .myt{font-size:.6rem;color:var(--tm);margin-top:1px}
 
 /* ── DRAWER ──────────────────────────── */
-.drw-bg{display:none;position:fixed;inset:0;background:rgba(45,40,64,.45);z-index:200;align-items:center;justify-content:center}
-.drw-bg.open{display:flex}
-.drw{position:relative;width:560px;max-width:96vw;max-height:90vh;background:#fff;border:.5px solid var(--gold-b);border-radius:8px;overflow:auto;z-index:201}
+.drw-bg{display:none;position:fixed;inset:0;background:rgba(45,40,64,.45);z-index:200}
+.drw-bg.open{display:block}
+.drw{position:fixed;top:50%;left:50%;transform:translate(-50%,-60%);width:560px;max-width:95vw;max-height:88vh;background:#fff;border:.5px solid var(--gold-b);border-radius:10px;overflow:auto;z-index:201;opacity:0;pointer-events:none;transition:transform .22s ease,opacity .22s ease}
+.drw.open{transform:translate(-50%,-50%);opacity:1;pointer-events:auto}
 .drw-head{display:flex;justify-content:space-between;align-items:flex-start;padding:1.5rem 1.6rem 1rem;border-bottom:.5px solid var(--gold-dim);position:sticky;top:0;background:#fff;z-index:1}
 .drw-title{font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:300;color:var(--pm);letter-spacing:.06em}
 .drw-yt{font-size:.65rem;color:var(--tm);margin-top:3px}
@@ -397,8 +398,8 @@ tr:hover td{background:#FEFBF2}
 </div>
 
 <!-- 會員詳細 Drawer -->
-<div class="drw-bg" id="drw-bg" onclick="closeDrw()">
-<div class="drw" id="drw" onclick="event.stopPropagation()">
+<div class="drw-bg" id="drw-bg" onclick="closeDrw()"></div>
+<div class="drw" id="drw">
   <div class="drw-head">
     <div>
       <div class="plabel" style="margin-bottom:.25rem">會員</div>
@@ -809,6 +810,7 @@ function openDrw(m){
   drw會員Id=m.id;
   refreshDrwInfo(m);
   document.getElementById('drw-bg').classList.add('open');
+  document.getElementById('drw').classList.add('open');
   // 依 localStorage 偏好展開/收合
   ['pay-sec','reward-sec'].forEach(id=>{
     const el=document.getElementById(id);
@@ -877,7 +879,7 @@ function nmUpdateDistricts(){
   }
 }
 
-function closeDrw(){ document.getElementById('drw-bg').classList.remove('open'); drw會員Id=null; drw會員Payments=[]; drw會員Rewards=[]; }
+function closeDrw(){ document.getElementById('drw-bg').classList.remove('open'); document.getElementById('drw').classList.remove('open'); drw會員Id=null; drw會員Payments=[]; drw會員Rewards=[]; }
 function openEditFromDrw(){ const m=members.find(x=>x.id===drw會員Id); if(m){ closeDrw(); edit會員(m); } }
 
 // ── MEMBER MODAL ─────────────────────────────────────────
@@ -1263,7 +1265,7 @@ function renderRewards(list, memberId){
   // 同類型福利合併（依 type 和 redeemed 狀態分組）
   const typeGroups = {};
   list.forEach(r=>{
-    const key = r.type + '_' + (r.redeemed?'1':'0');
+    const key = r.type + '_' + (r.redeemed?'1':'0') + (r.type==='里民禮物'?'_'+r.milestone:'');
     if(!typeGroups[key]) typeGroups[key]={type:r.type,redeemed:r.redeemed,items:[]};
     typeGroups[key].items.push(r);
   });
