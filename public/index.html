@@ -810,7 +810,6 @@ function openDrw(m){
   drw會員Id=m.id;
   refreshDrwInfo(m);
   document.getElementById('drw-bg').classList.add('open');
-  document.getElementById('drw').classList.add('open');
   // 依 localStorage 偏好展開/收合
   ['pay-sec','reward-sec'].forEach(id=>{
     const el=document.getElementById(id);
