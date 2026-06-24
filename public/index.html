@@ -397,8 +397,8 @@ tr:hover td{background:#FEFBF2}
 </div>
 
 <!-- 會員詳細 Drawer -->
-<div class="drw-bg" id="drw-bg" onclick="closeDrw()"></div>
-<div class="drw" id="drw">
+<div class="drw-bg" id="drw-bg" onclick="closeDrw()">
+<div class="drw" id="drw" onclick="event.stopPropagation()">
   <div class="drw-head">
     <div>
       <div class="plabel" style="margin-bottom:.25rem">會員</div>
@@ -497,7 +497,6 @@ tr:hover td{background:#FEFBF2}
     <button class="btn btn-sm" onclick="closeDrw()">關閉</button>
     <button class="btn btn-g btn-sm" onclick="openEditFromDrw()">編輯</button>
   </div>
-</div>
 </div>
 
 <!-- Modal 新增/編輯會員 -->
