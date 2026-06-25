@@ -1270,6 +1270,8 @@ async function loadRewards(memberId){
 }
 
 function renderRewards(list, memberId){
+  // 訂閱福利 tab 只顯示非里民禮物的記錄
+  list = list.filter(r=>r.type!=='里民禮物');
   if(!list.length){ document.getElementById('reward-list').innerHTML='<div class="empty">尚無福利記錄，點「同步福利」產生</div>'; return; }
   const m=members.find(x=>x.id===memberId)||{};
   const lvInfo=LEVELS[m.level]||{};
