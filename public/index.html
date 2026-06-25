@@ -2196,8 +2196,9 @@ async function confirmEditGift(id){
   const date = document.getElementById('gift-date').value;
   try{
     const updated = await apiFetch(`/api/rewards?id=${id}`,{method:'PATCH',body:{ note:giftNote2, triggerDate:date }});
-    drw會員Rewards = drw會員Rewards.map(r=>r.id===id?{...r,...updated}:r);
-    allRewards = allRewards.map(r=>r.id===id?{...r,...updated}:r);
+    const merged = {...updated, triggerDate: date, note: giftNote2};
+    drw會員Rewards = drw會員Rewards.map(r=>r.id===id?{...r,...merged}:r);
+    allRewards = allRewards.map(r=>r.id===id?{...r,...merged}:r);
     renderGiftList();
     closeM('add-gift');
     // 重設按鈕為新增模式
