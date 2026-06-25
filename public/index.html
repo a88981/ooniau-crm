@@ -1289,14 +1289,14 @@ function calcExpectedRewards(member){
     }
   }
   // 每年生日禮 LV1-LV4 四筆，依等級帶入兌換內容
-  const bdaySuffix = member.level==='LV.5 真蒸暖暖包'?'+卡片+影片':member.level==='LV.4 肌肉暖暖包'?'+卡片+語音':'+卡';
+  const bdaySuffix = member.level==='LV.5 真蒸暖暖包'?'+卡片+影片':member.level==='LV.4 肌肉暖暖包'?'+卡片+語音':'+卡片';
   const bdayLevels = ['LV.1鑰匙圈','LV.2壓克力卡','LV.3方型立牌','LV.4準備中'];
   bdayLevels.forEach(lv=>{
     rewards.push({
-      milestone: lv,               // 標題：LV.1鑰匙圈
-      type: '里民禮物',
-      rewardItem: '',              // 兌換時再填
-      note: lv+bdaySuffix,        // 說明：LV.1鑰匙圈+卡
+      milestone:   lv,           // 里程碑：LV.1鑰匙圈
+      type:        '里民禮物',
+      rewardItem:  '生日禮',     // 兌換內容固定
+      note:        lv+bdaySuffix, // 備註：LV.1鑰匙圈+卡片
       triggerDate: TODAY.toISOString().slice(0,10),
     });
   });
@@ -1386,15 +1386,16 @@ async function syncRewards(){
   const expected=calcExpectedRewards(m);
   if(!expected.length){showToast('訂閱未滿3個月，暫無福利');if(syncBtn)syncBtn.disabled=false;return;}
   // 去重：同 milestone + 同 rewardItem（空值統一為空字串）
-  const existing=drw會員Rewards.map(r=>(r.type||'')+'|'+(r.rewardItem||''));
-  const missing=expected.filter(e=>!existing.includes((e.type||'')+'|'+(e.rewardItem||'')));
+  const existing=drw會員Rewards.filter(r=>r.type==='里民禮物').map(r=>r.milestone||'');
+  const nonGiftExisting=drw會員Rewards.filter(r=>r.type!=='里民禮物').map(r=>(r.milestone||'')+'|'+(r.rewardItem||''));
+  const missing=expected.filter(e=>e.type==='里民禮物'?!existing.includes(e.milestone||''):!nonGiftExisting.includes((e.milestone||'')+'|'+(e.rewardItem||'')));
   const alreadyRedeemed=expected.filter(e=>drw會員Rewards.find(r=>(r.milestone||'')===(e.milestone||'')&&(r.rewardItem||'')===(e.rewardItem||'')&&r.redeemed));
   if(!missing.length){showToast(`福利已是最新${alreadyRedeemed.length?'（已兌換 '+alreadyRedeemed.length+' 筆）':''}，無需同步`);if(syncBtn)syncBtn.disabled=false;return;}
   const lvInfo=LEVELS[m.level]||{};
   try{
     const created = await Promise.all(missing.map(rw => {
-      const defaultItem=rw.rewardItem||(rw.type==='12個月獎勵'?'專屬週邊':(lvInfo.items?lvInfo.items[0]:''));
-      return apiFetch('/api/rewards',{method:'POST',body:{ memberId:m.id, type:rw.type, milestone:rw.milestone||'', rewardItem:defaultItem, note:rw.note||'', triggerDate:rw.triggerDate }});
+      const rewardItemVal = rw.rewardItem || (rw.type==='12個月獎勵'?'專屬週邊':(lvInfo.items?lvInfo.items[0]:''));
+      return apiFetch('/api/rewards',{method:'POST',body:{ memberId:m.id, type:rw.type, milestone:rw.milestone||'', rewardItem:rewardItemVal, note:rw.note||'', triggerDate:rw.triggerDate }});
     }));
     created.forEach(r=>{ drw會員Rewards.push(r); allRewards.push(r); });
     drw會員Rewards.sort((a,b)=>a.triggerDate>b.triggerDate?1:-1);
