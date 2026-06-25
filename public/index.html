@@ -1288,12 +1288,17 @@ function calcExpectedRewards(member){
         rewards.push({ milestone:`${mo}個月占卜`, type:'每月占卜', triggerDate:trigDate.toISOString().slice(0,10) });
     }
   }
-  // 每年生日禮 LV1-LV4 四筆
-  const thisYear = TODAY.getFullYear();
-  const bdayItems = ['LV.1鑰匙圈','LV.2壓克力卡','LV.3方型立牌','LV.4準備中'];
+  // 每年生日禮 LV1-LV4 四筆，依等級帶入兌換內容
+  const bdaySuffix = member.level==='LV.5 真蒸暖暖包'?'+卡片+影片':member.level==='LV.4 肌肉暖暖包'?'+卡片+語音':'+卡';
+  const bdayItems = [
+    'LV.1鑰匙圈'+bdaySuffix,
+    'LV.2壓克力卡'+bdaySuffix,
+    'LV.3方型立牌'+bdaySuffix,
+    'LV.4準備中'+bdaySuffix,
+  ];
   bdayItems.forEach(item=>{
     rewards.push({
-      milestone: `${thisYear}生日禮`,
+      milestone: '',
       type: '里民禮物',
       rewardItem: item,
       triggerDate: TODAY.toISOString().slice(0,10),
@@ -1385,8 +1390,8 @@ async function syncRewards(){
   const expected=calcExpectedRewards(m);
   if(!expected.length){showToast('訂閱未滿3個月，暫無福利');if(syncBtn)syncBtn.disabled=false;return;}
   // 去重：同 milestone + 同 rewardItem（空值統一為空字串）
-  const existing=drw會員Rewards.map(r=>(r.milestone||'')+'|'+(r.rewardItem||''));
-  const missing=expected.filter(e=>!existing.includes((e.milestone||'')+'|'+(e.rewardItem||'')));
+  const existing=drw會員Rewards.map(r=>(r.type||'')+'|'+(r.rewardItem||''));
+  const missing=expected.filter(e=>!existing.includes((e.type||'')+'|'+(e.rewardItem||'')));
   const alreadyRedeemed=expected.filter(e=>drw會員Rewards.find(r=>(r.milestone||'')===(e.milestone||'')&&(r.rewardItem||'')===(e.rewardItem||'')&&r.redeemed));
   if(!missing.length){showToast(`福利已是最新${alreadyRedeemed.length?'（已兌換 '+alreadyRedeemed.length+' 筆）':''}，無需同步`);if(syncBtn)syncBtn.disabled=false;return;}
   const lvInfo=LEVELS[m.level]||{};
@@ -2128,7 +2133,7 @@ function renderGiftList(){
       <div class="reward-item-row">
         <div class="reward-left">
           <div class="reward-title">🎂 生日禮</div>
-          <div class="reward-sub">${r.rewardItem||r.milestone}${r.redeemed?' · ✓ 已兌換 '+(r.redeemedAt||''):''}</div>
+          <div class="reward-sub">${r.rewardItem||'—'}${r.redeemed?' · ✓ 已兌換 '+(r.redeemedAt||''):''}</div>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="btn btn-sm" onclick="openEditGiftModal('${r.id}')">編輯</button>
