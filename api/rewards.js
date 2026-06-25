@@ -62,13 +62,14 @@ module.exports = async function handler(req, res) {
     }
     if (req.method === 'PATCH') {
       const { id } = req.query;
-      const { redeemed, redeemedAt, rewardItem, illustration, note } = req.body;
+      const { redeemed, redeemedAt, rewardItem, illustration, note, triggerDate } = req.body;
       const props = {};
       if (redeemed     !== undefined) props['已兌換']   = { checkbox: redeemed };
       if (redeemedAt   !== undefined) props['兌換日期'] = { date: redeemedAt ? { start: redeemedAt } : null };
       if (rewardItem   !== undefined) props['兌換內容'] = { select: { name: rewardItem } };
       if (illustration !== undefined) props['指定插圖'] = { rich_text: [{ text:{ content: illustration } }] };
       if (note         !== undefined) props['備註']     = { rich_text: [{ text:{ content: note } }] };
+      if (triggerDate  !== undefined) props['觸發日期'] = { title: [{ text: { content: triggerDate||'' } }] };
       const r = await fetch(`https://api.notion.com/v1/pages/${id}`, {
         method:'PATCH', headers:h, body: JSON.stringify({ properties: props }),
       });
