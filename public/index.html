@@ -2192,7 +2192,7 @@ function openEditGiftModal(id){
 }
 
 async function confirmEditGift(id){
-  const giftNote2 = document.getElementById('gift-content').value.trim();
+  const giftNote2 = document.getElementById('gift-note').value.trim();
   const date = document.getElementById('gift-date').value;
   try{
     const updated = await apiFetch(`/api/rewards?id=${id}`,{method:'PATCH',body:{ note:giftNote2, triggerDate:date }});
