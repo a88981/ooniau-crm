@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ooniau 暖暖｜綠界會員管理</title>
+<title>Ooniau 暖暖｜會員福利查詢</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐈‍⬛</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,2416 +17,356 @@
   --lv3:#3B6D11;--lv3bg:#EAF3DE;
   --lv4:#A07800;--lv4bg:#FFF8D6;
   --lv5:#7050A0;--lv5bg:#F0EBF8;
+  --green:#3B6D11;
 }
-html,body{height:100%;font-family:'Noto Sans TC',sans-serif;font-size:18px;color:var(--pd);background:#F8F7F5}
-.app{display:flex;height:100vh;overflow:hidden}
+html,body{min-height:100%;font-family:'Noto Sans TC',sans-serif;font-size:16px;color:var(--pd);background:#F8F7F5}
+.page{max-width:540px;margin:0 auto;padding:2rem 1.2rem 4rem}
 
-/* ── SIDEBAR ─────────────────────────── */
-.sb{width:200px;background:#fff;border-right:.5px solid var(--gold-b);display:flex;flex-direction:column;flex-shrink:0}
-.brand{padding:1.4rem 1.4rem 1.1rem;border-bottom:.5px solid var(--gold-dim)}
-.brand-en{font-size:.58rem;letter-spacing:.3em;color:var(--th);text-transform:uppercase;margin-bottom:.3rem}
-.brand-name{font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:400;color:var(--purple);letter-spacing:.08em;line-height:1.4}
-.brand-sub{font-size:.63rem;color:var(--tm);margin-top:.15rem;letter-spacing:.06em}
-.nav{flex:1;padding:1rem 0}
-.ni{display:flex;align-items:center;gap:10px;padding:11px 1.4rem;font-size:.74rem;letter-spacing:.1em;color:var(--tm);cursor:pointer;border-left:2px solid transparent;transition:all .18s;user-select:none}
-.ni:hover{color:var(--pm);background:#FFF9F0}
-.ni.active{color:var(--purple);border-left-color:var(--gold);background:linear-gradient(to right,#FFFBEE,transparent);font-weight:500}
-.sb-foot{padding:1rem 1.4rem;border-top:.5px solid var(--gold-dim);font-size:.58rem;letter-spacing:.12em;color:var(--th)}
+.brand{text-align:center;padding:2.5rem 0 2rem}
+.brand-en{font-size:.56rem;letter-spacing:.4em;color:var(--th);text-transform:uppercase;margin-bottom:.4rem}
+.brand-name{font-family:'Noto Serif TC',serif;font-size:1.4rem;font-weight:300;color:var(--purple);letter-spacing:.12em}
+.brand-sub{font-size:.65rem;color:var(--tm);margin-top:.3rem;letter-spacing:.08em}
 
-/* ── MAIN ────────────────────────────── */
-.main{flex:1;overflow:auto}
-.view{display:none;padding:1.5rem 1.8rem;min-height:100%}
-.view.active{display:block}
-.ptop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.3rem;padding-bottom:.9rem;border-bottom:.5px solid var(--gold-dim)}
-.plabel{font-size:.58rem;letter-spacing:.35em;color:var(--gold);text-transform:uppercase;margin-bottom:.3rem}
-.ptitle{font-family:'Noto Serif TC',serif;font-size:1.1rem;font-weight:300;color:var(--pm);letter-spacing:.06em}
-.ptop-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.query-card{background:#fff;border:.5px solid var(--gold-b);border-radius:6px;padding:1.8rem;margin-bottom:1.5rem}
+.query-title{font-family:'Noto Serif TC',serif;font-size:.9rem;font-weight:300;color:var(--pm);letter-spacing:.08em;margin-bottom:1.2rem}
 
-/* ── BUTTONS ─────────────────────────── */
-.btn{padding:6px 16px;font-family:'Noto Sans TC',sans-serif;font-size:.68rem;letter-spacing:.12em;color:var(--purple);background:transparent;border:1px solid rgba(155,144,184,.4);border-radius:40px;cursor:pointer;transition:all .18s;display:inline-flex;align-items:center;gap:5px}
-.btn:hover{background:#F1EDF7;border-color:var(--ps)}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn-g{border-color:var(--gold);color:var(--pd);background:linear-gradient(135deg,#FFF9E6,#FFFBF0)}
-.btn-g:hover{background:#FFF3C0;border-color:#E6A800}
-.btn-sm{padding:3px 10px;font-size:.6rem}
-.btn-del{color:#A32D2D;border-color:rgba(162,45,45,.3)}
-.btn-del:hover{background:#FEF0F0}
-.btn-green{color:#3B6D11;border-color:rgba(59,109,17,.3)}
-.btn-green:hover{background:#EAF3DE}
-.filter-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem}
-.f-on{background:#FFF8D6 !important;border-color:var(--gold) !important;color:var(--pd) !important}
+.fi{width:100%;padding:10px 14px;border:.5px solid var(--gold-b);border-radius:3px;font-family:'Noto Sans TC',sans-serif;font-size:.85rem;color:var(--pd);background:#fff;outline:none;transition:border-color .18s;letter-spacing:.04em}
+.fi:focus{border-color:var(--ps)}
+.fi::placeholder{color:var(--th)}
+.btn{width:100%;padding:11px;font-family:'Noto Sans TC',sans-serif;font-size:.78rem;letter-spacing:.15em;color:var(--pd);background:linear-gradient(135deg,#FFF9E6,#FFFBF0);border:1px solid var(--gold);border-radius:40px;cursor:pointer;transition:all .18s;margin-top:.8rem}
+.btn:hover{background:#FFF3C0}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.hint{font-size:.65rem;color:var(--th);margin-top:.6rem;letter-spacing:.04em;line-height:1.6}
+.err{font-size:.72rem;color:#A32D2D;margin-top:.6rem;display:none;letter-spacing:.04em}
 
-/* ── STATS ───────────────────────────── */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.2rem}
-.stat{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;padding:.85rem 1rem;text-align:center}
-.stn{font-family:'Cormorant Garamond',serif;font-size:1.85rem;font-weight:300;color:var(--purple);margin-bottom:2px}
-.stl{font-size:.56rem;letter-spacing:.15em;color:var(--th);text-transform:uppercase}
-
-/* ── DASHBOARD ───────────────────────── */
-.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.dash-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.panel{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;padding:1rem 1.2rem}
-.pl{font-size:.58rem;letter-spacing:.28em;color:var(--gold);text-transform:uppercase;margin-bottom:.75rem;display:flex;align-items:center;gap:.6rem}
-.pl::after{content:'';flex:1;max-width:30px;height:.5px;background:var(--gold)}
-.ri-row{display:flex;align-items:center;gap:9px;padding:8px 0;border-bottom:.5px solid var(--gold-dim);cursor:pointer}
-.ri-row:last-child{border-bottom:none;padding-bottom:0}
-.ri-dot{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
-.rb{background:#F0EBF8}.rh{background:#FFF8D6}.re{background:#FCEAEA}.rg{background:#EAF3DE}
-.ri-info{flex:1}
-.ri-name{font-size:.76rem;font-weight:500;color:var(--pd);margin-bottom:1px}
-.ri-sub{font-size:.62rem;color:var(--tm)}
-.ri-天{text-align:right}
-.dn{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:300;color:var(--purple);display:block;line-height:1.1}
-.dn.red{color:#A32D2D}
-.dl{font-size:.58rem;color:var(--th);letter-spacing:.08em}
-
-/* ── TABLE ───────────────────────────── */
-.twrap{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;overflow:hidden}
-.tbar{display:flex;align-items:center;gap:8px;padding:9px 1.1rem;border-bottom:.5px solid var(--gold-dim)}
-.tbar input{border:none;background:transparent;font-family:'Noto Sans TC',sans-serif;font-size:.76rem;color:var(--pd);flex:1;outline:none}
-.tbar input::placeholder{color:var(--th)}
-table{width:100%;border-collapse:collapse}
-th{font-size:.56rem;letter-spacing:.15em;color:var(--th);font-weight:400;padding:7px 11px;text-transform:uppercase;border-bottom:.5px solid var(--gold-dim);background:#FEFDFB;text-align:left;white-space:nowrap}
-td{padding:8px 11px;border-bottom:.5px solid rgba(230,200,80,.1);font-size:.74rem;vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:#FEFBF2}
-
-/* ── BADGES ──────────────────────────── */
-.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:.58rem;letter-spacing:.05em;white-space:nowrap}
-.b-lv1{background:#F0F0F0;color:#606060}
-.b-lv2{background:#E8E8F0;color:#505070}
+.result{display:none}
+.member-card{background:#fff;border:.5px solid var(--gold-b);border-radius:6px;padding:1.4rem 1.6rem;margin-bottom:1rem}
+.member-header{display:flex;align-items:center;gap:12px;margin-bottom:1rem;padding-bottom:1rem;border-bottom:.5px solid var(--gold-dim)}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--lv5bg);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:var(--purple);flex-shrink:0}
+.member-name{font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:400;color:var(--pd);margin-bottom:3px;letter-spacing:.04em}
+.member-meta{display:flex;gap:6px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:.58rem;letter-spacing:.05em;white-space:nowrap}
 .b-lv3{background:var(--lv3bg);color:var(--lv3)}
 .b-lv4{background:var(--lv4bg);color:var(--lv4)}
 .b-lv5{background:var(--lv5bg);color:var(--lv5)}
 .b-ok{background:#EAF5EE;color:#3B6D11}
 .b-soon{background:#FFF8D6;color:#A07800}
-.b-urg{background:#FCEAEA;color:#A32D2D}
 .b-exp{background:#EBEBEB;color:#888}
+.b-urg{background:#FCEAEA;color:#A32D2D}
 .b-yr{background:var(--lv5bg);color:var(--lv5)}
 .b-once{background:#E6F1F8;color:#305080}
-.b-home{background:#EAF5EE;color:#3B6D11}
-.b-cvs{background:#FFF3D6;color:#7A5800}
-.b-reward{background:#FFF3D6;color:#7A5800}
-.b-redeemed{background:#F2F2F2;color:#888}
+.info-row{display:flex;gap:.5rem;padding:5px 0;border-bottom:.5px solid var(--gold-dim);font-size:.76rem}
+.info-row:last-child{border-bottom:none}
+.info-key{color:var(--th);width:70px;flex-shrink:0;font-size:.65rem;letter-spacing:.04em}
+.info-val{color:var(--pd)}
 
-/* ── AVATAR ──────────────────────────── */
-.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
-.av-a{background:#F0EBF8;color:#9080C0}
-.av-b{background:#FFF8D6;color:#A07800}
-.av-c{background:#EAF3DE;color:#3B6D11}
-.av-d{background:#EAF0FF;color:#5060A0}
-.av-e{background:#FCEAEA;color:#8B1A1A}
-.mrow{display:flex;align-items:center;gap:9px}
-.mname{font-size:.76rem;font-weight:500;color:var(--pd)}
-.myt{font-size:.6rem;color:var(--tm);margin-top:1px}
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem}
+.stat-box{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;padding:.8rem;text-align:center}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--purple);margin-bottom:2px;line-height:1}
+.stat-lbl{font-size:.56rem;letter-spacing:.12em;color:var(--th);text-transform:uppercase}
 
-/* ── DRAWER ──────────────────────────── */
-.drw-bg{display:none;position:fixed;inset:0;background:rgba(45,40,64,.45);z-index:200}
-.drw-bg.open{display:block}
-.drw{position:fixed;top:50%;left:50%;transform:translate(-50%,-60%);width:560px;max-width:95vw;max-height:88vh;background:#fff;border:.5px solid var(--gold-b);border-radius:10px;overflow:auto;z-index:201;opacity:0;pointer-events:none;transition:transform .22s ease,opacity .22s ease}
-.drw.open{transform:translate(-50%,-50%);opacity:1;pointer-events:auto}
-.drw-head{display:flex;justify-content:space-between;align-items:flex-start;padding:1.5rem 1.6rem 1rem;border-bottom:.5px solid var(--gold-dim);position:sticky;top:0;background:#fff;z-index:1}
-.drw-title{font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:300;color:var(--pm);letter-spacing:.06em}
-.drw-yt{font-size:.65rem;color:var(--tm);margin-top:3px}
-.drw-close{background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--th);padding:2px 6px;line-height:1}
-.drw-close:hover{color:var(--tm)}
-.drw-body{padding:1.2rem 1.6rem}
-.dsec{margin-bottom:1.3rem}
-.dsec-label{font-size:.56rem;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;margin-bottom:.6rem;display:flex;align-items:center;gap:.5rem}
-.dsec-label::after{content:'';flex:1;height:.5px;background:var(--gold-dim)}
-.drow{display:flex;align-items:baseline;gap:.5rem;padding:5px 0;border-bottom:.5px solid var(--gold-dim)}
-.drow:last-child{border-bottom:none}
-.dkey{font-size:.6rem;color:var(--th);letter-spacing:.08em;width:76px;flex-shrink:0}
-.dval{font-size:.78rem;color:var(--pd);flex:1}
-.dval.mono{font-family:'Cormorant Garamond',serif;font-size:.9rem}
-.addr-box{background:#FEFDFB;border:.5px solid var(--gold-dim);border-radius:3px;padding:.7rem .9rem;font-size:.74rem;line-height:1.8;margin-top:.4rem}
-.drw-foot{padding:1rem 1.6rem;border-top:.5px solid var(--gold-dim);display:flex;gap:8px;position:sticky;bottom:0;background:#fff}
-
-/* 累積訂閱 */
-.subscribe-bar{background:linear-gradient(to right,#FFFBEE,#FFF9F5);border:.5px solid var(--gold-dim);border-radius:4px;padding:.8rem 1rem;display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem}
-.sub-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--purple);line-height:1}
-.sub-label{font-size:.6rem;color:var(--tm);letter-spacing:.08em}
-.sub-detail{font-size:.65rem;color:var(--th);margin-top:2px}
-
-/* 福利年份分組 */
-.reward-year-group{margin-bottom:.8rem}
-.reward-item-row{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:.5px solid var(--gold-dim)}
-.reward-item-row:last-child{border-bottom:none}
-.reward-left{display:flex;flex-direction:column;gap:2px}
-.reward-title{font-size:.76rem;font-weight:500;color:var(--pd)}
-.reward-year-label{font-size:.65rem;font-weight:600;color:var(--th);letter-spacing:.1em;padding:4px 0 6px;border-bottom:.5px solid var(--gold-dim);margin-bottom:4px}
-
-/* 訂閱歷史 */
-.pay-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:.5px solid var(--gold-dim)}
-.pay-item:last-child{border-bottom:none}
-.pay-period{font-size:.68rem;color:var(--tm);flex-shrink:0}
-.pay-level{font-size:.68rem;color:var(--pd);font-weight:500;flex-shrink:0}
-.pay-note{font-size:.64rem;color:var(--th);flex:1}
-.pay-del{background:none;border:none;cursor:pointer;color:var(--th);font-size:.8rem;padding:2px 4px}
-.pay-del:hover{color:#A32D2D}
-.add-pay-row{display:flex;gap:6px;margin-top:.6rem;flex-wrap:wrap}
-.add-pay-row .fi{flex:1;min-width:80px;padding:5px 8px;font-size:.72rem}
-
-/* 福利 */
-.reward-item{padding:.75rem .9rem;border:.5px solid var(--gold-dim);border-radius:4px;margin-bottom:6px;display:flex;align-items:flex-start;gap:10px}
-.reward-item.redeemed{opacity:.55;background:#FAFAFA}
-.reward-badge-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;width:56px}
-.reward-milestone{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--purple);line-height:1;text-align:center}
-.reward-milestone-label{font-size:.52rem;color:var(--th);letter-spacing:.08em}
-.reward-info{flex:1}
-.reward-type{font-size:.74rem;font-weight:500;color:var(--pd);margin-bottom:3px}
-.reward-sub{font-size:.62rem;color:var(--tm)}
-.reward-illus{font-size:.62rem;color:var(--purple);margin-top:3px;font-style:italic}
-.reward-actions{display:flex;flex-direction:column;gap:4px;align-items:flex-end;flex-shrink:0}
-
-/* 提醒中心 */
-.rlist{display:flex;flex-direction:column;gap:8px}
-.rcard{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;padding:.9rem 1.1rem;display:flex;align-items:center;gap:11px;cursor:pointer;transition:border-color .18s}
-.rcard:hover{border-color:var(--gold-b)}
-.rcard.urg{border-left:2px solid #E24B4A}
-.rcard.warn{border-left:2px solid var(--gold)}
-.rcard.reward-card{border-left:2px solid var(--purple)}
-.rcard.activity-card{border-left:2px solid #E8A020}
-.rico{width:34px;height:34px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
-.rbody{flex:1}
-.rtitle{font-size:.78rem;font-weight:500;color:var(--pd);margin-bottom:2px}
-.rsub{font-size:.62rem;color:var(--tm)}
-.rdbig{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--purple);display:block;line-height:1}
-.rdbig.red{color:#A32D2D}
-.rdbig.star{color:var(--purple)}
-.rdsm{font-size:.56rem;color:var(--th);letter-spacing:.08em}
-
-/* 節日日曆 */
-.callayout{display:grid;grid-template-columns:1fr 220px;gap:12px}
-.calwrap{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;padding:1rem}
-.calnav{display:flex;align-items:center;justify-content:space-between;margin-bottom:.8rem}
-.calml{font-family:'Noto Serif TC',serif;font-size:.85rem;font-weight:300;color:var(--pm);letter-spacing:.1em}
-.calhead{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;margin-bottom:4px}
-.calhead span{font-size:.56rem;color:var(--th);letter-spacing:.1em;padding:3px}
-.calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.cday{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:3px;cursor:pointer;font-size:.68rem;transition:background .15s}
-.cday:hover{background:#FFF8E6}
-.cday.today{background:#FFF3C0;color:var(--purple);font-weight:500}
-.cday.other{color:var(--th)}
-.dots{display:flex;gap:2px;margin-top:2px}
-.d{width:4px;height:4px;border-radius:50%}
-.dp{background:#9080C0}.dg{background:#D4A800}.dr{background:#E24B4A}
-.calleg{display:flex;gap:10px;margin-top:.8rem;flex-wrap:wrap}
-.leg{display:flex;align-items:center;gap:4px;font-size:.58rem;color:var(--tm)}
-.epanel{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;padding:1rem}
-.eptitle{font-size:.58rem;letter-spacing:.25em;color:var(--gold);text-transform:uppercase;margin-bottom:.75rem}
-.epi{display:flex;gap:7px;padding:6px 0;border-bottom:.5px solid var(--gold-dim)}
-.epi:last-child{border-bottom:none}
-.epidot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:4px}
-.epiname{font-size:.72rem;font-weight:500;color:var(--pd);margin-bottom:1px}
-.epitype{font-size:.58rem;color:var(--tm)}
-
-/* MODAL */
-.mdbg{display:none;position:fixed;inset:0;background:rgba(45,40,64,.32);z-index:300;align-items:center;justify-content:center}
-.mdbg.open{display:flex}
-.md{background:#fff;border:.5px solid var(--gold-b);border-radius:4px;padding:1.6rem;width:500px;max-width:94vw;max-height:92vh;overflow:auto}
-.mdtitle{font-family:'Noto Serif TC',serif;font-size:.95rem;font-weight:300;color:var(--pm);letter-spacing:.08em;margin-bottom:1.2rem}
-.fl{font-size:.56rem;letter-spacing:.18em;color:var(--tm);margin-bottom:4px;display:block;text-transform:uppercase}
-.fi{width:100%;padding:7px 10px;border:.5px solid var(--gold-b);border-radius:2px;font-family:'Noto Sans TC',sans-serif;font-size:.76rem;color:var(--pd);background:#fff;outline:none;transition:border-color .18s}
-.fi:focus{border-color:var(--ps)}
-.fr{margin-bottom:.8rem}
-.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.mdfoot{display:flex;justify-content:flex-end;gap:8px;margin-top:1rem;padding-top:.85rem;border-top:.5px solid var(--gold-dim)}
-.secdiv{font-size:.56rem;letter-spacing:.22em;color:var(--gold);text-transform:uppercase;margin:.85rem 0 .55rem;padding-bottom:.35rem;border-bottom:.5px solid var(--gold-dim)}
-.ship-toggle{display:flex;gap:7px;margin-bottom:.8rem}
-.ship-opt{flex:1;padding:7px;border:.5px solid var(--gold-b);border-radius:3px;text-align:center;cursor:pointer;font-size:.7rem;letter-spacing:.08em;color:var(--tm);transition:all .18s}
-.ship-opt.sel{border-color:var(--purple);background:#F5F0FF;color:var(--purple);font-weight:500}
-.ship-fld{display:none}
-.ship-fld.show{display:block}
-
-/* UTILS */
-.loading{display:flex;align-items:center;justify-content:center;gap:9px;padding:1.8rem;font-size:.7rem;color:var(--th);letter-spacing:.12em}
-.spinner{width:15px;height:15px;border:1.5px solid var(--gold-dim);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0}
+.section-title{font-size:.56rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
+.section-title::after{content:'';flex:1;height:.5px;background:var(--gold-dim)}
+.stamp-card{background:#fff;border:.5px solid var(--gold-b);border-radius:12px;padding:1.2rem;margin-bottom:12px}
+.sc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem}
+.sc-title{font-family:'Noto Serif TC',serif;font-size:.85rem;font-weight:400;color:var(--pd);letter-spacing:.04em}
+.sc-sub{font-size:.6rem;color:var(--tm);margin-top:2px}
+.sc-count{font-size:.62rem;color:var(--th);white-space:nowrap}
+.stamps{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.stamp{display:flex;flex-direction:column;align-items:center;gap:3px}
+.s-circle{width:100%;aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.5px solid;gap:0}
+.s-circle.future{background:#F5F4F2;border-color:#D3D1C7}
+.s-circle.earned{background:#FFF9E6;border-color:var(--gold);border-style:dashed}
+.s-circle.redeemed{background:var(--lv5bg);border-color:var(--purple)}
+.s-num{font-weight:700;font-size:15px;line-height:1}
+.s-ico{font-size:11px;line-height:1}
+.s-num.future{color:#C8C6BE}
+.s-num.earned{color:var(--lv4)}
+.s-num.redeemed{color:var(--purple)}
+.s-lbl{font-size:9px;text-align:center;line-height:1.2}
+.s-lbl.future{color:#B4B2A9}
+.s-lbl.earned{color:var(--lv4)}
+.s-lbl.redeemed{color:var(--purple)}
+.sc-note{font-size:.62rem;color:var(--tm);margin-top:.6rem;padding:.4rem .6rem;background:var(--gold-dim);border-radius:6px;line-height:1.5}
+.sc-divider{border:none;border-top:.5px solid var(--gold-dim);margin:.6rem 0}
+.sc-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:.5rem}
+.leg{display:flex;align-items:center;gap:4px;font-size:.6rem;color:var(--th)}
+.leg-c{width:10px;height:10px;border-radius:50%;border:1.5px solid}
+.leg-c.future{background:#F5F4F2;border-color:#D3D1C7}
+.leg-c.earned{background:#FFF9E6;border-color:var(--gold)}
+.leg-c.redeemed{background:var(--lv5bg);border-color:var(--purple)}
+.empty{text-align:center;padding:2rem;font-size:.72rem;color:var(--th);letter-spacing:.1em}
+.spinner{display:inline-block;width:16px;height:16px;border:1.5px solid var(--gold-dim);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.empty{font-size:.68rem;color:var(--th);letter-spacing:.15em;text-align:center;padding:1.5rem}
-.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--pd);color:#fff;font-size:.7rem;letter-spacing:.1em;padding:.6rem 1.1rem;border-radius:40px;opacity:0;transform:translateY(8px);transition:all .28s;z-index:9999;pointer-events:none}
-.toast.show{opacity:1;transform:translateY(0)}
-.divider{height:.5px;background:var(--gold-dim);margin:1rem 0}
+.footer{text-align:center;font-size:.6rem;color:var(--th);margin-top:2rem;letter-spacing:.1em}
 </style>
 </head>
 <body>
-<div id="auth-screen" style="position:fixed;inset:0;background:#F8F7F5;display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:1rem">
-  <div style="font-size:1.1rem;font-weight:600;color:var(--pd);letter-spacing:.1em">Ooniau 暖暖 後台</div>
-  <input type="password" id="auth-input" placeholder="請輸入密碼" style="padding:8px 14px;border:.5px solid var(--gold-dim);border-radius:4px;font-size:.85rem;width:200px;text-align:center" onkeydown="if(event.key==='Enter')checkAuth()" oninput="document.getElementById('auth-err').style.display='none'">
-  <button class="btn btn-g" onclick="checkAuth()" style="width:200px">進入</button>
-  <div id="auth-err" style="font-size:.7rem;color:#A32D2D;display:none">密碼錯誤</div>
-</div>
-<div class="app" id="app-main" style="display:none">
-  <div class="sb">
-    <div class="brand">
-      <div class="brand-en">Ooniau 會員 CRM</div>
-      <div class="brand-name">暖暖</div>
-      <div class="brand-sub">綠界會員管理</div>
-    </div>
-    <nav class="nav">
-      <div class="ni active"  onclick="go('dashboard',this)"><span>✦</span>總覽</div>
-      <div class="ni" id="nav-members"  onclick="go('members',this)">  <span>◎</span>會員列表</div>
-      <div class="ni" id="nav-reminders" onclick="go('reminders',this)"><span>◇</span>提醒中心</div>
-      <div class="ni" id="nav-calendar"  onclick="go('calendar',this)"> <span>△</span>節日日曆</div>
-      <div class="ni" onclick="go('review',this);loadApplications(currentAppFilter)">   <span>◉</span>審核申請 <span id="review-badge" style="display:none;background:#E24B4A;color:#fff;font-size:.55rem;padding:1px 6px;border-radius:10px;margin-left:4px"></span></div>
-    </nav>
-    <div class="sb-foot">🐈‍⬛ Ooniau 暖暖</div>
+<div class="page">
+  <div class="brand">
+    <div class="brand-en">Ooniau Member</div>
+    <div class="brand-name">暖暖綠界暖暖包</div>
+    <div class="brand-sub">會員福利查詢</div>
   </div>
 
-  <div class="main">
+  <div class="query-card">
+    <div class="query-title">查詢你的福利</div>
 
-    <!-- 總覽 -->
-    <div id="view-dashboard" class="view active">
-      <div class="ptop">
-        <div><div class="plabel">Overview</div><div class="ptitle">總覽</div></div>
-        <button class="btn btn-g" onclick="openAdd會員()">＋ 新增會員</button>
-      </div>
-      <div class="stats">
-        <div class="stat" style="cursor:pointer" onclick="go('members',document.getElementById('nav-members'));setTimeout(()=>setMFilter('all',document.querySelector('#view-members .filter-row .btn')),50)"><div class="stn" id="s-total">—</div><div class="stl">有效 / 全部</div></div>
-        <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('birthday',document.getElementById('remind-btn-birthday')),50)"><div class="stn" style="color:#D4A800" id="s-bday">—</div><div class="stl">本月生日</div></div>
-        <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('urgent',document.getElementById('remind-btn-urgent')),50)"><div class="stn" style="color:#A32D2D" id="s-exp7">—</div><div class="stl">7天內到期</div></div>
-        <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('reward',document.getElementById('remind-btn-reward')),50)"><div class="stn" style="color:var(--purple)" id="s-reward">—</div><div class="stl">福利待兌換</div></div>
-      </div>
-      <div class="dash-grid-3">
-        <div class="panel"><div class="pl">本月壽星</div><div id="dash-bday"><div class="loading"><div class="spinner"></div></div></div></div>
-        <div class="panel"><div class="pl">即將生日</div><div id="dash-exp"><div class="loading"><div class="spinner"></div></div></div></div>
-        <div class="panel"><div class="pl">待兌換福利</div><div id="dash-reward"><div class="loading"><div class="spinner"></div></div></div></div>
-      </div>
-    </div>
+    <!-- Tab 切換 -->
+    <!-- 手機號碼 -->
+    <input class="fi" id="phone-input" type="tel" placeholder="請輸入登記的手機號碼" maxlength="10"
+      onkeydown="if(event.key==='Enter')query()" oninput="this.value=this.value.replace(/[^0-9]/g,'');hideErr()">
+    <div class="hint">請輸入加入會員時填寫的手機號碼</div>
 
-    <!-- 會員列表 -->
-    <div id="view-members" class="view">
-      <div class="ptop">
-        <div><div class="plabel">會員</div><div class="ptitle">會員列表</div></div>
-        <div class="ptop-actions">
-          <button class="btn" onclick="exportCSV(false)">↓ 匯出全部</button>
-          <button class="btn" onclick="exportCSV(true)">↓ 匯出有效</button>
-          <button class="btn" onclick="document.getElementById('csv-import-input').click()">↑ 匯入 CSV</button>
-          <input type="file" id="csv-import-input" accept=".csv" style="display:none" onchange="importCSV(this)">
-          <button class="btn" onclick="openEventRewardModal()">🎁 活動福利</button>
-          <button class="btn btn-g" onclick="openAdd會員()">＋ 新增會員</button>
+    <button class="btn" id="query-btn" onclick="query()">查詢</button>
+    <div class="err" id="err-msg"></div>
+  </div>
+
+  <!-- 結果 -->
+  <div class="result" id="result">
+    <div class="member-card">
+      <div class="member-header">
+        <div class="avatar" id="m-avatar">暖</div>
+        <div>
+          <div class="member-name" id="m-name">—</div>
+          <div class="member-meta" id="m-meta"></div>
         </div>
       </div>
-      <div class="twrap">
-        <div class="tbar">
-          <span style="color:var(--th)">⌕</span>
-          <input type="text" id="m-search" placeholder="搜尋姓名、YT名稱、電話、Email、備註…" oninput="debouncedFilterM(this.value)">
-          <div class="filter-row" style="margin-left:auto;flex-shrink:0">
-            <button class="btn btn-sm f-on" onclick="setMFilter('all',this)">全部</button>
-            <button class="btn btn-sm" onclick="setMFilter('active',this)">有效</button>
-            <button class="btn btn-sm" onclick="setMFilter('expired',this)">已到期</button>
-            <select class="fi" id="m-sort" onchange="filterM(document.getElementById('m-search').value)" style="font-size:.68rem;padding:3px 6px;height:auto;margin-left:4px">
-              <option value="">預設排序</option>
-              <option value="exp-asc">到期日 ↑</option>
-              <option value="exp-desc">到期日 ↓</option>
-              <option value="join-asc">加入日 ↑</option>
-              <option value="join-desc">加入日 ↓</option>
-              <option value="name-asc">姓名 A→Z</option>
-            </select>
-          </div>
-        </div>
-        <table>
-          <thead><tr>
-            <th>會員</th><th>YouTube名稱</th><th>等級</th><th>方案</th>
-            <th>累積訂閱</th><th>到期日</th><th>狀態</th><th></th>
-          </tr></thead>
-          <tbody id="m-tbody"><tr><td colspan="9"><div class="loading"><div class="spinner"></div>載入中</div></td></tr></tbody>
-        </table>
-        <div id="m-stats" style="display:flex;gap:1.2rem;padding:.6rem .2rem;font-size:.68rem;color:var(--th);border-top:.5px solid var(--gold-dim);margin-top:.2rem;flex-wrap:wrap"></div>
-      </div>
+      <div class="info-row"><span class="info-key">生日</span><span class="info-val" id="m-bday">—</span></div>
+      <div class="info-row"><span class="info-key">加入日期</span><span class="info-val" id="m-join">—</span></div>
+      <div class="info-row"><span class="info-key">訂閱月數</span><span class="info-val" id="m-submonth">—</span></div>
+      <div class="info-row"><span class="info-key">到期日</span><span class="info-val" id="m-exp">—</span></div>
+      <div class="info-row"><span class="info-key">狀態</span><span class="info-val" id="m-status">—</span></div>
+
     </div>
 
-    <!-- 提醒中心 -->
-    <div id="view-reminders" class="view">
-      <div class="ptop">
-        <div><div class="plabel">提醒</div><div class="ptitle">提醒中心</div></div>
-      </div>
-      <div class="filter-row">
-        <button class="btn f-on" id="remind-btn-all" onclick="filterR('all',this)">全部</button>
-        <button class="btn" id="remind-btn-urgent" onclick="filterR('urgent',this)">⚠ 7天內到期</button>
-        <button class="btn" id="remind-btn-soon" onclick="filterR('soon',this)">◇ 30天內到期</button>
-        <button class="btn" id="remind-btn-birthday" onclick="filterR('birthday',this)">🎂 生日</button>
-        <button class="btn" id="remind-btn-reward-monthly" onclick="filterR('reward-monthly',this)">🔮 占卜福利</button>
-        <button class="btn" id="remind-btn-reward-sub" onclick="filterR('reward-sub',this)">🎁 三個月福利</button>
-        <button class="btn" id="remind-btn-reward-year" onclick="filterR('reward-year',this)">🏆 週邊福利</button>
-<button class="btn" id="remind-btn-activity" onclick="filterR('activity',this)">🎪 活動福利</button>
-        <button class="btn" id="remind-btn-holiday" onclick="filterR('holiday',this)">◈ 節日</button>
-      </div>
-      <div class="rlist" id="r-list"><div class="loading"><div class="spinner"></div>載入中</div></div>
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-num" id="s-total">0</div><div class="stat-lbl">總福利</div></div>
+      <div class="stat-box"><div class="stat-num" id="s-redeemed" style="color:#3B6D11">0</div><div class="stat-lbl">已兌換</div></div>
+      <div class="stat-box"><div class="stat-num" id="s-pending" style="color:#A07800">0</div><div class="stat-lbl">待兌換</div></div>
     </div>
 
-    <!-- 日曆 -->
-    <div id="view-calendar" class="view">
-      <div class="ptop">
-        <div><div class="plabel">日曆</div><div class="ptitle">節日日曆</div></div>
-        <span style="font-size:.65rem;color:var(--th)">節日請直接修改 holidays.js</span>
-      </div>
-      <div class="callayout">
-        <div class="calwrap">
-          <div class="calnav">
-            <button class="btn" style="padding:4px 11px" onclick="prevMo()">‹</button>
-            <span class="calml" id="cal-label"></span>
-            <button class="btn" style="padding:4px 11px" onclick="nextMo()">›</button>
-          </div>
-          <div class="calhead"><span>日</span><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span></div>
-          <div class="calgrid" id="cal-grid"></div>
-          <div class="calleg">
-            <div class="leg"><div class="d dp" style="width:6px;height:6px"></div>生日</div>
-            <div class="leg"><div class="d dg" style="width:6px;height:6px"></div>節日</div>
-            <div class="leg"><div class="d dr" style="width:6px;height:6px"></div>到期</div>
-            <div class="leg"><div class="d" style="width:6px;height:6px;background:var(--green)"></div>福利</div>
-          </div>
-        </div>
-        <div class="epanel">
-          <div class="eptitle" id="ep-title">本月事項</div>
-          <div id="ep-list"><div class="loading"><div class="spinner"></div></div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 審核申請 -->
-    <div id="view-review" class="view">
-      <div class="ptop">
-        <div><div class="plabel">審核</div><div class="ptitle">審核申請</div></div>
-        <div style="display:flex;gap:8px">
-          <button class="btn f-on" onclick="filterApps('待審核',this)">待審核</button>
-          <button class="btn" onclick="filterApps('已核准',this)">已核准</button>
-          <button class="btn" onclick="filterApps('已拒絕',this)">已拒絕</button>
-        </div>
-      </div>
-      <div id="app-list"><div class="loading"><div class="spinner"></div>載入中</div></div>
-    </div>
-
+    <div class="section-title">福利明細</div>
+    <div id="reward-list"></div>
   </div>
+
+  <div class="footer">🐈‍⬛ Ooniau 暖暖 · 如有疑問請聯繫暖暖</div>
 </div>
-
-<!-- 會員詳細 Drawer -->
-<div class="drw-bg" id="drw-bg" onclick="closeDrw()"></div>
-<div class="drw" id="drw">
-  <div class="drw-head">
-    <div>
-      <div class="plabel" style="margin-bottom:.25rem">會員</div>
-      <div class="drw-title" id="d-name">—</div>
-      <div class="drw-yt" id="d-yt"></div>
-    </div>
-    <button class="drw-close" onclick="closeDrw()">✕</button>
-  </div>
-  <div class="drw-body">
-
-    <!-- 累積訂閱時間 -->
-    <div class="subscribe-bar" id="d-sub-bar">
-      <div><div class="sub-num" id="d-sub-num">—</div></div>
-      <div><div class="sub-label" id="d-sub-label">累積訂閱</div><div class="sub-detail" id="d-sub-detail"></div></div>
-    </div>
-
-    <!-- 基本資料 -->
-    <div class="dsec">
-      <div class="dsec-label">基本資料</div>
-      <div class="drow"><span class="dkey">電話</span><span class="dval" id="d-phone">—</span></div>
-      <div class="drow"><span class="dkey">Email</span><span class="dval" id="d-email">—</span></div>
-      <div class="drow"><span class="dkey">生日</span><span class="dval" id="d-bday">—</span></div>
-      <div class="drow"><span class="dkey">性別</span><span class="dval" id="d-gender">—</span></div>
-      <div class="drow"><span class="dkey">訂單編號</span><span class="dval" id="d-order" style="font-size:.68rem;color:var(--tm)">—</span></div>
-    </div>
-
-    <!-- 會員資格 -->
-    <div class="dsec">
-      <div class="dsec-label">會員資格</div>
-      <div class="drow"><span class="dkey">等級</span><span class="dval" id="d-level">—</span></div>
-      <div class="drow"><span class="dkey">方案</span><span class="dval" id="d-plan">—</span></div>
-      <div class="drow"><span class="dkey">加入日期</span><span class="dval mono" id="d-join">—</span></div>
-      <div class="drow"><span class="dkey">到期日</span><span class="dval mono" id="d-exp">—</span></div>
-      <div class="drow"><span class="dkey">狀態</span><span class="dval" id="d-status">—</span></div>
-    </div>
-
-    <!-- 收件資訊 -->
-    <div class="dsec" id="d-ship-sec">
-      <div class="dsec-label">收件資訊</div>
-      <div class="drow"><span class="dkey">地址</span><span class="dval" id="d-address"></span></div>
-    </div>
-
-    <!-- 備註 -->
-    <div class="dsec" id="d-note-sec" style="display:none">
-      <div class="dsec-label">備註</div>
-      <div class="addr-box" id="d-note"></div>
-    </div>
-
-    <div class="divider"></div>
-
-    <!-- 訂閱歷史 -->
-    <div class="dsec">
-      <div class="dsec-label" style="cursor:pointer" onclick="toggleSec('pay-sec')">訂閱歷史 <span id="pay-sec-arrow" style="font-size:.6rem">▼</span></div>
-      <div id="pay-sec">
-      <div id="pay-list"><div class="loading"><div class="spinner"></div></div></div>
-      <div class="add-pay-row" style="margin-top:.75rem">
-        <input class="fi" id="pay-date-start" type="date" style="flex:0 0 120px" placeholder="開始日">
-        <input class="fi" id="pay-date-end"   type="date" style="flex:0 0 120px" placeholder="結束日">
-        <select class="fi" id="pay-level" style="flex:0 0 140px">
-          <option value="">選擇階級</option>
-          <option>LV.3 里民暖暖包</option>
-          <option>LV.4 肌肉暖暖包</option>
-          <option>LV.5 真蒸暖暖包</option>
-        </select>
-        <input class="fi" id="pay-note" placeholder="備註（選填）" style="flex:1">
-        <button class="btn btn-g btn-sm" onclick="addPayment()">新增</button>
-      </div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <!-- 福利記錄 -->
-    <div class="dsec">
-      <div class="dsec-label">福利兌換</div>
-      <!-- Tab bar -->
-      <div style="display:flex;border-bottom:.5px solid var(--gold-dim);margin-bottom:.8rem">
-        <button class="reward-tab active" id="rtab-sub" onclick="switchRewardTab('sub',this)" style="flex:1;padding:7px;font-size:.72rem;border:none;cursor:pointer;background:var(--bg);border-bottom:2px solid var(--gold);color:var(--pd);font-weight:500">訂閱福利</button>
-        <button class="reward-tab" id="rtab-gift" onclick="switchRewardTab('gift',this)" style="flex:1;padding:7px;font-size:.72rem;border:none;cursor:pointer;background:var(--gold-dim);color:var(--th)">里民禮品</button>
-      </div>
-      <!-- 訂閱福利 tab -->
-      <div id="reward-panel-sub">
-        <div id="reward-list"><div class="loading"><div class="spinner"></div></div></div>
-        <div style="margin-top:.6rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-          <button class="btn btn-sm btn-g" id="sync-rewards-btn" onclick="syncRewards()">↻ 同步福利</button>
-          <button class="btn btn-sm" onclick="openAddRewardModal()">＋ 手動新增</button>
-          <span style="font-size:.58rem;color:var(--th)">根據加入日期自動產生應有的福利筆數</span>
-        </div>
-      </div>
-      <!-- 里民禮品 tab -->
-      <div id="reward-panel-gift" style="display:none">
-        <div id="gift-list"><div class="loading"><div class="spinner"></div></div></div>
-        <div style="margin-top:.6rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-          <button class="btn btn-sm btn-g" onclick="openAddGiftModal()">＋ 新增里民禮品</button>
-        </div>
-      </div>
-    </div>
-
-  </div>
-  <div class="drw-foot">
-    <button class="btn btn-del btn-sm" onclick="delete會員()">刪除會員</button>
-    <button class="btn btn-sm" onclick="closeDrw()">關閉</button>
-    <button class="btn btn-g btn-sm" onclick="openEditFromDrw()">編輯</button>
-  </div>
-</div>
-
-<!-- Modal 新增/編輯會員 -->
-<div class="mdbg" id="modal-add-member">
-  <div class="md">
-    <div class="mdtitle" id="member-modal-title">新增會員</div>
-    <input type="hidden" id="nm-id">
-    <div class="secdiv">基本資料</div>
-    <div class="f2">
-      <div class="fr"><label class="fl">姓名</label><input class="fi" id="nm-name" placeholder="真實姓名"></div>
-      <div class="fr"><label class="fl">YouTube 會員名稱</label><input class="fi" id="nm-yt" placeholder="頻道顯示名稱"></div>
-    </div>
-    <div class="f2">
-      <div class="fr"><label class="fl">電話</label><input class="fi" id="nm-phone" placeholder="09xx-xxx-xxx"></div>
-      <div class="fr"><label class="fl">Email</label><input class="fi" id="nm-email" placeholder="選填"></div>
-    </div>
-    <div class="f2">
-      <div class="fr"><label class="fl">訂單編號</label><input class="fi" id="nm-order" placeholder="多筆用逗號分隔，例：12345,67890"></div>
-      <div class="fr"></div>
-    </div>
-    <div class="f2">
-      <div class="fr"><label class="fl">生日</label><input class="fi" id="nm-bday" type="date"></div>
-      <div class="fr"><label class="fl">性別</label><select class="fi" id="nm-gender"><option value="">請選擇</option><option>男</option><option>女</option><option>非二元</option></select></div>
-      <div class="fr"><label class="fl">備註</label><input class="fi" id="nm-note" placeholder="喜好、特殊需求…"></div>
-    </div>
-    <div class="fr"><label class="fl">地址</label><input class="fi" id="nm-addr" placeholder="完整地址"></div>
-    <div class="f2">
-
-    </div>
-    <div class="secdiv">會員資格</div>
-    <div class="f3">
-      <div class="fr"><label class="fl">會員等級</label>
-        <select class="fi" id="nm-level">
-          <option value="LV.3 里民暖暖包">LV.3 里民暖暖包</option>
-          <option value="LV.4 肌肉暖暖包">LV.4 肌肉暖暖包</option>
-          <option value="LV.5 真蒸暖暖包">LV.5 真蒸暖暖包</option>
-        </select>
-      </div>
-      <div class="fr"><label class="fl">方案類型</label>
-        <select class="fi" id="nm-plan" onchange="autoCalcExp()"><option value="年繳">年繳</option><option value="單筆">單筆</option></select>
-      </div>
-      <div class="fr"><label class="fl">加入日期</label><input class="fi" id="nm-join" type="date" onchange="autoCalcExp()"></div>
-    </div>
-    <div class="fr" style="max-width:175px"><label class="fl">會員到期日</label><input class="fi" id="nm-exp" type="date"></div>
-    <div class="mdfoot">
-      <button class="btn btn-del" id="nm-del" style="display:none" onclick="delete會員()">刪除</button>
-      <button class="btn" onclick="cancel會員Modal()">取消</button>
-      <button class="btn btn-g" id="nm-submit" onclick="save會員()">新增</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal 新增里民禮品 -->
-<div class="mdbg" id="modal-add-gift">
-  <div class="md">
-    <div class="mdtitle">新增里民禮品</div>
-    <div class="fr">
-      <label class="fl">禮品類型</label>
-      <select class="fi" id="gift-type" onchange="onGiftTypeChange()">
-        <option value="bday">生日禮</option>
-        <option value="other">不定期禮品</option>
-      </select>
-    </div>
-    <div class="fr" id="gift-bday-level-wrap">
-      <label class="fl">生日禮階級</label>
-      <select class="fi" id="gift-bday-level">
-        <option value="LV.1鑰匙圈">LV.1 鑰匙圈</option>
-        <option value="LV.2壓克力卡">LV.2 壓克力卡</option>
-        <option value="LV.3方型立牌">LV.3 方型立牌</option>
-        <option value="LV.4準備中">LV.4 準備中</option>
-      </select>
-    </div>
-    <div class="fr" id="gift-name-wrap" style="display:none">
-      <label class="fl">禮品名稱</label>
-      <input class="fi" id="gift-name" placeholder="例如：端午節禮品">
-    </div>
-    <div class="fr">
-      <label class="fl">說明（選填）</label>
-      <input class="fi" id="gift-note" placeholder="例如：LV.3 方型立牌＋卡片">
-    </div>
-    <div class="fr">
-      <label class="fl">觸發日期</label>
-      <input class="fi" id="gift-date" type="date">
-    </div>
-    <div class="mdfoot">
-      <button class="btn" onclick="closeM('add-gift')">取消</button>
-      <button class="btn btn-g" onclick="confirmAddGift()">新增</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal 福利兌換設定 -->
-<div class="mdbg" id="modal-reward">
-  <div class="md" style="width:380px">
-    <div class="mdtitle" id="reward-modal-title">設定兌換內容</div>
-    <input type="hidden" id="rw-id">
-    <input type="hidden" id="rw-redeemedAt">
-    <input type="hidden" id="rw-allids">
-    <div class="fr" id="rw-count-wrap" style="display:none">
-      <label class="fl">兌換數量</label>
-      <input class="fi" id="rw-count" type="number" min="1" style="width:100px">
-    </div>
-    <div class="fr" id="rw-item-wrap">
-      <label class="fl">兌換項目</label>
-      <input class="fi" id="rw-item" list="rw-item-list" placeholder="可選或手填">
-      <datalist id="rw-item-list"></datalist>
-    </div>
-    <div class="fr" id="rw-illus-wrap" style="display:none">
-      <label class="fl">指定插圖（填寫哪張）</label>
-      <input class="fi" id="rw-illus" placeholder="例如：2024年8月暖暖插圖">
-    </div>
-    <div class="fr"><label class="fl">備註</label><input class="fi" id="rw-note" placeholder="選填"></div>
-    <div class="fr"><label class="fl">兌換日期</label><input class="fi" id="rw-date" type="date"></div>
-    <div class="mdfoot">
-      <button class="btn" onclick="closeM('reward')">取消</button>
-      <button class="btn btn-g" onclick="confirmRedeem()">標記已兌換</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal 手動新增福利 -->
-<div class="mdbg" id="modal-add-reward">
-  <div class="md" style="width:380px">
-    <div class="mdtitle">手動新增福利</div>
-    <div class="fr">
-      <label class="fl">獎勵類型</label>
-      <input class="fi" id="ar-type" list="ar-type-list" placeholder="可選或手填" oninput="arTypeChange()">
-      <datalist id="ar-type-list">
-        <option value="3個月獎勵">
-        <option value="6個月福利">
-        <option value="9個月福利">
-        <option value="12個月獎勵">
-        <option value="生日禮">
-        <option value="不定期禮物">
-      </datalist>
-    </div>
-    <div class="fr">
-      <label class="fl">里程碑</label>
-      <input class="fi" id="ar-milestone" placeholder="例如：3個月">
-    </div>
-    <div class="fr">
-      <label class="fl">觸發日期</label>
-      <input class="fi" type="date" id="ar-trigger">
-    </div>
-    <div class="fr" id="ar-item-wrap">
-      <label class="fl">兌換項目</label>
-      <input class="fi" id="ar-item" list="ar-item-list" placeholder="可選或手填">
-      <datalist id="ar-item-list"></datalist>
-    </div>
-    <div class="fr" id="ar-illus-wrap" style="display:none">
-      <label class="fl">指定插圖</label>
-      <input class="fi" id="ar-illus" placeholder="例如：2024年8月暖暖插圖">
-    </div>
-    <div class="fr">
-      <label class="fl">備註</label>
-      <input class="fi" id="ar-note" placeholder="選填">
-    </div>
-    <div class="mdfoot">
-      <button class="btn" onclick="closeM('add-reward')">取消</button>
-      <button class="btn btn-g" onclick="confirmAddReward()">新增</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal CSV 匯入預覽 -->
-<div class="mdbg" id="modal-csv-import">
-  <div class="md" style="width:520px;max-height:80vh;overflow-y:auto">
-    <div class="mdtitle">匯入 CSV 預覽</div>
-    <div id="csv-preview-info" style="font-size:.72rem;color:var(--th);margin-bottom:.8rem"></div>
-    <div id="csv-preview-list" style="max-height:320px;overflow-y:auto;margin-bottom:1rem"></div>
-    <div id="csv-import-warning" style="font-size:.7rem;color:#A32D2D;margin-bottom:.8rem;display:none"></div>
-    <div class="mdfoot">
-      <button class="btn" onclick="closeM('csv-import')">取消</button>
-      <button class="btn btn-g" id="csv-confirm-btn" onclick="confirmImportCSV()">確認匯入</button>
-    </div>
-  </div>
-</div>
-
-<!-- Modal 活動福利 -->
-<div class="mdbg" id="modal-event-reward">
-  <div class="md" style="width:420px">
-    <div class="mdtitle">活動福利 — 一鍵新增</div>
-    <div class="fr" style="align-items:center">
-      <label class="fl">活動名稱</label>
-      <input class="fi" id="ev-name" placeholder="例如：端午節、週年慶" oninput="updateEvPreview()">
-      <button class="btn btn-sm" id="ev-last-btn" onclick="applyLastEventReward()" style="display:none;margin-left:6px;flex-shrink:0;font-size:.65rem">套用上次</button>
-    </div>
-    <div class="fr">
-      <label class="fl">觸發日期（發放日）</label>
-      <input class="fi" type="date" id="ev-date">
-    </div>
-    <div class="secdiv">各等級禮物設定</div>
-    <div class="fr">
-      <label class="fl" style="color:var(--pd)">LV.3 里民暖暖包</label>
-      <input class="fi" id="ev-lv3" placeholder="留空則不發放" oninput="updateEvPreview()">
-    </div>
-    <div class="fr">
-      <label class="fl" style="color:var(--pd)">LV.4 肌肉暖暖包</label>
-      <input class="fi" id="ev-lv4" placeholder="留空則不發放" oninput="updateEvPreview()">
-    </div>
-    <div class="fr">
-      <label class="fl" style="color:var(--pd)">LV.5 真蒸暖暖包</label>
-      <input class="fi" id="ev-lv5" placeholder="留空則不發放" oninput="updateEvPreview()">
-    </div>
-    <div class="fr">
-      <label class="fl">備註</label>
-      <input class="fi" id="ev-note" placeholder="選填">
-    </div>
-    <div id="ev-preview" style="font-size:.7rem;color:var(--th);margin:.6rem 0;min-height:1.2rem"></div>
-    <div class="mdfoot">
-      <button class="btn" onclick="closeM('event-reward')">取消</button>
-      <button class="btn btn-g" id="ev-submit-btn" onclick="confirmEventReward()">確認新增</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
 
 <script>
-const API = '';
-let members=[], holi天=[], allRewards=[];
-let calY=new Date().getFullYear(), calMo=new Date().getMonth();
-const TODAY=new Date(); TODAY.setHours(0,0,0,0);
-const avList=['av-a','av-b','av-c','av-d','av-e'];
-let curFilter='all', drw會員Id=null, drw會員Payments=[], drw會員Rewards=[];
-
-// ── LEVELS ───────────────────────────────────────────────
-const LEVELS = {
-  'LV.3 里民暖暖包': { cls:'b-lv3', reward3:'相印小卡/半小時占卜', hasIllus:false, items:['相印小卡','半小時占卜'] },
-  'LV.4 肌肉暖暖包': { cls:'b-lv4', reward3:'實體拍立得', hasIllus:true, items:['實體拍立得'], monthlyReward:'半小時占卜' },
-  'LV.5 真蒸暖暖包': { cls:'b-lv5', reward3:'親簽拍立得', hasIllus:true, items:['親簽拍立得'], monthlyReward:'一小時占卜' },
-};
-function lvBadge(lv){
-  const l=LEVELS[lv];
-  if(l) return `<span class="badge ${l.cls}">${lv}</span>`;
-  if(lv) return `<span class="badge b-lv3">${lv}</span>`; // 未知等級用中性樣式
-  return `<span class="badge b-exp">—</span>`;
+function 天Until(s){
+  if(!s) return 9999;
+  const d=new Date(s); d.setHours(0,0,0,0);
+  const today=new Date(); today.setHours(0,0,0,0);
+  return Math.ceil((d-today)/86400000);
 }
-function planBadge(p){ return p==='年繳'?`<span class="badge b-yr">年繳</span>`:`<span class="badge b-once">單筆</span>`; }
-function shipBadge(s){ if(!s)return'—'; return s==='宅配'?`<span class="badge b-home">🏠 宅配</span>`:`<span class="badge b-cvs">🏪 超商</span>`; }
-
-// ── UTILS ────────────────────────────────────────────────
-function 天Until(s){ if(!s)return 9999; const d=new Date(s); d.setHours(0,0,0,0); return Math.ceil((d-TODAY)/86400000); }
-function 天UntilBday(s){
-  if(!s)return 9999;
-  const b=new Date(s);
-  let nx=new Date(TODAY.getFullYear(),b.getMonth(),b.getDate());
-  if(nx<TODAY) nx=new Date(TODAY.getFullYear()+1,b.getMonth(),b.getDate());
-  return Math.ceil((nx-TODAY)/86400000);
-}
-function expStatus(s){
-  if(!s) return{label:'未設定',cls:'b-exp'};
-  const d=天Until(s);
+function expStatus(exp){
+  if(!exp) return{label:'未設定',cls:'b-exp'};
+  const d=天Until(exp);
   if(d<0)  return{label:'已到期',cls:'b-exp'};
-  if(d<=7) return{label:`剩${d}天`,cls:'b-urg'};
-  if(d<=30)return{label:`剩${d}天`,cls:'b-soon'};
+  if(d<=7) return{label:`剩 ${d} 天`,cls:'b-urg'};
+  if(d<=30)return{label:`剩 ${d} 天`,cls:'b-soon'};
   return{label:'有效',cls:'b-ok'};
 }
-function initials(n){ return(n||'??').slice(0,2); }
-function showToast(msg,dur){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); const d=dur??(msg.startsWith('⚠')?3500:2500); setTimeout(()=>t.classList.remove('show'),d); }
-function calcSubscribe(joinStr, expStr){
-  if(!joinStr)return null;
-  const j=new Date(joinStr); j.setHours(0,0,0,0);
-  // 上限：到期日 vs 今天取較早
-  let ceil=new Date(TODAY);
-  if(expStr){ const e=new Date(expStr); e.setHours(0,0,0,0); if(e<ceil) ceil=e; }
-  let yrs=ceil.getFullYear()-j.getFullYear();
-  let mos=ceil.getMonth()-j.getMonth();
-  let 天=ceil.getDate()-j.getDate();
-  if(天<0){ mos--; }
-  if(mos<0){ yrs--; mos+=12; }
-  const total=yrs*12+mos;
-  return{ years:yrs, months:mos, totalMonths:total, since:joinStr };
+function lvBadge(lv){
+  const map={'LV.3 里民暖暖包':'b-lv3','LV.4 肌肉暖暖包':'b-lv4','LV.5 真蒸暖暖包':'b-lv5'};
+  return `<span class="badge ${map[lv]||'b-exp'}">${lv||'—'}</span>`;
 }
 
-// ── API ──────────────────────────────────────────────────
-async function apiFetch(path,opts={}){
-  const controller = new AbortController();
-  const timer = setTimeout(()=>controller.abort(), 15000);
+async function query(){
+  const val = document.getElementById('phone-input').value.trim();
+  if(!val){ showErr('請輸入手機號碼'); return; }
+
+  const btn = document.getElementById('query-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>查詢中…';
+  hideErr();
+  document.getElementById('result').style.display = 'none';
+
   try{
-    const r=await fetch(API+path,{ headers:{'Content-Type':'application/json'}, ...opts, body:opts.body?JSON.stringify(opts.body):undefined, signal:controller.signal });
-    if(!r.ok) throw new Error(r.status);
-    return await r.json();
-  } catch(e) {
-    if(e.name === 'AbortError') throw new Error('TIMEOUT');
-    throw e;
-  } finally { clearTimeout(timer); }
-}
-async function loadAll(){
-  try{
-    const [m,h,rw,apps]=await Promise.all([
-      apiFetch('/api/members'),
-      apiFetch('/api/holidays'),
-      apiFetch('/api/rewards'),
-      apiFetch('/api/applications?status=%E5%BE%85%E5%AF%A9%E6%A0%B8').catch(()=>[]),
-    ]);
-    members=m; holi天=h; allRewards=rw;
-    lastLoadTime = Date.now();
-    TODAY.setTime(new Date().setHours(0,0,0,0)); // 重設今日日期，避免跨午夜問題
-    // 更新審核 badge
-    const badge = document.getElementById('review-badge');
-    if(badge){ if(apps.length>0){badge.style.display='inline';badge.textContent=apps.length;}else{badge.style.display='none';} }
-    renderDash(); filterM(document.getElementById('m-search')?.value||''); render提醒(curFilter); renderCal();
-    // 如果 drawer 是開著的，只更新靜態資料（不重打 loadPayments/loadRewards）
-    if(drw會員Id && document.getElementById('drw').classList.contains('open')){
-      const updated = members.find(x=>x.id===drw會員Id);
-      if(updated) refreshDrwInfo(updated);
-    }
-  }catch(e){ showToast(e.message==='TIMEOUT'?'⚠ 連線逾時，請稍後再試':'⚠ 無法連線，請確認設定'); }
-}
+    const param = `phone=${encodeURIComponent(val)}&_=${Date.now()}`;
+    const r = await fetch(`/api/member-query?${param}`);
+    const data = await r.json();
 
-// ── UTILS (debounce) ────────────────────────────────────
-function debounce(fn, ms){
-  let t;
-  return function(...args){ clearTimeout(t); t = setTimeout(()=>fn.apply(this,args), ms); };
-}
-
-// ── NAV ──────────────────────────────────────────────────
-function go(v,el){
-  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
-  document.querySelectorAll('.ni').forEach(x=>x.classList.remove('active'));
-  document.getElementById('view-'+v).classList.add('active');
-  if(el) el.classList.add('active');
-}
-
-// ── MODAL / DRAWER ───────────────────────────────────────
-function openM(id){ document.getElementById('modal-'+id).classList.add('open'); }
-function closeM(id){
-  document.getElementById('modal-'+id).classList.remove('open');
-  if(id==='reward'){ redeemRewardId=null; redeem會員Level=null; }
-}
-// 背景點擊不關閉 modal（避免誤觸遺失資料）
-document.addEventListener('keydown', e => {
-  if(e.key !== 'Escape') return;
-  // 關閉最上層開啟的 modal
-  const openModals = [...document.querySelectorAll('.mdbg.open')];
-  if(openModals.length){
-    const last = openModals[openModals.length-1];
-    if(last.style.pointerEvents === 'none') return; // 進行中不關閉
-    last.classList.remove('open');
-    return;
-  }
-  // 關閉 drawer
-  if(document.getElementById('drw').classList.contains('open')) closeDrw();
-});
-
-function openDrw(m){
-  if(!m) return;
-  drw會員Id=m.id;
-  refreshDrwInfo(m);
-  document.getElementById('drw-bg').classList.add('open');
-  document.getElementById('drw').classList.add('open');
-  // 依 localStorage 偏好展開/收合
-  ['pay-sec','reward-sec'].forEach(id=>{
-    const el=document.getElementById(id);
-    const arrow=document.getElementById(id+'-arrow');
-    if(!el) return;
-    let pref;
-    try { pref = localStorage.getItem('drw_sec_'+id); } catch(e){}
-    const open = pref === null ? true : pref === '1'; // 預設展開
-    el.style.display = open ? '' : 'none';
-    if(arrow) arrow.textContent = open ? '▼' : '▶';
-  });
-  loadPayments(m.id);
-  loadRewards(m.id);
-}
-function refreshDrwInfo(m){
-  if(!m) return;
-  document.getElementById('d-name').textContent=m.memberName||m.name||'—';
-  document.getElementById('d-yt').textContent=m.memberName?m.name:'';
-  const sub=calcSubscribe(m.join, m.exp);
-  const numEl=document.getElementById('d-sub-num');
-  if(sub && sub.totalMonths >= 0){
-    if(sub.years>0){ numEl.textContent=sub.years; document.getElementById('d-sub-label').textContent=`年 ${sub.months} 個月`; }
-    else{ numEl.textContent=sub.totalMonths; document.getElementById('d-sub-label').textContent='個月'; }
-    const joinFmt=m.join?m.join.replace(/^(\d{4})-(\d{2})-(\d{2})$/,'$1 年 $2 月 $3 日'):'';
-    document.getElementById('d-sub-detail').textContent=`自 ${joinFmt} 加入`;
-  } else {
-    numEl.textContent='—'; document.getElementById('d-sub-label').textContent=''; document.getElementById('d-sub-detail').textContent='未填加入日期';
-  }
-  const phoneEl=document.getElementById('d-phone');
-  phoneEl.textContent=m.phone||'—';
-  phoneEl.style.cursor=m.phone?'pointer':'';
-  phoneEl.title=m.phone?'點擊複製電話':'';
-  phoneEl.onclick=m.phone?()=>{navigator.clipboard.writeText(m.phone).then(()=>showToast('✦ 電話已複製'));}:null;
-  const emailEl=document.getElementById('d-email');
-  emailEl.textContent=m.email||'—';
-  emailEl.style.cursor=m.email?'pointer':'';
-  emailEl.title=m.email?'點擊複製 Email':'';
-  emailEl.onclick=m.email?()=>{navigator.clipboard.writeText(m.email).then(()=>showToast('✦ Email 已複製'));}:null;
-  document.getElementById('d-bday').textContent=m.bday||'—';
-  const genderEl=document.getElementById('d-gender'); if(genderEl) genderEl.textContent=m.gender||'—';
-  const orderEl=document.getElementById('d-order'); if(orderEl) orderEl.textContent=m.orderNos||'—';
-  document.getElementById('d-level').innerHTML=lvBadge(m.level);
-  document.getElementById('d-plan').innerHTML=planBadge(m.plan);
-  document.getElementById('d-join').textContent=m.join||'—';
-  document.getElementById('d-exp').textContent=m.exp||'—';
-  const st=expStatus(m.exp);
-  const daysStr=m.exp?`<span style="font-size:.62rem;color:var(--th);margin-left:4px">${m.exp}</span>`:'';
-  document.getElementById('d-status').innerHTML=`<span class="badge ${st.cls}">${st.label}</span>${daysStr}`;
-  const addrEl=document.getElementById('d-address'); if(addrEl) addrEl.textContent=m.address||'';
-  const shipSec=document.getElementById('d-ship-sec'); if(shipSec) shipSec.style.display=m.address?'block':'none';
-  document.getElementById('d-note-sec').style.display=m.note?'block':'none';
-  document.getElementById('d-note').textContent=m.note||'';
-  const lvSel = document.getElementById('pay-level');
-  if(lvSel) lvSel.value = m.level || '';
-}
-function nmUpdateDistricts(){
-  const city = document.getElementById('nm-city').value;
-  const dist = document.getElementById('nm-district');
-  dist.innerHTML = '<option value="">區域</option>';
-  if(city && DISTRICTS[city]){
-    DISTRICTS[city].forEach(d=>{
-      const opt = document.createElement('option');
-      opt.value = d; opt.textContent = d;
-      dist.appendChild(opt);
-    });
-  }
-}
-
-function closeDrw(){ document.getElementById('drw-bg').classList.remove('open'); document.getElementById('drw').classList.remove('open'); drw會員Id=null; drw會員Payments=[]; drw會員Rewards=[]; }
-function openEditFromDrw(){ const m=members.find(x=>x.id===drw會員Id); if(m){ closeDrw(); edit會員(m); } }
-
-// ── MEMBER MODAL ─────────────────────────────────────────
-function openAdd會員(){ reset會員Modal(); openM('add-member'); }
-function edit會員(m){
-  reset會員Modal();
-  document.getElementById('member-modal-title').textContent='編輯會員';
-  document.getElementById('nm-id').value=m.id;
-  document.getElementById('nm-name').value=m.name||'';
-  document.getElementById('nm-yt').value=m.memberName||'';
-  document.getElementById('nm-phone').value=m.phone||'';
-  document.getElementById('nm-email').value=m.email||'';
-  document.getElementById('nm-bday').value=m.bday||'';
-  document.getElementById('nm-level').value=m.level||'LV.3 里民暖暖包';
-  document.getElementById('nm-plan').value=m.plan||'年繳';
-  document.getElementById('nm-join').value=m.join||'';
-  document.getElementById('nm-exp').value=m.exp||'';
-  document.getElementById('nm-note').value=m.note||'';
-  document.getElementById('nm-addr').value=m.address||'';
-  document.getElementById('nm-order').value=m.orderNos||'';
-  document.getElementById('nm-gender').value=m.gender||'';
-  document.getElementById('nm-del').style.display='inline-flex';
-  document.getElementById('nm-submit').textContent='儲存';
-  openM('add-member');
-}
-function autoCalcExp(){
-  const join = document.getElementById('nm-join').value;
-  const plan = document.getElementById('nm-plan').value;
-  if(!join) return;
-  const d = new Date(join);
-  if(isNaN(d.getTime())) return;
-  d.setMonth(d.getMonth() + (plan === '單筆' ? 1 : 12));
-  const exp = d.toISOString().slice(0,10);
-  if(exp <= join) return;
-  const isEdit = !!document.getElementById('nm-id').value;
-  if(!isEdit){
-    // 新增模式才自動帶入到期日，編輯模式不動
-    document.getElementById('nm-exp').value = exp;
-  }
-}
-function cancel會員Modal(){ reset會員Modal(); closeM('add-member'); }
-function reset會員Modal(){
-  document.getElementById('member-modal-title').textContent='新增會員';
-  document.getElementById('nm-id').value='';
-  ['nm-name','nm-yt','nm-phone','nm-email','nm-bday','nm-join','nm-exp','nm-note','nm-addr','nm-order'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('nm-gender').value='';
-
-  document.getElementById('nm-level').value='LV.3 里民暖暖包';
-  document.getElementById('nm-plan').value='年繳';
-  document.getElementById('nm-del').style.display='none';
-  document.getElementById('nm-submit').textContent='新增';
-}
-async function save會員(){
-  const name=document.getElementById('nm-name').value.trim();
-  if(!name){showToast('請填寫姓名');return;}
-  const id=document.getElementById('nm-id').value;
-  const payload={ name, memberName:document.getElementById('nm-yt').value, phone:document.getElementById('nm-phone').value, email:document.getElementById('nm-email').value, bday:document.getElementById('nm-bday').value, level:document.getElementById('nm-level').value, plan:document.getElementById('nm-plan').value, join:document.getElementById('nm-join').value, exp:document.getElementById('nm-exp').value, address:document.getElementById('nm-addr').value, note:document.getElementById('nm-note').value, orderNos:document.getElementById('nm-order').value, gender:document.getElementById('nm-gender').value };
-  const btn=document.getElementById('nm-submit'); btn.disabled=true; btn.textContent='儲存中…';
-  try{
-    if(id){
-      const u=await apiFetch(`/api/members?id=${id}`,{method:'PATCH',body:payload});
-      members=members.map(m=>m.id===id?u:m);
-      showToast('✦ 已更新');
-      cancel會員Modal(); renderDash(); filterM(document.getElementById('m-search')?.value||''); render提醒(curFilter); renderCal();
-      // 如果 drawer 是開著的同一個會員，只刷新靜態資料（不重打 API）
-      if(drw會員Id===id) refreshDrwInfo(u);
+    if(!r.ok){
+      if(r.status===404) showErr('查無此會員，請確認手機號碼是否正確');
+      else showErr(data.error || '查詢失敗，請稍後再試');
       return;
     }
-    else{
-      const c=await apiFetch('/api/members',{method:'POST',body:payload});
-      members.push(c);
-      showToast('✦ 已新增會員');
-      cancel會員Modal(); renderDash(); filterM(document.getElementById('m-search')?.value||''); render提醒(curFilter); renderCal();
-      openDrw(c);
-      return;
-    }
-  }catch(e){showToast('⚠ 儲存失敗');}
-  finally{btn.disabled=false; btn.textContent=id?'儲存':'新增';}
-}
-async function delete會員(){
-  const id=drw會員Id||document.getElementById('nm-id').value;
-  const delM = members.find(m=>m.id===id);
-  if(!id||!confirm(`確定要刪除「${delM?.name||'這位會員'}」？此操作無法復原。`))return;
-  // disable 兩個刪除按鈕防重複點擊
-  const delBtns = [document.getElementById('nm-del'), document.querySelector('.drw-foot .btn-del')].filter(Boolean);
-  delBtns.forEach(b=>b.disabled=true);
-  try{
-    await apiFetch(`/api/members?id=${id}`,{method:'DELETE'});
-    members=members.filter(m=>m.id!==id);
-    allRewards=allRewards.filter(r=>r.memberId!==id);
-    showToast('已刪除');
-    closeM('add-member'); closeDrw(); renderDash(); filterM(document.getElementById('m-search')?.value||''); render提醒(curFilter); renderCal();
-  }catch(e){ delBtns.forEach(b=>b.disabled=false); showToast('⚠ 刪除失敗');}
-}
-
-// ── DASHBOARD ────────────────────────────────────────────
-function renderDash(){
-  const activeCount = members.filter(m=>m.exp && 天Until(m.exp)>=0).length;
-  document.getElementById('s-total').textContent=`${activeCount} / ${members.length}`;
-  document.getElementById('s-bday').textContent=members.filter(m=>m.bday&&m.exp&&天Until(m.exp)>=0&&parseInt(m.bday.slice(5,7))===TODAY.getMonth()+1).length;
-  document.getElementById('s-exp7').textContent=members.filter(m=>{const d=天Until(m.exp);return d>=0&&d<=7;}).length;
-  const pendingRewards=allRewards.filter(r=>!r.redeemed).length;
-  document.getElementById('s-reward').textContent=pendingRewards;
-
-  const icons=['🎂','✨','🌸','🎁'];
-  const thisMonth = TODAY.getMonth()+1;
-  const bd=[...members].filter(m=>m.bday&&m.exp&&天Until(m.exp)>=0&&parseInt(m.bday.slice(5,7))===thisMonth).sort((a,b)=>parseInt(a.bday.slice(8))-parseInt(b.bday.slice(8)));
-  document.getElementById('dash-bday').innerHTML=bd.length?bd.map((m,i)=>{const d=天UntilBday(m.bday);return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${m.id}'))"><div class="ri-dot rb">${icons[i]||'🎂'}</div><div class="ri-info"><div class="ri-name">${m.memberName||m.name}</div><div class="ri-sub">${m.memberName?m.name+' · ':''} ${m.level} · ${m.bday.slice(5).replace('-','/')}</div></div><div class="ri-天"><span class="dn${d<=7?' red':''}">${d}</span><span class="dl">天</span></div></div>`;}).join(''):'<div class="empty">本月無壽星</div>';
-
-  const upcoming3Mo=[...members].filter(m=>m.bday&&m.exp&&天Until(m.exp)>=0&&天UntilBday(m.bday)>=0&&天UntilBday(m.bday)<=90).sort((a,b)=>天UntilBday(a.bday)-天UntilBday(b.bday));
-  const bdUpcoming=upcoming3Mo.slice(0,4);
-  const bdMore = upcoming3Mo.length > 4 ? `<div style="text-align:right;margin-top:4px"><span style="font-size:.65rem;color:var(--purple);cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('birthday',document.getElementById('remind-btn-birthday')),50)">查看全部 ${upcoming3Mo.length} 筆 →</span></div>` : '';
-  document.getElementById('dash-exp').innerHTML=(bdUpcoming.length?bdUpcoming.map(m=>{const d=天UntilBday(m.bday);return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${m.id}'))"><div class="ri-dot rb">🎂</div><div class="ri-info"><div class="ri-name">${m.memberName||m.name}</div><div class="ri-sub">${m.level} · ${m.bday.slice(5).replace('-','/')}</div></div><div class="ri-天"><span class="dn${d<=7?' red':''}">${d}</span><span class="dl">天</span></div></div>`;}).join(''):'<div class="empty">近3個月無生日</div>')+bdMore;
-
-  const allPending=allRewards.filter(r=>!r.redeemed);
-  const rw=allPending.slice(0,4);
-  const rwMore = allPending.length > 4 ? `<div style="text-align:right;margin-top:4px"><span style="font-size:.65rem;color:var(--purple);cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('reward',document.getElementById('remind-btn-reward')),50)">查看全部 ${allPending.length} 筆 →</span></div>` : '';
-  document.getElementById('dash-reward').innerHTML=(rw.length?rw.map(r=>{const m=members.find(x=>x.id===r.memberId)||{};const typeLabel = r.type==='里民禮物'?'🎪 活動':r.type==='12個月獎勵'?'🏆 週邊':'🎁 訂閱';
-return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${r.memberId}'))"><div class="ri-dot rg">${r.type==='里民禮物'?'🎪':r.type==='12個月獎勵'?'🏆':'🎁'}</div><div class="ri-info"><div class="ri-name">${m.memberName||m.name||'—'}</div><div class="ri-sub">${typeLabel} · ${r.milestone} · ${r.rewardItem||''}</div></div></div>`;}).join(''):'<div class="empty">無待兌換福利</div>')+rwMore;
-}
-
-// ── 會員列表 TABLE ────────────────────────────────────────
-function render會員(list){
-  const tb=document.getElementById('m-tbody');
-  if(!list.length){tb.innerHTML=`<tr><td colspan="9"><div class="empty">找不到會員</div></td></tr>`; renderMStats(list); return;}
-  tb.innerHTML=list.map((m,i)=>{
-    const st=expStatus(m.exp);
-    const sub=calcSubscribe(m.join, m.exp);
-    const subStr=sub&&sub.totalMonths>=0?( sub.years>0?`${sub.years}年${sub.months}個月`:`${sub.totalMonths}個月` ):'—';
-    const avIdx = m.id ? m.id.charCodeAt(0) % 5 : i % 5;
-    return`<tr style="cursor:pointer" onclick="openDrw(members.find(x=>x.id==='${m.id}'))">
-      <td><div class="mrow"><div class="av ${avList[avIdx % 5]}">${initials(m.memberName||m.name)}</div><div><div class="mname">${m.memberName||m.name}</div>${m.memberName?`<div class="myt">${m.name}</div>`:''}</div></div></td>
-      <td style="font-size:.7rem;color:var(--tm)">${m.memberName||'—'}</td>
-      <td>${lvBadge(m.level)}</td>
-      <td>${planBadge(m.plan)}</td>
-      <td style="font-size:.72rem;color:var(--purple);font-weight:500">${subStr}</td>
-      <td style="font-size:.7rem;font-weight:500;color:var(--pd)">${m.exp||'—'}</td>
-      <td><span class="badge ${st.cls}">${st.label}</span></td>
-      <td><button class="btn btn-sm" onclick="event.stopPropagation();edit會員(members.find(x=>x.id==='${m.id}'))">編輯</button></td>
-    </tr>`;
-  }).join('');
-  renderMStats(list);
-}
-
-function renderMStats(list){
-  const el = document.getElementById('m-stats');
-  if(!el) return;
-  const total = list.length;
-  const active = list.filter(m=>{ const d=天Until(m.exp); return m.exp && d>=0; }).length;
-  const expired = list.filter(m=>{ const d=天Until(m.exp); return m.exp && d<0; }).length;
-  const exp7 = list.filter(m=>{ const d=天Until(m.exp); return d>=0&&d<=7; }).length;
-  // 等級統計
-  const lvCount = {};
-  list.forEach(m=>{ if(m.level){ lvCount[m.level]=(lvCount[m.level]||0)+1; } });
-  const lvStr = Object.entries(lvCount).sort((a,b)=>b[1]-a[1]).map(([lv,n])=>{ const m=lv.match(/LV\.\d+/); return `${m?m[0]:lv.split(' ')[0]} ${n}`; }).join('・');
-  const noExp = list.filter(m => !m.exp).length;
-  el.innerHTML = [
-    `<span>共 <b style="color:var(--pd)">${total}</b> 筆</span>`,
-    active  ? `<span style="color:var(--green)">有效 <b>${active}</b></span>` : '',
-    expired ? `<span style="color:var(--th)">已到期 <b>${expired}</b></span>` : '',
-    noExp   ? `<span style="color:var(--tm)">未填到期日 <b>${noExp}</b></span>` : '',
-    exp7    ? `<span style="color:#A32D2D">7天內到期 <b>${exp7}</b></span>` : '',
-    lvStr   ? `<span style="margin-left:auto">${lvStr}</span>` : '',
-  ].filter(Boolean).join('<span style="color:var(--gold-dim)"> ｜ </span>');
-}
-let curMFilter = 'all';
-function setMFilter(type, el) {
-  curMFilter = type;
-  document.querySelectorAll('#view-members .filter-row .btn').forEach(b => b.classList.remove('f-on'));
-  el.classList.add('f-on');
-  const search = document.getElementById('m-search');
-  search.value = '';
-  const sortEl = document.getElementById('m-sort');
-  if(sortEl) sortEl.value = '';
-  filterM('');
-}
-function applyMFilter(list) {
-  if (curMFilter === 'active')  return list.filter(m => { const d = 天Until(m.exp); return m.exp && d >= 0; });
-  if (curMFilter === 'expired') return list.filter(m => { const d = 天Until(m.exp); return m.exp && d < 0; });
-  return list;
-}
-const debouncedFilterM = debounce(filterM, 150);
-function filterM(q) {
-  let searched = members.filter(m =>
-    (m.name||'').includes(q) ||
-    (m.memberName||'').includes(q) ||
-    (m.phone||'').includes(q) ||
-    (m.email||'').includes(q) ||
-    (m.note||'').includes(q)
-  );
-  searched = applyMFilter(searched);
-  // 排序
-  const sort = document.getElementById('m-sort')?.value || '';
-  if(sort === 'exp-asc')   searched = [...searched].sort((a,b)=>(a.exp||'9999')>(b.exp||'9999')?1:-1);
-  if(sort === 'exp-desc')  searched = [...searched].sort((a,b)=>{ if(!a.exp&&!b.exp) return 0; if(!a.exp) return 1; if(!b.exp) return -1; return a.exp>b.exp?-1:1; });
-  if(sort === 'join-asc')  searched = [...searched].sort((a,b)=>(a.join||'')>(b.join||'')?1:-1);
-  if(sort === 'join-desc') searched = [...searched].sort((a,b)=>(a.join||'')>(b.join||'')?-1:1);
-  if(sort === 'name-asc')  searched = [...searched].sort((a,b)=>(a.name||'').localeCompare(b.name||'','zh-TW'));
-  render會員(searched);
-}
-
-// ── PAYMENTS ─────────────────────────────────────────────
-async function loadPayments(memberId){
-  const reqId = memberId;
-  document.getElementById('pay-list').innerHTML='<div class="loading"><div class="spinner"></div></div>';
-  try{
-    const list=await apiFetch(`/api/payments?memberId=${memberId}`);
-    if(drw會員Id !== reqId) return; // 已切換到其他會員
-    drw會員Payments=list;
-    renderPayments(list);
-  }catch(e){ if(drw會員Id===reqId) document.getElementById('pay-list').innerHTML='<div class="empty">載入失敗</div>'; }
-}
-function renderPayments(list){
-  if(!list.length){ document.getElementById('pay-list').innerHTML='<div class="empty">尚無訂閱記錄</div>'; return; }
-  // 計算總訂閱月數（合併重疊區間）
-  const intervals = list
-    .filter(p => p.dateStart && p.dateEnd && p.dateEnd > p.dateStart)
-    .map(p => [new Date(p.dateStart).getTime(), new Date(p.dateEnd).getTime()])
-    .sort((a,b) => a[0]-b[0]);
-  let totalSubMonths = 0;
-  let merged = [];
-  intervals.forEach(([s,e]) => {
-    if(merged.length && s <= merged[merged.length-1][1]) {
-      merged[merged.length-1][1] = Math.max(merged[merged.length-1][1], e);
-    } else { merged.push([s,e]); }
-  });
-  merged.forEach(([s,e]) => {
-    const sd = new Date(s), ed = new Date(e);
-    const months = (ed.getFullYear()-sd.getFullYear())*12 + (ed.getMonth()-sd.getMonth());
-    if(months>0) totalSubMonths += months;
-  });
-  const statsStr = totalSubMonths > 0
-    ? `<div style="font-size:.65rem;color:var(--th);margin-top:.5rem;text-align:right">共 ${totalSubMonths} 個月訂閱記錄</div>`
-    : '';
-  document.getElementById('pay-list').innerHTML=list.map(p=>`
-    <div class="pay-item">
-      <span class="pay-period">${p.dateStart||p.date||'—'} ～ ${p.dateEnd||'—'}</span>
-      <span class="pay-level">${p.level||''}</span>
-      <span class="pay-note">${p.note||''}</span>
-      <button class="pay-del" onclick="editPayment('${p.id}')" title="編輯" style="margin-right:2px">✎</button>
-      <button class="pay-del" onclick="deletePayment('${p.id}',false,this)" title="刪除">✕</button>
-    </div>`).join('') + statsStr;
-}
-async function addPayment(){
-  const dateStart=document.getElementById('pay-date-start').value;
-  const dateEnd=document.getElementById('pay-date-end').value;
-  const level=document.getElementById('pay-level').value;
-  if(!dateStart||!dateEnd||!level){showToast('請填寫開始日、結束日和階級');return;}
-  if(dateEnd<=dateStart){showToast('⚠ 結束日必須晚於開始日');return;}
-  const btn=document.querySelector('.add-pay-row .btn-g');
-  if(btn) btn.disabled=true;
-  try{
-    const p=await apiFetch('/api/payments',{method:'POST',body:{ memberId:drw會員Id, dateStart, dateEnd, level, note:document.getElementById('pay-note').value }});
-    drw會員Payments.push(p);
-    drw會員Payments.sort((a,b)=>(a.dateStart||a.date||'')>(b.dateStart||b.date||'')?1:-1);
-    renderPayments(drw會員Payments);
-    // 自動帶入下一筆開始日
-    const nextStart = new Date(dateEnd);
-    nextStart.setDate(nextStart.getDate()+1);
-    document.getElementById('pay-date-start').value = nextStart.toISOString().slice(0,10);
-    document.getElementById('pay-date-end').value='';
-    document.getElementById('pay-note').value='';
-    showToast('✦ 訂閱記錄已新增');
-  }catch(e){showToast('⚠ 新增失敗');}
-  finally{ if(btn) btn.disabled=false; }
-}
-function editPayment(id) {
-  const p = drw會員Payments.find(x => x.id === id);
-  if (!p) return;
-  // 填入表單，並記住編輯中的 id
-  document.getElementById('pay-date-start').value = p.dateStart || p.date || '';
-  document.getElementById('pay-date-end').value = p.dateEnd || '';
-  document.getElementById('pay-level').value = p.level || '';
-  document.getElementById('pay-note').value = p.note || '';
-  document.getElementById('pay-date-start').dataset.editId = id;
-  // 新增按鈕改成儲存
-  const btn = document.querySelector('.add-pay-row .btn-g');
-  if(btn){ btn.textContent='儲存'; btn.onclick = ()=>savePayment(id); }
-}
-
-async function savePayment(id){
-  const dateStart=document.getElementById('pay-date-start').value;
-  const dateEnd=document.getElementById('pay-date-end').value;
-  const level=document.getElementById('pay-level').value;
-  if(!dateStart||!dateEnd||!level){showToast('請填寫開始日、結束日和階級');return;}
-  if(dateEnd<=dateStart){showToast('⚠ 結束日必須晚於開始日');return;}
-  const btn=document.querySelector('.add-pay-row .btn-g');
-  if(btn) btn.disabled=true;
-  try{
-    const p=await apiFetch(`/api/payments?id=${id}`,{method:'PATCH',body:{dateStart,dateEnd,level,note:document.getElementById('pay-note').value}});
-    drw會員Payments=drw會員Payments.map(x=>x.id===id?p:x);
-    renderPayments(drw會員Payments);
-    // 重設按鈕
-    document.getElementById('pay-date-start').value='';
-    document.getElementById('pay-date-end').value='';
-    document.getElementById('pay-note').value='';
-    delete document.getElementById('pay-date-start').dataset.editId;
-    showToast('✦ 已更新');
-  }catch(e){showToast('⚠ 更新失敗');}
-  finally{
-    if(btn){ btn.disabled=false; btn.textContent='新增'; btn.onclick=addPayment; }
+    renderResult(data);
+  }catch(e){
+    showErr('連線失敗，請稍後再試');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = '查詢';
   }
 }
-async function deletePayment(id, silent=false, delBtn=null){
-  if(!silent && !confirm('刪除這筆訂閱記錄？'))return;
-  if(delBtn) delBtn.disabled = true;
-  try{
-    await apiFetch(`/api/payments?id=${id}`,{method:'DELETE'});
-    drw會員Payments=drw會員Payments.filter(p=>p.id!==id); renderPayments(drw會員Payments);
-    showToast('已刪除');
-  }catch(e){ if(delBtn) delBtn.disabled=false; showToast('⚠ 刪除失敗');}
-}
 
-// ── REWARDS ──────────────────────────────────────────────
-function addMonthsSafe(base, months) {
-  // 保留原始日期（如 1/4 + 3個月 = 4/4），月底溢出時用當月最後一天
-  const d = new Date(base.getFullYear(), base.getMonth() + months, base.getDate());
-  // 如果日期溢出（例如 1/31 + 1個月溢出到 3/3），退回到月底
-  if(d.getMonth() !== (base.getMonth() + months) % 12) {
-    d.setDate(0); // 退回到上個月最後一天
+function renderResult({member, rewards}){
+  const displayName = member.memberName || '會員';
+  document.getElementById('m-avatar').textContent = displayName.slice(0,1);
+  document.getElementById('m-name').textContent = displayName;
+  const st = expStatus(member.exp);
+  document.getElementById('m-meta').innerHTML =
+    lvBadge(member.level) +
+    `<span class="badge ${member.plan==='年繳'?'b-yr':'b-once'}">${member.plan||'—'}</span>` +
+    `<span class="badge ${st.cls}">${st.label}</span>`;
+  document.getElementById('m-bday').textContent = member.bday || '—';
+  // 計算已訂閱第幾個月（第N次繳款）
+  if(member.join){
+    const j = new Date(member.join); j.setHours(0,0,0,0);
+    const today = new Date(); today.setHours(0,0,0,0);
+    let mos = (today.getFullYear()-j.getFullYear())*12 + (today.getMonth()-j.getMonth());
+    if(today.getDate() >= j.getDate()) mos++;
+    document.getElementById('m-submonth').textContent = `第 ${mos} 個月`;
   }
-  return d;
-}
-function calcExpectedRewards(member){
-  if(!member.join) return [];
-  const j = new Date(member.join); j.setHours(0,0,0,0);
-  const lvInfo = LEVELS[member.level];
-  if(!lvInfo) return [];
-  // 以觸發日是否已到今天來判斷（繳款日當天即可發福利）
-  const rewards = [];
-  const joinDate = new Date(member.join);
-  // 先算最大可能月數（到今天最多幾個月）
-  let maxMos = (TODAY.getFullYear() - j.getFullYear()) * 12 + (TODAY.getMonth() - j.getMonth()) + 1;
-  // 觸發日 = 加入日 + (N-1)個月，即第N次繳款日
-  // 例：1/4加入，3個月福利在3/4（第三次繳款）觸發
-  for(let mo=3; mo<=maxMos; mo+=3){
-    const trigDate = addMonthsSafe(joinDate, mo-1);
-    if(trigDate <= TODAY)
-      rewards.push({ milestone:`${mo}個月`, type:'3個月獎勵', triggerDate:trigDate.toISOString().slice(0,10) });
-  }
-  for(let mo=12; mo<=maxMos; mo+=12){
-    const trigDate = addMonthsSafe(joinDate, mo-1);
-    if(trigDate <= TODAY)
-      rewards.push({ milestone:`${mo}個月(週邊)`, type:'12個月獎勵', triggerDate:trigDate.toISOString().slice(0,10) });
-  }
-  // 每月占卜（LV.4 半小時、LV.5 一小時）
-  if(lvInfo.monthlyReward){
-    let maxMosMonthly = (TODAY.getFullYear() - j.getFullYear()) * 12 + (TODAY.getMonth() - j.getMonth());
-    if(TODAY.getDate() >= j.getDate()) maxMosMonthly++;
-    for(let mo=1; mo<=maxMosMonthly; mo++){
-      const trigDate = addMonthsSafe(joinDate, mo-1);
-      if(trigDate <= TODAY)
-        rewards.push({ milestone:`${mo}個月占卜`, type:'每月占卜', triggerDate:trigDate.toISOString().slice(0,10) });
-    }
-  }
-  // 每年生日禮 LV1-LV4 四筆，依等級帶入兌換內容
-  const bdaySuffix = member.level==='LV.5 真蒸暖暖包'?'+卡片+影片':member.level==='LV.4 肌肉暖暖包'?'+卡片+語音':'+卡片';
-  const bdayLevels = ['LV.1鑰匙圈','LV.2壓克力卡','LV.3方型立牌','LV.4準備中'];
-  bdayLevels.forEach(lv=>{
-    rewards.push({
-      milestone:   lv,           // 里程碑：LV.1鑰匙圈
-      type:        '里民禮物',
-      rewardItem:  '生日禮',     // 兌換內容固定
-      note:        lv+bdaySuffix, // 備註：LV.1鑰匙圈+卡片
-      triggerDate: TODAY.toISOString().slice(0,10),
-    });
-  });
+  document.getElementById('m-join').textContent = member.join || '—';
+  document.getElementById('m-exp').textContent = member.exp || '—';
+  document.getElementById('m-status').innerHTML = `<span class="badge ${st.cls}">${st.label}</span>`;
 
-  if(!rewards.length) return [];
-  return rewards;
-}
 
-async function loadRewards(memberId){
-  const reqId = memberId;
-  document.getElementById('reward-list').innerHTML='<div class="loading"><div class="spinner"></div></div>';
-  try{
-    const list=await apiFetch(`/api/rewards?memberId=${memberId}`);
-    if(drw會員Id !== reqId) return; // 已切換到其他會員
-    drw會員Rewards=list;
-    renderRewards(list, memberId);
-  }catch(e){ if(drw會員Id===reqId) document.getElementById('reward-list').innerHTML='<div class="empty">載入失敗</div>'; }
-}
+  const total = rewards.length;
+  const redeemed = rewards.filter(r=>r.redeemed).length;
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-redeemed').textContent = redeemed;
+  document.getElementById('s-pending').textContent = total - redeemed;
 
-function renderRewards(list, memberId){
-  // 訂閱福利 tab 只顯示非里民禮物的記錄
-  list = list.filter(r=>r.type!=='里民禮物');
-  if(!list.length){ document.getElementById('reward-list').innerHTML='<div class="empty">尚無福利記錄，點「同步福利」產生</div>'; return; }
-  const m=members.find(x=>x.id===memberId)||{};
-  const lvInfo=LEVELS[m.level]||{};
-  // 同類型福利合併（依 type 和 redeemed 狀態分組）
+  // 同類型合併
   const typeGroups = {};
-  list.forEach(r=>{
-    const key = r.type + '_' + (r.redeemed?'1':'0') + (r.type==='里民禮物'?'_'+r.milestone:'');
+  rewards.forEach(r=>{
+    const key = r.type + '_' + (r.redeemed?'1':'0');
     if(!typeGroups[key]) typeGroups[key]={type:r.type,redeemed:r.redeemed,items:[]};
     typeGroups[key].items.push(r);
   });
-  const mergedList = Object.values(typeGroups).map(g=>{
+  const mergedRewards = Object.values(typeGroups).map(g=>{
     if(g.items.length===1) return {...g.items[0], count:1};
-    return {
-      id: g.items[0].id,
-      type: g.type,
-      milestone: g.items[0].milestone,
-      rewardItem: g.items[0].rewardItem,
-      redeemed: g.redeemed,
-      redeemedAt: g.items[g.items.length-1]?.redeemedAt||'',
-      triggerDate: g.items[0]?.triggerDate||'',
-      count: g.items.length,
-      allIds: g.items.map(x=>x.id),
-    };
+    return {...g.items[0], count:g.items.length, milestone:g.items[0].milestone};
   });
 
-  // 依年份分組
-  const byYear={};
-  mergedList.forEach(r=>{
-    const yr=r.triggerDate?r.triggerDate.slice(0,4):'未知';
-    if(!byYear[yr]) byYear[yr]=[];
-    byYear[yr].push(r);
-  });
-  const years=Object.keys(byYear).sort((a,b)=>{ if(a==='未知') return 1; if(b==='未知') return -1; return b-a; });
-  document.getElementById('reward-list').innerHTML=years.map(yr=>`
-    <div class="reward-year-group">
-      ${yr!=='未知'?`<div class="reward-year-label">${yr}</div>`:''}
-      ${byYear[yr].map(r=>`
-      <div class="reward-item${r.redeemed?' redeemed':''}">
-        <div class="reward-badge-wrap">
-          ${r.type==='里民禮物'
-            ? `<div class="reward-milestone" style="font-size:.55rem;letter-spacing:0">${r.milestone&&r.milestone.includes('生日')?'🎂':'🎪'}</div><div class="reward-milestone-label">${r.milestone&&r.milestone.includes('生日')?'生日':'活動'}</div>`
-            : `<div class="reward-milestone">${r.milestone.replace('個月(週邊)','').replace('個月','')}<span style="font-size:.6rem">mo</span></div><div class="reward-milestone-label">${r.type==='12個月獎勵'?'週邊':'訂閱'}</div>`
-          }
-        </div>
-        <div class="reward-info">
-          <div class="reward-type">${r.type==='里民禮物'?'🎪 '+r.milestone:r.type==='12個月獎勵'?'🏆 專屬週邊福利':r.type==='每月占卜'?'🔮 '+(r.redeemed?r.rewardItem:(lvInfo.monthlyReward||'占卜'))+(r.count>1?' × '+r.count+' 項':''):'🎁 '+(r.redeemed?r.rewardItem:lvInfo.reward3||r.rewardItem||'訂閱福利')+(r.count>1?' × '+r.count+' 項':'')}</div>
-          <div class="reward-sub">${r.triggerDate?'📅 '+r.triggerDate:''} ${r.redeemed?'· ✓ '+r.redeemedAt:''}</div>
-          ${r.illustration?`<div class="reward-illus">指定插圖：${r.illustration}</div>`:''}
-        </div>
-        <div class="reward-actions">
-          ${r.redeemed
-            ? `<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><span class="badge b-redeemed">已兌換</span><button class="btn btn-sm" onclick="editReward('${r.id}','${m.level||''}')">編輯</button><button class="btn btn-sm btn-del" onclick="deleteReward('${r.id}','${(r.allIds||[r.id]).join('|')}' )">刪除</button></div>`
-            : `<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><button class="btn btn-sm btn-green" onclick="openRedeemModal(this.getAttribute('data-id'),this.getAttribute('data-lv'),this.getAttribute('data-aids'))" data-id="${r.id}" data-lv="${m.level||''}" data-aids="${(r.allIds||[r.id]).join('|')}">兌換${r.count>1?' ('+r.count+'項)':''}</button><button class="btn btn-sm btn-del" onclick="deleteReward('${r.id}','${(r.allIds||[r.id]).join('|')}' )">刪除</button></div>`
-          }
-        </div>
-      </div>`).join('')}
-    </div>`).join('');
-}
-
-async function syncRewards(){
-  const m=members.find(x=>x.id===drw會員Id);
-  if(!m){return;}
-  const syncBtn = document.getElementById('sync-rewards-btn');
-  if(syncBtn) syncBtn.disabled = true;
-  const expected=calcExpectedRewards(m);
-  if(!expected.length){showToast('訂閱未滿3個月，暫無福利');if(syncBtn)syncBtn.disabled=false;return;}
-  // 去重：同 milestone + 同 rewardItem（空值統一為空字串）
-  const existingKeys=drw會員Rewards.map(r=>(r.type||'')+'|'+(r.milestone||''));
-  const missing=expected.filter(e=>!existingKeys.includes((e.type||'')+'|'+(e.milestone||'')));
-  const alreadyRedeemed=expected.filter(e=>drw會員Rewards.find(r=>(r.milestone||'')===(e.milestone||'')&&(r.rewardItem||'')===(e.rewardItem||'')&&r.redeemed));
-  if(!missing.length){showToast(`福利已是最新${alreadyRedeemed.length?'（已兌換 '+alreadyRedeemed.length+' 筆）':''}，無需同步`);if(syncBtn)syncBtn.disabled=false;return;}
-  const lvInfo=LEVELS[m.level]||{};
-  try{
-    const created = await Promise.all(missing.map(rw => {
-      const rewardItemVal = rw.rewardItem || (rw.type==='12個月獎勵'?'專屬週邊':(lvInfo.items?lvInfo.items[0]:''));
-      return apiFetch('/api/rewards',{method:'POST',body:{ memberId:m.id, type:rw.type, milestone:rw.milestone||'', rewardItem:rewardItemVal, note:rw.note||'', triggerDate:rw.triggerDate }});
-    }));
-    created.forEach(r=>{ drw會員Rewards.push(r); allRewards.push(r); });
-    renderGiftList();
-    drw會員Rewards.sort((a,b)=>a.triggerDate>b.triggerDate?1:-1);
-    renderRewards(drw會員Rewards, m.id);
-    renderDash();
-    const milestones = missing.map(r=>r.milestone).join('、');
-    showToast(`✦ 已同步 ${missing.length} 筆：${milestones}`);
-  }catch(e){showToast('⚠ 同步失敗');}
-  finally{ if(syncBtn) syncBtn.disabled = false; }
-}
-
-let redeemRewardId=null, redeem會員Level=null;
-
-function editReward(rewardId, level) {
-  const rw = drw會員Rewards.find(r => r.id === rewardId);
-  if (!rw) return;
-  redeemRewardId = rewardId;
-  redeem會員Level = level;
-  const lvInfo = LEVELS[level] || {};
-  const is12 = rw.type === '12個月獎勵';
-  document.getElementById('reward-modal-title').textContent = '編輯兌換記錄';
-  const itemWrap = document.getElementById('rw-item-wrap');
-  const illusWrap = document.getElementById('rw-illus-wrap');
-  const isActivityEdit = rw.type === '里民禮物';
-  if (is12) {
-    itemWrap.style.display = 'none'; illusWrap.style.display = 'none';
-  } else if (isActivityEdit) {
-    itemWrap.style.display = 'block';
-    document.getElementById('rw-item-list').innerHTML = '';
-    document.getElementById('rw-item').value = rw.rewardItem || '';
-    illusWrap.style.display = 'none';
-  } else {
-    itemWrap.style.display = 'block';
-    const rwItemList = document.getElementById('rw-item-list');
-    rwItemList.innerHTML = (lvInfo.items || ['相印小卡']).map(i => `<option value="${i}">`).join('');
-    document.getElementById('rw-item').value = rw.rewardItem || '';
-    illusWrap.style.display = lvInfo.hasIllus ? 'block' : 'none';
-  }
-  document.getElementById('rw-id').value = rewardId;
-  document.getElementById('rw-redeemedAt').value = rw.redeemedAt || '';
-  document.getElementById('rw-date').value = rw.redeemedAt || new Date().toISOString().slice(0,10);
-  document.getElementById('rw-illus').value = rw.illustration || '';
-  document.getElementById('rw-note').value = rw.note || '';
-  const foot = document.querySelector('#modal-reward .mdfoot');
-  foot.innerHTML = `<button class="btn btn-del" onclick="cancelRedeem('${rewardId}')">取消兌換</button><button class="btn" onclick="closeM('reward')">關閉</button><button class="btn btn-g" onclick="confirmRedeem()">儲存</button>`;
-  openM('reward');
-}
-
-async function cancelRedeem(id) {
-  if (!confirm('確定要取消這筆兌換記錄？')) return;
-  const foot = document.querySelector('#modal-reward .mdfoot');
-  const btns = foot ? foot.querySelectorAll('button') : [];
-  btns.forEach(b=>b.disabled=true);
-  try {
-    const updated = await apiFetch('/api/rewards?id=' + id, { method: 'PATCH', body: { redeemed: false, redeemedAt: '' } });
-    drw會員Rewards = drw會員Rewards.map(r => r.id === id ? updated : r);
-    allRewards = allRewards.map(r => r.id === id ? updated : r);
-    renderRewards(drw會員Rewards, drw會員Id);
-    renderGiftList();
-    renderDash(); closeM('reward'); showToast('已取消兌換');
-  } catch(e) { btns.forEach(b=>b.disabled=false); showToast('⚠ 操作失敗'); }
-}
-function openRedeemModal(rewardId, level, allIdsStr=''){
-  redeemRewardId=rewardId; redeem會員Level=level;
-  const rw=drw會員Rewards.find(r=>r.id===rewardId);
-  const lvInfo=LEVELS[level]||{};
-  const is12=(rw&&rw.type==='12個月獎勵');
-  const isActivity = rw && rw.type === '里民禮物';
-  const isMonthly = rw && rw.type === '每月占卜';
-  document.getElementById('reward-modal-title').textContent=is12?'兌換週邊福利':isActivity?`兌換活動福利：${rw.milestone}`:isMonthly?'兌換每月占卜':'兌換訂閱福利';
-  const itemWrap=document.getElementById('rw-item-wrap');
-  const illusWrap=document.getElementById('rw-illus-wrap');
-  if(is12||isMonthly||isActivity){
-    itemWrap.style.display='none'; illusWrap.style.display='none';
-  } else if(isActivity){
-    // 活動福利：直接帶入已設定的禮物，不讓重選
-    itemWrap.style.display='block';
-    document.getElementById('rw-item-list').innerHTML='';
-    document.getElementById('rw-item').value=rw.rewardItem||'';
-    illusWrap.style.display='none';
-  } else {
-    itemWrap.style.display='block';
-    const rwList=document.getElementById('rw-item-list');
-    rwList.innerHTML=(lvInfo.items||['相印小卡']).map(i=>`<option value="${i}">`).join('');
-    document.getElementById('rw-item').value='';
-    illusWrap.style.display=lvInfo.hasIllus?'block':'none';
-  }
-  document.getElementById('rw-id').value=rewardId;
-  document.getElementById('rw-redeemedAt').value='';
-  document.getElementById('rw-date').value=new Date().toISOString().slice(0,10);
-  document.getElementById('rw-allids').value=allIdsStr||rewardId; // | 分隔
-  // 數量選擇
-  const ids = (allIdsStr||rewardId).split('|').filter(Boolean);
-  const countWrap = document.getElementById('rw-count-wrap');
-  const countSel = document.getElementById('rw-count');
-  if(countWrap && countSel){
-    if(ids.length > 1){
-      countSel.max = ids.length;
-      countSel.value = ids.length;
-      countSel.placeholder = `最多 ${ids.length} 項`;
-      countWrap.style.display = 'block';
-    } else {
-      countWrap.style.display = 'none';
-    }
-  }
-  document.getElementById('rw-illus').value='';
-  document.getElementById('rw-note').value='';
-  // 確保 footer 是正常兌換的按鈕
-  const foot = document.querySelector('#modal-reward .mdfoot');
-  foot.innerHTML = `<button class="btn" onclick="closeM('reward')">取消</button><button class="btn btn-g" onclick="confirmRedeem()">標記已兌換</button>`;
-  openM('reward');
-}
-async function confirmRedeem(){
-  const id=document.getElementById('rw-id').value;
-  const rw=drw會員Rewards.find(r=>r.id===id);
-  const is12=(rw&&rw.type==='12個月獎勵');
-  const lvInfo=LEVELS[redeem會員Level]||{};
-  const item=is12?'專屬週邊':document.getElementById('rw-item').value;
-  const illus=lvInfo.hasIllus&&!is12?document.getElementById('rw-illus').value:'';
-  const note=document.getElementById('rw-note').value;
-  const storedAt = document.getElementById('rw-redeemedAt')?.value;
-  const today = document.getElementById('rw-date')?.value || storedAt || new Date().toISOString().slice(0,10);
-  // 防重複點擊
-  const foot = document.querySelector('#modal-reward .mdfoot');
-  const btns = foot ? foot.querySelectorAll('button') : [];
-  btns.forEach(b=>b.disabled=true);
-  try{
-    const allIdsStr = document.getElementById('rw-allids')?.value || id;
-    const allIdsList = allIdsStr.split('|').filter(Boolean);
-    const countSel = document.getElementById('rw-count');
-    const countWrap = document.getElementById('rw-count-wrap');
-    const count = (countSel && countWrap && countWrap.style.display!=='none') ? parseInt(countSel.value)||allIdsList.length : allIdsList.length;
-    const ids = allIdsList.slice(0, count);
-    // 批次兌換所有同類型
-    const updates = await Promise.all(ids.map(rid =>
-      apiFetch(`/api/rewards?id=${rid}`,{method:'PATCH',body:{ redeemed:true, redeemedAt:today, rewardItem:item, illustration:illus, note }})
-    ));
-    updates.forEach(u=>{ drw會員Rewards=drw會員Rewards.map(r=>r.id===u.id?u:r); allRewards=allRewards.map(r=>r.id===u.id?u:r); });
-    renderRewards(drw會員Rewards, drw會員Id);
-    renderGiftList();
-    renderDash(); closeM('reward');
-    btns.forEach(b=>b.disabled=false);
-    showToast(`✦ 已標記兌換${ids.length>1?' ('+ids.length+'項)':''}`);
-  }catch(e){ btns.forEach(b=>b.disabled=false); showToast('⚠ 更新失敗'); }
-}
-
-// ── 提醒中心 ────────────────────────────────────────────
-function build提醒(){
-  const list=[];
-  members.forEach(m=>{
-    const bd=天UntilBday(m.bday);
-    if(m.bday&&bd<=30&&m.exp&&天Until(m.exp)>=0){
-      const bdYear = 天UntilBday(m.bday)===0?TODAY.getFullYear():(TODAY.getMonth()+1>parseInt(m.bday.slice(5,7))||(TODAY.getMonth()+1===parseInt(m.bday.slice(5,7))&&TODAY.getDate()>parseInt(m.bday.slice(8)))?TODAY.getFullYear()+1:TODAY.getFullYear());
-      list.push({type:'birthday',icon:'🎂',title:`${m.name} 生日提醒`,sub:`${m.level} · ${bdYear}/${m.bday.slice(5).replace('-','/')}`,天:bd,ic:'rb',urgent:bd<=7,id:m.id});
-    }
-    const ex=天Until(m.exp);
-    if(m.exp&&ex>=0&&ex<=30){ const urg=ex<=7; list.push({type:urg?'urgent':'soon',icon:urg?'⚠':'◇',title:`${m.name} 會員即將到期`,sub:`${m.plan||''} · ${m.exp}`,天:ex,ic:urg?'re':'rh',urgent:urg,id:m.id}); }
-  });
-  // 同一會員多筆福利合併
-  const pendingByMember = {};
-  allRewards.filter(r=>!r.redeemed).forEach(r=>{
-    if(!pendingByMember[r.memberId]) pendingByMember[r.memberId]=[];
-    pendingByMember[r.memberId].push(r);
-  });
-  Object.entries(pendingByMember).forEach(([memberId, rewards])=>{
-    const m=members.find(x=>x.id===memberId)||{};
-    // 分成各類福利群組
-    const groups = {
-      'reward-monthly': rewards.filter(r=>r.type==='每月占卜'),
-      'reward-sub':     rewards.filter(r=>r.type==='3個月獎勵'),
-      'reward-year':    rewards.filter(r=>r.type==='12個月獎勵'),
-      birthday:         rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&r.milestone.includes('生日')),
-      anniversary:      rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&['鑰匙圈','壓克力卡','方型立牌','準備中'].some(k=>r.milestone.includes(k))),
-      activity:         rewards.filter(r=>r.type==='里民禮物'&&(!r.milestone||(!r.milestone.includes('生日')&&!['鑰匙圈','壓克力卡','方型立牌','準備中'].some(k=>r.milestone.includes(k))))),
-    };
-    Object.entries(groups).forEach(([gType, gRewards])=>{
-      if(!gRewards.length) return;
-      const earliest = gRewards.filter(r=>r.triggerDate).sort((a,b)=>a.triggerDate>b.triggerDate?1:-1)[0];
-      const trigD = earliest ? 天Until(earliest.triggerDate) : 9999;
-      const overdue = earliest && trigD < 0;
-      const countLabel = gRewards.length > 1 ? ` (${gRewards.length} 筆)` : '';
-      const sub = gRewards.length === 1
-        ? `${gRewards[0].milestone} · ${gRewards[0].rewardItem||gRewards[0].type}${gRewards[0].triggerDate?' · 觸發 '+gRewards[0].triggerDate:''}`
-        : `${gRewards.length} 筆待兌換 · 最早觸發 ${earliest?.triggerDate||'—'}`;
-      const rIcon = gType==='activity'?'🎪':gType==='birthday'?'🎂':gType==='reward-monthly'?'🔮':gType==='reward-year'?'🏆':'🎁';
-      const rLabel = gType==='activity'?'活動':gType==='birthday'?'生日禮':gType==='anniversary'?'生日禮紀念':gType==='reward-monthly'?'占卜':gType==='reward-year'?'週邊':'三個月';
-      const pushType = gType==='birthday'?'birthday':gType;
-      list.push({type:pushType,icon:rIcon,title:`${m.name||'—'} ${rLabel}福利待兌換${countLabel}`,sub,天:trigD,ic:gType==='birthday'?'rb':'rg',urgent:overdue,id:memberId,isReward:true,overdue});
-    });
-  });
-  holi天.forEach(h=>{ const d=天Until(h.date); if(d>=0&&d<=90) list.push({type:'holiday',icon:'◈',title:h.name,sub:`${h.date} · ${h.type}${h.note?' · '+h.note:''}`,天:d,ic:'rh',urgent:false}); });
-  return list.sort((a,b)=>{
-    // 非福利排前面
-    if(!a.isReward && b.isReward) return -1;
-    if(a.isReward && !b.isReward) return 1;
-    // 都是福利：逾期的排後面
-    if(a.isReward && b.isReward){
-      if(a.overdue && !b.overdue) return 1;
-      if(!a.overdue && b.overdue) return -1;
-    }
-    return a.天 - b.天;
-  });
-}
-function render提醒(type){
-  curFilter=type;
-  const all=build提醒();
-  const list=type==='all'?all:all.filter(r=>r.type===type);
-  const el=document.getElementById('r-list');
-  if(!list.length){el.innerHTML='<div class="empty">目前無提醒事項</div>';return;}
-  el.innerHTML=list.map(r=>`
-    <div class="rcard${r.urgent?' urg':r.type==='soon'?' warn':r.type==='reward'?' reward-card':r.type==='activity'?' activity-card':''}" ${r.id?`onclick="const _m=members.find(x=>x.id==='${r.id}');if(_m)openDrw(_m)"`:''}>
-      <div class="rico ${r.ic}">${r.icon}</div>
-      <div class="rbody"><div class="rtitle">${r.title}</div><div class="rsub">${r.sub}</div></div>
-      <div style="text-align:right">${r.isReward
-        ? r.overdue
-          ? `<span class="rdbig red">${Math.abs(r.天)}</span><span class="rdsm">天前</span>`
-          : r.天<9999
-            ? `<span class="rdbig">${r.天}</span><span class="rdsm">天後</span>`
-            : `<span style="font-size:1.2rem">🎁</span>`
-        : `<span class="rdbig${r.urgent?' red':''}">${r.天}</span><span class="rdsm">天</span>`
-      }</div>
-    </div>`).join('');
-}
-function filterR(type,el){
-  document.querySelectorAll('#view-reminders .filter-row .btn').forEach(b=>b.classList.remove('f-on'));
-  el.classList.add('f-on'); render提醒(type);
-}
-
-// ── 節日日曆 ─────────────────────────────────────────────
-const MOS=['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
-function renderCal(){
-  document.getElementById('cal-label').textContent=`${calY} · ${MOS[calMo]}`;
-  const first=new Date(calY,calMo,1).getDay(), dim=new Date(calY,calMo+1,0).getDate(), prev=new Date(calY,calMo,0).getDate();
-  let html='';
-  for(let i=0;i<first;i++) html+=`<div class="cday other"><span>${prev-first+1+i}</span></div>`;
-  for(let d=1;d<=dim;d++){
-    const ds=`${calY}-${String(calMo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const isT=new Date(ds).getTime()===TODAY.getTime();
-    const hasBd=members.some(m=>m.bday&&m.bday.slice(5)===ds.slice(5));
-    const hasH=holi天.some(h=>h.date===ds);
-    const hasEx=members.some(m=>m.exp===ds);
-    const hasRw=allRewards.some(r=>r.triggerDate===ds&&!r.redeemed);
-    let dots='';
-    if(hasBd) dots+=`<div class="d dp"></div>`;
-    if(hasH)  dots+=`<div class="d dg"></div>`;
-    if(hasEx) dots+=`<div class="d dr"></div>`;
-    if(hasRw) dots+=`<div class="d" style="background:var(--green)"></div>`;
-    html+=`<div class="cday${isT?' today':''}" onclick="showDay(${d},'${ds}')"><span>${d}</span>${dots?`<div class="dots">${dots}</div>`:''}</div>`;
-  }
-  const rem=(7-(first+dim)%7)%7;
-  for(let i=1;i<=rem;i++) html+=`<div class="cday other"><span>${i}</span></div>`;
-  document.getElementById('cal-grid').innerHTML=html;
-  showMonthEp();
-}
-function showMonthEp(){
-  const ms=`${calY}-${String(calMo+1).padStart(2,'0')}`;
-  document.getElementById('ep-title').textContent=`${calMo+1}月 事項`;
-  const items=[];
-  holi天.filter(h=>h.date.startsWith(ms)).forEach(h=>{
-    items.push({day:parseInt(h.date.slice(8)), html:`<div class="epi"><div class="epidot" style="background:#D4A800"></div><div><div class="epiname">${h.name}</div><div class="epitype">${h.type} · ${h.date.slice(8)}日</div></div></div>`});
-  });
-  members.filter(m=>m.bday&&m.bday.length>=10&&m.bday.slice(5,7)===String(calMo+1).padStart(2,'0')).forEach(m=>{
-    items.push({day:parseInt(m.bday.slice(8)), html:`<div class="epi"><div class="epidot" style="background:#9080C0"></div><div><div class="epiname">${m.name} 生日</div><div class="epitype">${m.bday.slice(8)}日</div></div></div>`});
-  });
-  members.filter(m=>m.exp&&m.exp.startsWith(ms)).forEach(m=>{
-    items.push({day:parseInt(m.exp.slice(8)), html:`<div class="epi"><div class="epidot" style="background:#E24B4A"></div><div><div class="epiname">${m.name} 到期</div><div class="epitype">${m.plan||''} · ${m.exp.slice(8)}日</div></div></div>`});
-  });
-  items.sort((a,b)=>a.day-b.day);
-  const html = items.map(i=>i.html).join('') || '<div class="empty" style="padding:.4rem 0">本月暫無事項</div>';
-  document.getElementById('ep-list').innerHTML=html;
-}
-function showDay(d,ds){
-  document.getElementById('ep-title').textContent=`${calMo+1}月${d}日`;
-  let html='';
-  holi天.filter(h=>h.date===ds).forEach(h=>{html+=`<div class="epi"><div class="epidot" style="background:#D4A800"></div><div><div class="epiname">${h.name}</div><div class="epitype">${h.note||h.type}</div></div></div>`;});
-  members.filter(m=>m.bday&&m.bday.length>=10&&m.bday.slice(0,4)!=='0001'&&m.bday.slice(5)===ds.slice(5)).forEach(m=>{html+=`<div class="epi"><div class="epidot" style="background:#9080C0"></div><div><div class="epiname">${m.name} 🎂</div><div class="epitype">${m.level}</div></div></div>`;});
-  members.filter(m=>m.exp===ds).forEach(m=>{html+=`<div class="epi"><div class="epidot" style="background:#E24B4A"></div><div><div class="epiname">${m.name} 到期</div><div class="epitype">${m.plan||''}</div></div></div>`;});
-  allRewards.filter(r=>r.triggerDate===ds&&!r.redeemed).forEach(r=>{ const m=members.find(x=>x.id===r.memberId)||{}; html+=`<div class="epi" style="cursor:${m.id?'pointer':'default'}" onclick="${m.id?`openDrw(members.find(x=>x.id==='${m.id}'))`:''}" ><div class="epidot" style="background:var(--green)"></div><div><div class="epiname">${m.name||'—'} 福利觸發</div><div class="epitype">${r.milestone} · ${r.rewardItem||r.type}</div></div></div>`; });
-  if(!html) html='<div class="empty" style="padding:.4rem 0">這天無事項</div>';
-  document.getElementById('ep-list').innerHTML=html;
-}
-function prevMo(){calMo--;if(calMo<0){calMo=11;calY--;}renderCal();}
-function nextMo(){calMo++;if(calMo>11){calMo=0;calY++;}renderCal();}
-
-// ── HOLIDAYS ─────────────────────────────────────────────
-
-// ── CSV EXPORT ───────────────────────────────────────────
-function exportCSV(activeOnly=false){
-  const list = activeOnly ? members.filter(m=>m.exp&&天Until(m.exp)>=0) : members;
-  const header=['姓名','YouTube會員名稱','電話','Email','生日','會員等級','方案','加入日期','到期日','地址','備註'];
-  const rows=list.map(m=>{
-    return [m.name,m.memberName,m.phone,m.email,m.bday,m.level,m.plan,m.join,m.exp,m.address,m.note].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`);
-  });
-  const csv=[header,...rows].map(r=>r.join(',')).join('\n');
-  const a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);
-  a.download=`ooniau_members${activeOnly?'_active':''}_${new Date().toISOString().slice(0,10)}.csv`;
-  a.click(); showToast(`✦ CSV 匯出成功（${list.length} 筆）`);
-}
-
-
-// ── APPLICATIONS ──────────────────────────────────────────
-let currentAppFilter = '待審核';
-
-async function loadApplications(status) {
-  currentAppFilter = status || '待審核';
-  const el = document.getElementById('app-list');
-  el.innerHTML = '<div class="loading"><div class="spinner"></div>載入中</div>';
-  try {
-    const list = await apiFetch('/api/applications?status=' + encodeURIComponent(currentAppFilter));
-    renderApps(list);
-    // 永遠更新 badge（不限 status）
-    if (status === '待審核' || status === undefined) {
-      const badge = document.getElementById('review-badge');
-      if (list.length > 0) { badge.style.display = 'inline'; badge.textContent = list.length; }
-      else { badge.style.display = 'none'; }
-    }
-  } catch(e) { el.innerHTML = '<div class="empty">載入失敗</div>'; }
-}
-
-function renderApps(list) {
-  const el = document.getElementById('app-list');
-  if (!list.length) { el.innerHTML = '<div class="empty">目前無申請</div>'; return; }
-  const PAGE = 20;
-  const showing = list.slice(0, PAGE);
-  const more = list.length > PAGE ? `<div style="text-align:center;padding:.8rem;font-size:.72rem;color:var(--th)">僅顯示最新 ${PAGE} 筆，共 ${list.length} 筆</div>` : '';
-  el.innerHTML = showing.map(a => {
-    const statusCls = a.status === '待審核' ? 'b-soon' : a.status === '已核准' ? 'b-ok' : 'b-exp';
-    return `<div style="background:#fff;border:0.5px solid var(--gold-dim);border-radius:4px;padding:1.2rem 1.4rem;margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem">
-        <div>
-          <div style="font-size:.82rem;font-weight:500;color:var(--pd);margin-bottom:3px">${a.name} <span style="font-size:.7rem;color:var(--tm)">@ ${a.memberName}</span></div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap">
-            ${lvBadge(a.level)}
-            <span class="badge ${a.plan === '年繳' ? 'b-yr' : 'b-once'}">${a.plan}</span>
-            <span class="badge ${statusCls}">${a.status}</span>
-          </div>
-        </div>
-        <div style="font-size:.68rem;color:var(--th)">${(a.createdAt||"").slice(0,10)||"—"}</div>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:.72rem;color:var(--tm);margin-bottom:.8rem">
-        <div>綠界訂閱日期：${a.joinDate||'—'}</div>
-        <div>電話：${a.phone||'—'}</div>
-        <div>訂單編號：${a.orderNos||'—'}</div>
-        ${a.email ? '<div>Email：'+a.email+'</div>' : '<div>Email：—</div>'}
-        ${a.bday ? '<div>生日：'+a.bday+'</div>' : '<div>生日：—</div>'}
-        <div>地址：${a.address||'—'}</div>
-        ${a.reason ? '<div style="grid-column:1/-1">訂閱原因：'+a.reason+'</div>' : ''}
-      </div>
-      ${a.screenshot ? `<div style="margin-bottom:.8rem"><a href="${a.screenshot}" target="_blank" style="font-size:.75rem;color:var(--purple);letter-spacing:.05em">📷 查看訂閱截圖 ↗</a></div>` : ''}
-      ${a.status === '待審核'
-        ? `<div style="display:flex;gap:8px">
-        <button class="btn btn-del btn-sm" id="reject-btn-${a.id}" onclick="handleReview(this,'${a.id}','reject')">拒絕</button>
-        <button class="btn btn-green btn-sm" id="approve-btn-${a.id}" onclick="handleReview(this,'${a.id}','approve')">核准</button>
-      </div>`
-        : a.status === '已拒絕'
-        ? `<button class="btn btn-del btn-sm" onclick="deleteApp('${a.id}')">刪除</button>`
-        : ''}
-    </div>`;
-  }).join('') + more;
-}
-
-function filterApps(status, el) {
-  document.querySelectorAll('#view-review .ptop .btn').forEach(b => b.classList.remove('f-on'));
-  el.classList.add('f-on');
-  loadApplications(status);
-}
-
-async function deleteApp(id) {
-  if(!confirm('確定刪除這筆已拒絕的申請？')) return;
-  try {
-    await apiFetch(`/api/applications?id=${id}`, { method: 'DELETE' });
-    showToast('已刪除');
-    loadApplications(currentAppFilter);
-  } catch(e) { showToast('⚠ 刪除失敗'); }
-}
-async function handleReview(btn, id, action) {
-  const rejectBtn = document.getElementById(`reject-btn-${id}`);
-  const approveBtn = document.getElementById(`approve-btn-${id}`);
-  const btns = [rejectBtn, approveBtn].filter(Boolean);
-  btns.forEach(b => b.disabled = true);
-  try {
-    await reviewApp(id, action);
-  } catch(e) {
-    btns.forEach(b => b.disabled = false);
-  }
-}
-async function reviewApp(id, action) {
-  const label = action === 'approve' ? '核准' : '拒絕';
-  if (!confirm(`確定要${label}這筆申請？`)){
-    // confirm 取消時，handleReview 那邊的 btns 需要恢復
-    const rejectBtn = document.getElementById(`reject-btn-${id}`);
-    const approveBtn = document.getElementById(`approve-btn-${id}`);
-    [rejectBtn, approveBtn].filter(Boolean).forEach(b=>b.disabled=false);
-    return;
-  }
-  try {
-    const result = await apiFetch(`/api/applications?id=${id}`, { method: 'PATCH', body: { action } });
-    if(action === 'approve'){
-      showToast(result?.isNew === false ? '✦ 已核准，已更新現有會員' : '✦ 已核准，已建立新會員');
-    } else {
-      showToast('已拒絕');
-    }
-    await Promise.all([loadApplications(currentAppFilter), loadAll()]);
-  } catch(e) { showToast('⚠ 操作失敗'); throw e; }
-}
-
-
-// ── DRAWER 收合 ──────────────────────────────────────────
-function toggleSec(id){
-  const el = document.getElementById(id);
-  const arrow = document.getElementById(id+'-arrow');
-  if(!el) return;
-  const isOpen = el.style.display !== 'none';
-  el.style.display = isOpen ? 'none' : '';
-  if(arrow) arrow.textContent = isOpen ? '▶' : '▼';
-  try { localStorage.setItem('drw_sec_'+id, isOpen ? '0' : '1'); } catch(e){}
-}
-
-// ── 刪除福利 ─────────────────────────────────────────────
-async function deleteReward(id, allIdsStr=''){
-  const ids = allIdsStr ? allIdsStr.split('|').filter(Boolean) : [id];
-  let delIds = ids;
-  if(ids.length > 1){
-    const n = prompt(`此項目共 ${ids.length} 筆，請輸入要刪除的數量（1～${ids.length}）：`, ids.length);
-    if(n===null) return;
-    const count = Math.min(Math.max(parseInt(n)||1, 1), ids.length);
-    delIds = ids.slice(0, count);
-  } else {
-    const rw = drw會員Rewards.find(r=>r.id===id);
-    if(!confirm(`確定刪除「${rw?.milestone||'這筆'}」福利記錄？`)) return;
-  }
-  try{
-    await Promise.all(delIds.map(did=>apiFetch(`/api/rewards?id=${did}`,{method:'DELETE'})));
-    drw會員Rewards = drw會員Rewards.filter(r=>!delIds.includes(r.id));
-    allRewards = allRewards.filter(r=>!delIds.includes(r.id));
-    renderRewards(drw會員Rewards, drw會員Id);
-    renderDash(); render提醒(curFilter);
-    showToast(`已刪除 ${delIds.length} 筆福利`);
-  }catch(e){ showToast('⚠ 刪除失敗'); }
-}
-
-// ── 手動新增福利 ──────────────────────────────────────────
-function openAddRewardModal() {
-  const m = members.find(x => x.id === drw會員Id);
-  if (!m) return;
-  const lvInfo = LEVELS[m.level] || {};
-  // 預設今天
-  document.getElementById('ar-trigger').value = new Date().toISOString().slice(0,10);
-  // 清空類型和里程碑
-  document.getElementById('ar-type').value = '';
-  document.getElementById('ar-milestone').value = '';
-  document.getElementById('ar-note').value = '';
-  document.getElementById('ar-illus').value = '';
-  // 填兌換項目選項
-  const arItemList = document.getElementById('ar-item-list');
-  const items = lvInfo.items || ['相印小卡'];
-  arItemList.innerHTML = items.map(i => `<option value="${i}">`).join('');
-  document.getElementById('ar-item').value = '';
-  // 顯示/隱藏插圖欄
-  document.getElementById('ar-illus-wrap').style.display = lvInfo.hasIllus ? 'block' : 'none';
-  document.getElementById('ar-item-wrap').style.display = 'block';
-  // 同步里程碑預設
-  arTypeChange();
-  openM('add-reward');
-}
-
-function arTypeChange() {
-  const type = document.getElementById('ar-type').value;
-  const is12 = type === '12個月獎勵';
-  document.getElementById('ar-item-wrap').style.display = is12 ? 'none' : 'block';
-  document.getElementById('ar-illus-wrap').style.display = 'none';
-  // 自動帶入里程碑
-  const milestoneMap = {
-    '3個月獎勵': '3個月', '6個月福利': '6個月',
-    '9個月福利': '9個月', '12個月獎勵': '12個月',
+  // 等級對應福利說明
+  const lvRewards = {
+    'LV.3 里民暖暖包': { every3: '相印小卡／占卜30分鐘', year: '3階：15公分立牌', note: '選擇兌換占卜者可累積時數，一次兌換使用。例如累積 2 次 30 分鐘，可合併預約 1 小時占卜。' },
+    'LV.4 肌肉暖暖包': { every3: '實體拍立得', year: '4階：親簽簽名板' },
+    'LV.5 真蒸暖暖包': { every3: '親簽拍立得', year: '5階：15公分立牌 ＆ 親簽簽名板 ＆ 直式掛軸' },
   };
-  if (milestoneMap[type]) {
-    document.getElementById('ar-milestone').value = milestoneMap[type];
-  } else {
-    document.getElementById('ar-milestone').value = '';
-  }
-  // 若是 LV4 以上且非12月，顯示插圖欄
-  const m = members.find(x => x.id === drw會員Id);
-  const lvInfo = LEVELS[m?.level] || {};
-  if (!is12 && lvInfo.hasIllus) {
-    document.getElementById('ar-illus-wrap').style.display = 'block';
-  }
-}
+  const lvInfo2 = lvRewards[member.level] || { every3: '訂閱福利', year: '週邊' };
 
-async function confirmAddReward() {
-  const type = document.getElementById('ar-type').value;
-  const milestone = document.getElementById('ar-milestone').value.trim();
-  const triggerDate = document.getElementById('ar-trigger').value;
-  const note = document.getElementById('ar-note').value.trim();
-  const is12 = type === '12個月獎勵';
-  const rewardItem = is12 ? '專屬週邊' : document.getElementById('ar-item').value;
-  const m = members.find(x => x.id === drw會員Id);
-  const lvInfo = LEVELS[m?.level] || {};
-  const illustration = (!is12 && lvInfo.hasIllus) ? document.getElementById('ar-illus').value.trim() : '';
-  if (!type) { showToast('請填寫獎勵類型'); return; }
-  if (!milestone) { showToast('請填寫里程碑'); return; }
-  // 若 type 是訂閱福利但 milestone 格式不是「N個月」，提示但不阻擋
-  if((type==='3個月獎勵'||type==='6個月福利'||type==='9個月福利')&&!milestone.endsWith('個月')){
-    if(!confirm(`里程碑「${milestone}」格式與自動同步不同（建議用「N個月」格式），仍要繼續嗎？`)) return;
-  }
-  if (!triggerDate) { showToast('請選擇觸發日期'); return; }
-  const submitBtn = document.querySelector('#modal-add-reward .mdfoot .btn-g');
-  if(submitBtn) submitBtn.disabled = true;
-  try {
-    const created = await apiFetch('/api/rewards', {
-      method: 'POST',
-      body: { memberId: drw會員Id, type, milestone, rewardItem, illustration, triggerDate, note }
-    });
-    drw會員Rewards.push(created);
-    drw會員Rewards.sort((a,b) => a.triggerDate > b.triggerDate ? 1 : -1);
-    allRewards.push(created);
-    renderRewards(drw會員Rewards, drw會員Id);
-    renderDash(); renderCal();
-    closeM('add-reward');
-    showToast('✦ 已新增福利');
-  } catch(e) { showToast('⚠ 新增失敗'); }
-  finally { if(submitBtn) submitBtn.disabled = false; }
-}
+  const subMos2 = member.join ? (()=>{
+    const j=new Date(member.join); j.setHours(0,0,0,0);
+    const t=new Date(); t.setHours(0,0,0,0);
+    let m=(t.getFullYear()-j.getFullYear())*12+(t.getMonth()-j.getMonth());
+    if(t.getDate()>=j.getDate()) m++;
+    return Math.min(m,12);
+  })() : 0;
 
+  const monthlyRewards = rewards.filter(r=>r.type==='每月占卜');
+  const subRewards = rewards.filter(r=>r.type==='3個月獎勵'||r.type==='12個月獎勵');
 
-// ── CSV 匯入 ─────────────────────────────────────────────
-let csvImportData = [];
-function findExistingMember(row) {
-  const rYt = (row.memberName||'').trim();
-  const rName = (row.name||'').trim();
-  return rYt
-    ? members.find(m => (m.memberName||'').trim() === rYt)
-    : members.find(m => (m.name||'').trim() === rName);
-}
-
-function importCSV(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const text = e.target.result.replace(/^﻿/, ''); // 移除 BOM
-    const lines = text.split('\n').map(l => l.replace('\r', '')).filter(l => l.trim());
-    if (lines.length < 2) { showToast('⚠ CSV 內容為空'); return; }
-
-    // 解析 CSV（處理引號內的逗號）
-    function parseRow(row) {
-      const cols = [];
-      let cur = '', inQ = false;
-      for (let i = 0; i < row.length; i++) {
-        const c = row[i];
-        if (c === '"') {
-          if (inQ && row[i+1] === '"') { cur += '"'; i++; }
-          else inQ = !inQ;
-        } else if (c === ',' && !inQ) { cols.push(cur); cur = ''; }
-        else cur += c;
-      }
-      cols.push(cur);
-      return cols;
+  function buildStamps(totalSlots, giftSlots, rewardList, subMosCount, allPending=false){
+    let html='';
+    for(let i=1;i<=totalSlots;i++){
+      const is12 = i===12;
+      const hasGift = giftSlots.includes(i);
+      const rw = rewardList.find(r=>{
+        const mo = parseInt(r.milestone);
+        return mo===i || (is12 && r.type==='12個月獎勵');
+      });
+      let state;
+      if(rw && rw.redeemed) state='redeemed';
+      else if(i<=subMosCount) state='earned';
+      else state='future';
+      const label = state==='redeemed'?'已兌換':state==='earned'&&hasGift?'待兌換':state==='earned'?'已累積':'—';
+      const borderStyle = is12?'border-style:dashed;border-color:var(--purple)':'';
+      const ico = is12?'🏆':hasGift?'🎁':'';
+      html += `<div class="stamp"><div class="s-circle ${state}" style="${borderStyle}"><span class="s-num ${state}">${i}</span>${ico?`<span class="s-ico">${ico}</span>`:''}</div><div class="s-lbl ${state}">${label}</div></div>`;
     }
-
-    const header = parseRow(lines[0]);
-    // 欄位對應（依 exportCSV 的順序）
-    const colMap = {
-      '姓名': 'name', 'YouTube會員名稱': 'memberName', '電話': 'phone',
-      'Email': 'email', '生日': 'bday', '會員等級': 'level', '方案': 'plan',
-      '加入日期': 'join', '到期日': 'exp',
-      '地址': 'address', '備註': 'note',
-    };
-    const idxMap = {};
-    header.forEach((h, i) => { if (colMap[h]) idxMap[colMap[h]] = i; });
-
-    if (!idxMap.name) { showToast('⚠ 找不到「姓名」欄位，請確認格式'); return; }
-
-    csvImportData = lines.slice(1).map(line => {
-      const cols = parseRow(line);
-      const obj = {};
-      Object.entries(idxMap).forEach(([field, idx]) => { obj[field] = cols[idx] || ''; });
-      return obj;
-    }).filter(r => r.name || r.memberName);
-
-    if (!csvImportData.length) { showToast('⚠ 沒有有效資料'); return; }
-
-    // 顯示預覽
-    const newCount = csvImportData.filter(r => !findExistingMember(r)).length;
-    const updateCount = csvImportData.filter(r => !!findExistingMember(r)).length;
-
-    document.getElementById('csv-preview-info').innerHTML =
-      `共 <b>${csvImportData.length}</b> 筆 ・ 新增 <b>${newCount}</b> 筆 ・ 更新 <b>${updateCount}</b> 筆（依 YouTube 名稱比對）`;
-
-    document.getElementById('csv-preview-list').innerHTML =
-      `<div style="display:flex;gap:8px;padding:3px 0;font-size:.65rem;color:var(--th);border-bottom:.5px solid var(--gold-dim);margin-bottom:2px">
-        <span style="flex:1">姓名</span><span style="flex:1">YT名稱</span><span style="flex:0 0 80px">等級</span><span style="flex:0 0 80px">到期日</span><span style="flex:0 0 36px"></span>
-      </div>` +
-      csvImportData.map(r => `
-      <div style="display:flex;gap:8px;align-items:center;padding:5px 0;border-bottom:.5px solid var(--gold-dim);font-size:.72rem">
-        <span style="flex:1;font-weight:500;color:var(--pd)">${r.name||'—'}</span>
-        <span style="color:var(--tm);flex:1">${r.memberName||'—'}</span>
-        <span style="flex:0 0 80px">${r.level||'—'}</span>
-        <span style="flex:0 0 80px;color:var(--purple)">${r.exp||'—'}</span>
-        <span style="color:${findExistingMember(r)?'var(--purple)':'var(--green)'};font-size:.65rem;flex:0 0 36px">
-          ${findExistingMember(r)?'更新':'新增'}
-        </span>
-      </div>`).join('');
-
-    document.getElementById('csv-import-warning').style.display = updateCount ? 'block' : 'none';
-    document.getElementById('csv-import-warning').textContent = `⚠ 更新的 ${updateCount} 筆會覆蓋現有資料`;
-    openM('csv-import');
-    input.value = ''; // 清除 file input
-  };
-  reader.readAsText(file, 'UTF-8');
-}
-
-async function confirmImportCSV() {
-  const btn = document.getElementById('csv-confirm-btn');
-  btn.disabled = true; btn.textContent = '匯入中…';
-  const modal = document.getElementById('modal-csv-import');
-  modal.style.pointerEvents = 'none'; // 禁止背景點擊關閉
-  let success = 0, fail = 0;
-  const failNames = [];
-  // 先並行送 API，再串行更新 members 避免 race condition
-  const batchSize = 5;
-  const results = [];
-  for (let i = 0; i < csvImportData.length; i += batchSize) {
-    const batch = csvImportData.slice(i, i + batchSize);
-    const batchResults = await Promise.all(batch.map(async (row, bi) => {
-      const existing = findExistingMember(row);
-      try {
-        if (existing) {
-          const updated = await apiFetch(`/api/members?id=${existing.id}`, { method: 'PATCH', body: row });
-          return { type: 'update', id: existing.id, data: updated };
-        } else {
-          const created = await apiFetch('/api/members', { method: 'POST', body: row });
-          return { type: 'create', data: created };
-        }
-      } catch(e) { return { type: 'error' }; }
-    }));
-    // 串行更新 members
-    batchResults.forEach((r, ri) => {
-      if(r.type === 'update') { members = members.map(m => m.id === r.id ? r.data : m); success++; }
-      else if(r.type === 'create') { members.push(r.data); success++; }
-      else { fail++; failNames.push(batch[ri]?.name || batch[ri]?.memberName || '?'); }
-    });
-    btn.textContent = `匯入中… ${Math.min(i+batchSize, csvImportData.length)}/${csvImportData.length}`;
+    return html;
   }
-  modal.style.pointerEvents = '';
-  closeM('csv-import');
-  const failMsg = fail ? `，${fail} 筆失敗${failNames.length ? '（'+failNames.slice(0,3).join('、')+(failNames.length>3?'…':'')+')' : ''}` : '';
-  showToast(`✦ 匯入完成：${success} 筆成功${failMsg}，重新載入中…`, fail ? 4000 : 2500);
-  csvImportData = [];
-  await loadAll();
-  btn.disabled = false; btn.textContent = '確認匯入';
-}
 
-
-// ── 活動福利 ─────────────────────────────────────────────
-let lastEventReward = null;
-function openEventRewardModal() {
-  document.getElementById('ev-name').value = '';
-  document.getElementById('ev-date').value = new Date().toISOString().slice(0,10);
-  document.getElementById('ev-lv3').value = '';
-  document.getElementById('ev-lv4').value = '';
-  document.getElementById('ev-lv5').value = '';
-  document.getElementById('ev-note').value = '';
-  // 顯示/隱藏「套用上次」按鈕
-  const lastBtn = document.getElementById('ev-last-btn');
-  if(lastBtn) lastBtn.style.display = lastEventReward ? 'inline-flex' : 'none';
-  updateEvPreview();
-  openM('event-reward');
-}
-function applyLastEventReward() {
-  if(!lastEventReward) return;
-  document.getElementById('ev-lv3').value = lastEventReward.lv3;
-  document.getElementById('ev-lv4').value = lastEventReward.lv4;
-  document.getElementById('ev-lv5').value = lastEventReward.lv5;
-  document.getElementById('ev-note').value = lastEventReward.note;
-  updateEvPreview();
-}
-
-function updateEvPreview() {
-  const lv3 = document.getElementById('ev-lv3').value.trim();
-  const lv4 = document.getElementById('ev-lv4').value.trim();
-  const lv5 = document.getElementById('ev-lv5').value.trim();
-  const lvMap = {
-    'LV.3 里民暖暖包': lv3,
-    'LV.4 肌肉暖暖包': lv4,
-    'LV.5 真蒸暖暖包': lv5,
-  };
-  const evName = document.getElementById('ev-name').value.trim();
-  // 有效會員，排除已有相同活動名稱的
-  const activeMembers = members.filter(m => m.exp && 天Until(m.exp) >= 0);
-  const el = document.getElementById('ev-preview');
-  if (!Object.values(lvMap).some(g => g)) { el.textContent = '請填寫至少一個等級的禮物'; return; }
-  let total = 0;
-  const lines = Object.entries(lvMap)
-    .filter(([lv, gift]) => gift)
-    .map(([lv, gift]) => {
-      const eligible = activeMembers.filter(m => m.level === lv && !(evName && allRewards.some(r => r.memberId === m.id && r.milestone === evName)));
-      total += eligible.length;
-      // 名字列表，超過5人縮寫
-      const names = eligible.map(m => m.name);
-      const nameStr = names.length <= 5 ? names.join('、') : names.slice(0,5).join('、') + ` 等 ${names.length} 人`;
-      return { label: `${lv.split(' ')[0]} ${eligible.length} 人 → ${gift}`, nameStr };
-    });
-  el.innerHTML = `將新增 <b style="color:var(--pd)">${total}</b> 筆福利：`
-    + lines.map(l => `<div style="margin-top:4px">・${l.label}</div>${l.nameStr?`<div style="margin-top:2px;color:var(--tm);font-size:.68rem">　${l.nameStr}</div>`:''}`).join('');
-}
-
-function switchRewardTab(tab, el){
-  document.querySelectorAll('.reward-tab').forEach(t=>{
-    t.style.background='var(--gold-dim)';
-    t.style.color='var(--th)';
-    t.style.fontWeight='normal';
-    t.style.borderBottom='none';
-  });
-  el.style.background='var(--bg,#fff)';
-  el.style.color='var(--pd)';
-  el.style.fontWeight='500';
-  el.style.borderBottom='2px solid var(--gold)';
-  document.getElementById('reward-panel-sub').style.display = tab==='sub' ? 'block' : 'none';
-  document.getElementById('reward-panel-gift').style.display = tab==='gift' ? 'block' : 'none';
-  if(tab==='gift' && drw會員Id) renderGiftList();
-}
-
-function renderGiftList(){
-  const rewards = drw會員Rewards;
-  const bdayRewards = rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&r.milestone.startsWith('LV.')).sort((a,b)=>a.milestone.localeCompare(b.milestone));
-  const otherRewards = rewards.filter(r=>r.type==='里民禮物'&&(!r.milestone||!r.milestone.startsWith('LV.')));
+  let cardsHtml = '';
+  const sub3Done = subRewards.filter(r=>r.type==='3個月獎勵'&&r.redeemed).length;
+  const sub3Total = subRewards.filter(r=>r.type==='3個月獎勵').length;
+  cardsHtml += `<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">訂閱福利</div><div class="sc-sub">${member.level} · ${lvInfo2.every3} · 已訂閱 ${subMos2} 個月</div></div><div class="sc-count">${sub3Done} / ${sub3Total} 已兌換</div></div><div class="stamps">${buildStamps(12,[3,6,9,12],subRewards,subMos2)}</div>${lvInfo2.note ? '<div class="sc-note" style="margin-bottom:6px">💡 ' + lvInfo2.note + '</div>' : ''}<hr class="sc-divider"><div class="sc-note">🎁 每滿 3 個月不間斷，獲得【${lvInfo2.every3}】</div><div class="sc-note" style="margin-top:6px">🏆 連續訂閱一年不間斷，獲得【${lvInfo2.year}】</div><div class="sc-legend"><div class="leg"><div class="leg-c future"></div>尚未累積</div><div class="leg"><div class="leg-c earned"></div>累積中</div><div class="leg"><div class="leg-c redeemed"></div>已兌換</div></div></div>`;
+  if(member.level==='LV.4 肌肉暖暖包'||member.level==='LV.5 真蒸暖暖包'){
+    const mTitle = member.level==='LV.5 真蒸暖暖包'?'一小時占卜':'半小時占卜';
+    const mDone = monthlyRewards.filter(r=>r.redeemed).length;
+    cardsHtml += `<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">每月占卜</div><div class="sc-sub">${member.level} · ${mTitle} · 已訂閱 ${subMos2} 個月</div></div><div class="sc-count">${mDone} / ${subMos2} 已兌換</div></div><div class="stamps">${buildStamps(12,[],monthlyRewards,subMos2)}</div><div class="sc-legend"><div class="leg"><div class="leg-c future"></div>尚未累積</div><div class="leg"><div class="leg-c earned"></div>累積中</div><div class="leg"><div class="leg-c redeemed"></div>已兌換</div></div></div>`;
+  }
+  // 里民禮品卡（最後）
+  const anniKeys = ['鑰匙圈','壓克力卡','方型立牌','準備中'];
+  const activityRewards = rewards.filter(r=>r.type==='里民禮物'&&(!r.milestone||!anniKeys.some(k=>r.milestone.includes(k))));
+  const joinYear = member.join ? parseInt(member.join.slice(0,4)) : new Date().getFullYear();
+  const thisYear = new Date().getFullYear();
+  // 每年一個生日禮格子（從加入年到今年）
+  const bdaySlots = [];
+  for(let y=joinYear; y<=thisYear; y++) bdaySlots.push(y);
+  // 其他里民禮物（非生日）
+  const otherActivity = activityRewards.filter(r=>!r.milestone||!r.milestone.includes('生日'));
+  const totalSlots = Math.max(bdaySlots.length + otherActivity.length, 6);
+  let activityHtml = '<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">里民禮品</div><div class="sc-sub">生日禮品 · 節日禮品 · 活動禮品</div></div></div><div class="stamps" style="grid-template-columns:repeat(6,1fr)">';
   
-  let html = '';
-  if(bdayRewards.length){
-    html += '<div class="reward-year-label">生日禮品</div>';
-    html += bdayRewards.map(r=>`
-      <div class="reward-item-row">
-        <div class="reward-left">
-          <div class="reward-title">🎂 ${r.milestone}</div>
-          <div class="reward-sub">${r.note||''}${r.redeemed?' · ✓ 已兌換 '+(r.redeemedAt||''):''}</div>
-        </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="btn btn-sm" onclick="openEditGiftModal('${r.id}')">編輯</button>
-          ${!r.redeemed?`<button class="btn btn-sm btn-green" onclick="openGiftRedeemModal('${r.id}')">兌換</button>`:'<span style="font-size:.65rem;color:var(--purple);align-self:center">已兌換</span>'}
-          <button class="btn btn-sm btn-del" onclick="deleteReward('${r.id}')">刪除</button>
-        </div>
-      </div>`).join('');
+  // 先排生日禮
+  bdaySlots.forEach(y=>{
+    const r = activityRewards.find(r=>r.milestone&&r.milestone.includes('生日')&&r.milestone.includes(String(y)));
+    const state = r ? (r.redeemed?'redeemed':'earned') : 'future';
+    const label = r ? (r.redeemed?'已兌換':'待兌換') : '待領取';
+    activityHtml += `<div class="stamp"><div class="s-circle ${state}"><span style="font-size:18px">🐈‍⬛</span></div><div class="s-lbl ${state}" style="font-size:8px">${y}<br>生日禮</div></div>`;
+  });
+  
+  // 其他活動禮
+  otherActivity.forEach(r=>{
+    const state = r.redeemed ? 'redeemed' : 'earned';
+    const label = r.redeemed ? '已兌換' : '待兌換';
+    activityHtml += `<div class="stamp"><div class="s-circle ${state}"><span style="font-size:18px">🐈‍⬛</span></div><div class="s-lbl ${state}">${label}</div></div>`;
+  });
+
+  // 補灰色到至少6格
+  const filled = bdaySlots.length + otherActivity.length;
+  for(let i=filled; i<6; i++){
+    activityHtml += '<div class="stamp"><div class="s-circle future"><span style="font-size:18px">🐈‍⬛</span></div><div class="s-lbl future">—</div></div>';
   }
-  if(otherRewards.length){
-    html += '<div class="reward-year-label" style="margin-top:.6rem">不定期禮品</div>';
-    html += otherRewards.map(r=>`
-      <div class="reward-item-row">
-        <div class="reward-left">
-          <div class="reward-title">🎁 ${r.milestone||'禮品'}</div>
-          <div class="reward-sub">${r.rewardItem||'—'}${r.redeemed?' · ✓ '+r.redeemedAt:''}</div>
-        </div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <button class="btn btn-sm" onclick="openEditGiftModal('${r.id}')">編輯</button>
-          ${!r.redeemed?`<button class="btn btn-sm btn-green" onclick="openGiftRedeemModal('${r.id}')">兌換</button>`:'<span style="font-size:.65rem;color:var(--purple);align-self:center">已兌換</span>'}
-          <button class="btn btn-sm btn-del" onclick="deleteReward('${r.id}')">刪除</button>
-        </div>
-      </div>`).join('');
-  }
-  if(!html) html = '<div class="empty">尚無里民禮品記錄</div>';
-  document.getElementById('gift-list').innerHTML = html;
+  activityHtml += '</div></div>';
+  cardsHtml += activityHtml;
+
+  // 生日禮紀念卡（固定4格）
+  const anniItems = [
+    { year: '第 1 年', name: '鑰匙圈', img: '/images/HBDGIFT-year1.jpg', key: '鑰匙圈' },
+    { year: '第 2 年', name: '壓克力卡', img: '/images/HBDGIFT-year2.jpg', key: '壓克力卡' },
+    { year: '第 3 年', name: '方型立牌', img: '/images/HBDGIFT-year3.jpg', key: '方型立牌' },
+    { year: '第 4 年', name: '準備中…', img: null, key: '準備中' },
+  ];
+  const anniRewards = rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&(r.milestone.includes('鑰匙圈')||r.milestone.includes('壓克力卡')||r.milestone.includes('方型立牌')||r.milestone.includes('準備中')));
+  
+  let anniHtml = '<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">生日禮紀念</div><div class="sc-sub">每年訂閱週年限定</div></div></div>';
+  anniHtml += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:.5rem">';
+  anniItems.forEach(item=>{
+    const rw = anniRewards.find(r=>r.milestone&&r.milestone.includes(item.key));
+    const owned = rw && rw.redeemed;
+    const yr = owned && rw.redeemedAt ? rw.redeemedAt.slice(0,4) : '';
+    const state = owned ? 'owned' : 'unowned';
+    const imgHtml = item.img
+      ? '<img src="'+item.img+'" style="width:60%;height:60%;object-fit:cover;border-radius:50%;'+(owned?'':'filter:grayscale(1)')+'">'
+      : '<span style="font-size:22px;line-height:1">🎁</span>';
+    anniHtml += '<div style="display:flex;flex-direction:column;align-items:center;gap:5px">'
+      + '<div style="width:100%;aspect-ratio:1;border-radius:50%;border:2px solid '+(owned?'#9080C0':'#D3D1C7')+';background:'+(owned?'#F0EBF8':'#F5F4F2')+';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;'+(owned?'':'filter:grayscale(1);opacity:.55')+'">'
+      + imgHtml
+      + '</div>'
+      + '<div style="font-size:10px;text-align:center;color:'+(owned?'#7050A0':'#B4B2A9')+'">'+item.key+'</div>'
+      + '<div style="font-size:9px;text-align:center;color:'+(owned?'#9080C0':'#C8C6BE')+'">'+(owned?(yr?yr+' 兌換':'已擁有'):'未擁有')+'</div>'
+      + '</div>';
+  });
+  anniHtml += '</div></div>';
+  cardsHtml += anniHtml;
+
+  document.getElementById('reward-list').innerHTML = cardsHtml || '<div class="empty">目前尚無福利記錄</div>';
+
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth', block:'start'});
+
 }
 
-async function addBirthdayGift(){
-  if(!drw會員Id){ showToast('請先開啟會員'); return; }
-  const yr = new Date().getFullYear();
-  const exists = drw會員Rewards.find(r=>r.type==='里民禮物'&&r.milestone===yr+'生日禮');
-  if(exists){ showToast(`${yr}生日禮已存在`); return; }
-  try{
-    const rw = await apiFetch('/api/rewards',{method:'POST',body:{
-      memberId:drw會員Id, type:'里民禮物', milestone:yr+'生日禮',
-      triggerDate:new Date().toISOString().slice(0,10), redeemed:false,
-    }});
-    drw會員Rewards.push(rw); allRewards.push(rw);
-    renderGiftList(); renderDash(); render提醒(curFilter);
-    showToast('✦ 已新增 '+yr+' 生日禮');
-  }catch(e){ showToast('⚠ 新增失敗'); }
-}
-
-function openEditGiftModal(id){
-  const rw = drw會員Rewards.find(r=>r.id===id);
-  if(!rw) return;
-  const isBday = rw.milestone && rw.milestone.includes('生日');
-  document.getElementById('gift-type').value = isBday ? 'bday' : 'other';
-  document.getElementById('gift-bday-level-wrap').style.display = isBday ? 'block' : 'none';
-  document.getElementById('gift-name-wrap').style.display = isBday ? 'none' : 'block';
-  document.getElementById('gift-bday-level').value = rw.rewardItem || 'LV.1鑰匙圈';
-  document.getElementById('gift-name').value = rw.milestone || '';
-  document.getElementById('gift-note').value = rw.note || '';
-  document.getElementById('gift-date').value = rw.triggerDate || new Date().toISOString().slice(0,10);
-  document.getElementById('gift-note').value = rw.note || '';
-  // 改 modal 標題和按鈕為儲存模式
-  document.querySelector('#modal-add-gift .mdtitle').textContent = '編輯里民禮品';
-  const btn = document.querySelector('#modal-add-gift .btn-g');
-  if(btn){ btn.textContent = '儲存'; btn.onclick = ()=>confirmEditGift(id); }
-  openM('add-gift');
-}
-
-async function confirmEditGift(id){
-  const giftNote2 = document.getElementById('gift-content').value.trim();
-  const date = document.getElementById('gift-date').value;
-  try{
-    const updated = await apiFetch(`/api/rewards?id=${id}`,{method:'PATCH',body:{ note:giftNote2, triggerDate:date }});
-    drw會員Rewards = drw會員Rewards.map(r=>r.id===id?{...r,...updated}:r);
-    allRewards = allRewards.map(r=>r.id===id?{...r,...updated}:r);
-    renderGiftList();
-    closeM('add-gift');
-    // 重設按鈕為新增模式
-    document.querySelector('#modal-add-gift .mdtitle').textContent = '新增里民禮品';
-    const btn = document.querySelector('#modal-add-gift .btn-g');
-    if(btn){ btn.textContent = '新增'; btn.onclick = confirmAddGift; }
-    showToast('✦ 已更新');
-  }catch(e){ showToast('⚠ 更新失敗'); }
-}
-
-function onGiftTypeChange(){
-  const type = document.getElementById('gift-type').value;
-  document.getElementById('gift-bday-level-wrap').style.display = type==='bday' ? 'block' : 'none';
-  document.getElementById('gift-name-wrap').style.display = type==='other' ? 'block' : 'none';
-}
-
-function openAddGiftModal(){
-  if(!drw會員Id){ showToast('請先開啟會員'); return; }
-  document.getElementById('gift-type').value = 'bday';
-  document.getElementById('gift-bday-level').value = 'LV.1鑰匙圈';
-  document.getElementById('gift-name').value = '';
-  document.getElementById('gift-content').value = '';
-  document.getElementById('gift-date').value = new Date().toISOString().slice(0,10);
-  document.getElementById('gift-note').value = '';
-  document.getElementById('gift-bday-level-wrap').style.display = 'block';
-  document.getElementById('gift-name-wrap').style.display = 'none';
-  openM('add-gift');
-}
-
-async function confirmAddGift(){
-  const type = document.getElementById('gift-type').value;
-  const isBday = type === 'bday';
-  const level = document.getElementById('gift-bday-level').value;
-  const name = document.getElementById('gift-name').value.trim() || (isBday ? document.getElementById('gift-bday-level').value : '');
-  if(!isBday && !name){ showToast('請填寫禮品名稱'); return; }
-  const rewardItem = document.getElementById('gift-content').value.trim();
-  const date = document.getElementById('gift-date').value;
-  const note = document.getElementById('gift-note').value.trim();
-  try{
-    const rw = await apiFetch('/api/rewards',{method:'POST',body:{
-      memberId: drw會員Id,
-      type: '里民禮物',
-      milestone: name,
-      rewardItem: '',
-      note: giftNote,
-      triggerDate: date,
-      redeemed: false,
-      note,
-    }});
-    drw會員Rewards.push(rw); allRewards.push(rw);
-    renderGiftList(); renderDash(); render提醒(curFilter);
-    closeM('add-gift');
-    showToast('✦ 已新增里民禮品');
-  }catch(e){ showToast('⚠ 新增失敗'); }
-}
-
-async function openAddGiftModal_OLD(){
-  const name = prompt('禮品名稱（例如：端午節禮品）：');
-  if(!name) return;
-  const content = prompt('禮品內容（選填）：') || '';
-  try{
-    const rw = await apiFetch('/api/rewards',{method:'POST',body:{
-      memberId:drw會員Id, type:'里民禮物', milestone:name,
-      rewardItem:content, triggerDate:new Date().toISOString().slice(0,10), redeemed:false,
-    }});
-    drw會員Rewards.push(rw); allRewards.push(rw);
-    renderGiftList(); renderDash(); render提醒(curFilter);
-    showToast('✦ 已新增禮品');
-  }catch(e){ showToast('⚠ 新增失敗'); }
-}
-
-function openGiftRedeemModal(id){
-  const rw = drw會員Rewards.find(r=>r.id===id);
-  if(!rw) return;
-  document.getElementById('rw-id').value = id;
-  document.getElementById('rw-allids').value = id;
-  document.getElementById('rw-redeemedAt').value = '';
-  document.getElementById('rw-date').value = new Date().toISOString().slice(0,10);
-  document.getElementById('rw-item').value = rw.rewardItem || '';
-  document.getElementById('rw-note').value = rw.note || '';
-  document.getElementById('rw-item-wrap').style.display = 'block';
-  document.getElementById('rw-illus-wrap').style.display = 'none';
-  document.getElementById('rw-count-wrap').style.display = 'none';
-  document.getElementById('reward-modal-title').textContent = '兌換 · '+rw.milestone;
-  // 兌換後要重新渲染 gift list
-  document.getElementById('rw-id').dataset.isGift = '1';
-  openM('reward');
-}
-
-function openBdayGiftPanel(){
-  const panel = document.getElementById('bday-gift-panel');
-  if(panel) panel.style.display = panel.style.display==='none' ? 'flex' : 'none';
-}
-
-async function addBdayGift(name, year){
-  if(!drw會員Id){ showToast('請先開啟會員'); return; }
-  const exists = drw會員Rewards.find(r=>r.type==='里民禮物'&&r.milestone&&r.milestone.includes(name));
-  if(exists){ showToast('此年份生日禮已存在'); return; }
-  try{
-    const rw = await apiFetch('/api/rewards',{ method:'POST', body:{
-      memberId: drw會員Id,
-      type: '里民禮物',
-      milestone: name,
-      triggerDate: new Date().toISOString().slice(0,10),
-      redeemed: false,
-    }});
-    drw會員Rewards.push(rw);
-    allRewards.push(rw);
-    renderRewards(drw會員Rewards, drw會員Id);
-    renderDash(); render提醒(curFilter);
-    showToast(`✦ 已新增 ${year} ${name}`);
-  }catch(e){ showToast('⚠ 新增失敗'); }
-}
-
-async function confirmEventReward() {
-  const name = document.getElementById('ev-name').value.trim();
-  const date = document.getElementById('ev-date').value;
-  const note = document.getElementById('ev-note').value.trim();
-  const lv3 = document.getElementById('ev-lv3').value.trim();
-  const lv4 = document.getElementById('ev-lv4').value.trim();
-  const lv5 = document.getElementById('ev-lv5').value.trim();
-  if (!name) { showToast('請填寫活動名稱'); return; }
-  if (!date) { showToast('請選擇觸發日期'); return; }
-  if (!lv3 && !lv4 && !lv5) { showToast('請至少填一個等級的禮物'); return; }
-
-  const lvMap = {
-    'LV.3 里民暖暖包': lv3,
-    'LV.4 肌肉暖暖包': lv4,
-    'LV.5 真蒸暖暖包': lv5,
-  };
-
-  // 有效會員
-  const activeMembers = members.filter(m => m.exp && 天Until(m.exp) >= 0);
-  const targets = activeMembers.filter(m => lvMap[m.level]);
-  if (!targets.length) { showToast('沒有符合條件的有效會員'); return; }
-
-  // 檢查已有相同 milestone 的會員
-  const alreadyHas = targets.filter(m => allRewards.some(r => r.memberId === m.id && r.milestone === name));
-  const realTargets = targets.filter(m => !allRewards.some(r => r.memberId === m.id && r.milestone === name));
-  let confirmMsg = `確定為 ${realTargets.length} 位有效會員新增「${name}」活動福利？`;
-  if (alreadyHas.length) confirmMsg += `\n（${alreadyHas.length} 位已有此活動福利，將略過）`;
-  if (!realTargets.length) { showToast(`所有會員已有「${name}」福利`); return; }
-  if (!confirm(confirmMsg)) return;
-
-  const btn = document.getElementById('ev-submit-btn');
-  btn.disabled = true; btn.textContent = '新增中…';
-
-  let success = 0, fail = 0;
-  const failNames = [];
-  try {
-    // 每批5筆並行
-    for (let i = 0; i < realTargets.length; i += 5) {
-      const batch = realTargets.slice(i, i + 5);
-      await Promise.all(batch.map(async m => {
-        try {
-          const created = await apiFetch('/api/rewards', {
-            method: 'POST',
-            body: {
-              memberId: m.id,
-              type: '里民禮物',
-              milestone: name,
-              rewardItem: lvMap[m.level],
-              triggerDate: date,
-              note,
-            }
-          });
-          allRewards.push(created);
-          success++;
-        } catch(e) { fail++; failNames.push(m.name||m.memberName||'?'); }
-      }));
-    }
-    lastEventReward = { lv3, lv4, lv5, note };
-    closeM('event-reward');
-    renderDash(); render提醒(curFilter); renderCal();
-    if(drw會員Id) loadRewards(drw會員Id);
-    const evFailMsg = fail ? `，${fail} 筆失敗${failNames.length?'（'+failNames.slice(0,3).join('、')+(failNames.length>3?'…':'')+')':''}` : '';
-    showToast(`✦ 已為 ${success} 位會員新增「${name}」福利${evFailMsg}`, fail ? 4000 : 2500);
-  } finally {
-    btn.disabled = false; btn.textContent = '確認新增';
-  }
-}
-
-// ── AUTH ─────────────────────────────────────────────────
-function enterApp(){
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app-main').style.display = 'flex';
-  loadAll();
-}
-async function checkAuth(){
-  const input = document.getElementById('auth-input').value;
-  const btn = document.querySelector('#auth-screen .btn-g');
-  if(btn) btn.disabled = true;
-  try {
-    const r = await fetch('/api/auth', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({pwd: input})
-    });
-    if(r.ok){
-      sessionStorage.setItem('ooniau_auth','1');
-      enterApp();
-    } else {
-      document.getElementById('auth-err').textContent = '密碼錯誤';
-      document.getElementById('auth-err').style.display = 'block';
-      document.getElementById('auth-input').value = '';
-      document.getElementById('auth-input').focus();
-    }
-  } catch(e) {
-    document.getElementById('auth-err').textContent = '⚠ 連線失敗，請稍後再試';
-    document.getElementById('auth-err').style.display = 'block';
-  } finally {
-    if(btn) btn.disabled = false;
-  }
-}
-// 已登入則直接進入
-if(sessionStorage.getItem('ooniau_auth')==='1'){
-  enterApp();
-} else {
-  setTimeout(()=>document.getElementById('auth-input')?.focus(), 100);
-}
-// ── INIT ─────────────────────────────────────────────────
-let lastLoadTime = Date.now();
-// loadAll 在 auth 通過後呼叫
-document.addEventListener('visibilitychange',()=>{
-  if(!document.hidden && sessionStorage.getItem('ooniau_auth')==='1' && Date.now() - lastLoadTime > 5 * 60 * 1000){
-    lastLoadTime = Date.now();
-    loadAll();
-  }
-});
+function showErr(msg){ const e=document.getElementById('err-msg'); e.textContent=msg; e.style.display='block'; }
+function hideErr(){ document.getElementById('err-msg').style.display='none'; }
 </script>
 </body>
 </html>
