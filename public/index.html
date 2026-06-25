@@ -1384,9 +1384,10 @@ async function syncRewards(){
   if(syncBtn) syncBtn.disabled = true;
   const expected=calcExpectedRewards(m);
   if(!expected.length){showToast('訂閱未滿3個月，暫無福利');if(syncBtn)syncBtn.disabled=false;return;}
-  const existing=drw會員Rewards.map(r=>r.milestone+'|'+r.rewardItem);
-  const missing=expected.filter(e=>!existing.includes(e.milestone+'|'+(e.rewardItem||'')));
-  const alreadyRedeemed=expected.filter(e=>existing.includes(e.milestone)&&drw會員Rewards.find(r=>r.milestone===e.milestone&&r.redeemed));
+  // 去重：同 milestone + 同 rewardItem（空值統一為空字串）
+  const existing=drw會員Rewards.map(r=>(r.milestone||'')+'|'+(r.rewardItem||''));
+  const missing=expected.filter(e=>!existing.includes((e.milestone||'')+'|'+(e.rewardItem||'')));
+  const alreadyRedeemed=expected.filter(e=>drw會員Rewards.find(r=>(r.milestone||'')===(e.milestone||'')&&(r.rewardItem||'')===(e.rewardItem||'')&&r.redeemed));
   if(!missing.length){showToast(`福利已是最新${alreadyRedeemed.length?'（已兌換 '+alreadyRedeemed.length+' 筆）':''}，無需同步`);if(syncBtn)syncBtn.disabled=false;return;}
   const lvInfo=LEVELS[m.level]||{};
   try{
@@ -2127,7 +2128,7 @@ function renderGiftList(){
       <div class="reward-item-row">
         <div class="reward-left">
           <div class="reward-title">🎂 生日禮</div>
-          <div class="reward-sub">${r.milestone}${r.redeemed?' · ✓ 已兌換 '+(r.redeemedAt||''):''}</div>
+          <div class="reward-sub">${r.rewardItem||r.milestone}${r.redeemed?' · ✓ 已兌換 '+(r.redeemedAt||''):''}</div>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="btn btn-sm" onclick="openEditGiftModal('${r.id}')">編輯</button>
