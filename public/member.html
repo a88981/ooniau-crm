@@ -293,7 +293,8 @@ function renderResult({member, rewards}){
     cardsHtml += `<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">每月占卜</div><div class="sc-sub">${member.level} · ${mTitle} · 已訂閱 ${subMos2} 個月</div></div><div class="sc-count">${mDone} / ${subMos2} 已兌換</div></div><div class="stamps">${buildStamps(12,[],monthlyRewards,subMos2)}</div><div class="sc-legend"><div class="leg"><div class="leg-c future"></div>尚未累積</div><div class="leg"><div class="leg-c earned"></div>累積中</div><div class="leg"><div class="leg-c redeemed"></div>已兌換</div></div></div>`;
   }
   // 里民禮品卡（最後）
-  const activityRewards = rewards.filter(r=>r.type==='里民禮物');
+  const anniKeys = ['鑰匙圈','壓克力卡','方型立牌','準備中'];
+  const activityRewards = rewards.filter(r=>r.type==='里民禮物'&&(!r.milestone||!anniKeys.some(k=>r.milestone.includes(k))));
   const joinYear = member.join ? parseInt(member.join.slice(0,4)) : new Date().getFullYear();
   const thisYear = new Date().getFullYear();
   // 每年一個生日禮格子（從加入年到今年）
@@ -343,16 +344,16 @@ function renderResult({member, rewards}){
     const owned = rw && rw.redeemed;
     const yr = owned && rw.redeemedAt ? rw.redeemedAt.slice(0,4) : '';
     const state = owned ? 'owned' : 'unowned';
-    anniHtml += `<div style="display:flex;flex-direction:column;align-items:center;gap:5px">
-      <div style="width:100%;aspect-ratio:1;border-radius:50%;border:2px solid ${owned?'#9080C0':'#D3D1C7'};background:${owned?'#F0EBF8':'#F5F4F2'};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;${owned?'':'filter:grayscale(1);opacity:.55'}">
-        ${item.img
-          ? `<img src="${item.img}" style="width:60%;height:60%;object-fit:cover;border-radius:50%;${owned?'':'filter:grayscale(1)'}">`
-          : `<span style="font-size:22px;line-height:1">🎁</span>`}
-        <span style="font-size:9px;font-weight:500;color:${owned?'#7050A0':'#B4B2A9'}">${item.year}</span>
-      </div>
-      <div style="font-size:10px;text-align:center;color:${owned?'#7050A0':'#B4B2A9'}">${item.name}</div>
-      <div style="font-size:9px;text-align:center;color:${owned?'#9080C0':'#C8C6BE'}">${owned?(yr?yr+' 兌換':'已擁有'):'未擁有'}</div>
-    </div>`;
+    const imgHtml = item.img
+      ? '<img src="'+item.img+'" style="width:60%;height:60%;object-fit:cover;border-radius:50%;'+(owned?'':'filter:grayscale(1)')+'">'
+      : '<span style="font-size:22px;line-height:1">🎁</span>';
+    anniHtml += '<div style="display:flex;flex-direction:column;align-items:center;gap:5px">'
+      + '<div style="width:100%;aspect-ratio:1;border-radius:50%;border:2px solid '+(owned?'#9080C0':'#D3D1C7')+';background:'+(owned?'#F0EBF8':'#F5F4F2')+';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;'+(owned?'':'filter:grayscale(1);opacity:.55')+'">'
+      + imgHtml
+      + '</div>'
+      + '<div style="font-size:10px;text-align:center;color:'+(owned?'#7050A0':'#B4B2A9')+'">'+item.key+'</div>'
+      + '<div style="font-size:9px;text-align:center;color:'+(owned?'#9080C0':'#C8C6BE')+'">'+(owned?(yr?yr+' 兌換':'已擁有'):'未擁有')+'</div>'
+      + '</div>';
   });
   anniHtml += '</div></div>';
   cardsHtml += anniHtml;
