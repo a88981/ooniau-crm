@@ -582,19 +582,20 @@ tr:hover td{background:#FEFBF2}
     </div>
     <div class="fr" id="gift-name-wrap" style="display:none">
       <label class="fl">禮品名稱</label>
-      <input class="fi" id="gift-name" placeholder="例如：端午節禮品">
+      <select class="fi" id="gift-name">
+        <option value="LV.1鑰匙圈">LV.1 鑰匙圈</option>
+        <option value="LV.2壓克力卡">LV.2 壓克力卡</option>
+        <option value="LV.3方型立牌">LV.3 方型立牌</option>
+        <option value="LV.4準備中">LV.4 準備中</option>
+      </select>
     </div>
     <div class="fr">
-      <label class="fl">說明</label>
-      <input class="fi" id="gift-content" placeholder="例如：LV.3 方型立牌＋卡片">
+      <label class="fl">說明（選填）</label>
+      <input class="fi" id="gift-note" placeholder="例如：LV.3 方型立牌＋卡片">
     </div>
     <div class="fr">
       <label class="fl">觸發日期</label>
       <input class="fi" id="gift-date" type="date">
-    </div>
-    <div class="fr">
-      <label class="fl">說明（選填）</label>
-      <input class="fi" id="gift-note" placeholder="例如：已確認收件地址">
     </div>
     <div class="mdfoot">
       <button class="btn" onclick="closeM('add-gift')">取消</button>
@@ -2183,7 +2184,7 @@ function openEditGiftModal(id){
   document.getElementById('gift-name-wrap').style.display = isBday ? 'none' : 'block';
   document.getElementById('gift-bday-level').value = rw.rewardItem || 'LV.1鑰匙圈';
   document.getElementById('gift-name').value = rw.milestone || '';
-  document.getElementById('gift-content').value = rw.note || '';
+  document.getElementById('gift-note').value = rw.note || '';
   document.getElementById('gift-date').value = rw.triggerDate || new Date().toISOString().slice(0,10);
   document.getElementById('gift-note').value = rw.note || '';
   // 改 modal 標題和按鈕為儲存模式
@@ -2233,7 +2234,7 @@ async function confirmAddGift(){
   const type = document.getElementById('gift-type').value;
   const isBday = type === 'bday';
   const level = document.getElementById('gift-bday-level').value;
-  const name = isBday ? (new Date().getFullYear()+'生日禮') : document.getElementById('gift-name').value.trim();
+  const name = document.getElementById('gift-name').value.trim() || (isBday ? document.getElementById('gift-bday-level').value : '');
   if(!isBday && !name){ showToast('請填寫禮品名稱'); return; }
   const rewardItem = document.getElementById('gift-content').value.trim();
   const date = document.getElementById('gift-date').value;
