@@ -585,8 +585,8 @@ tr:hover td{background:#FEFBF2}
       <input class="fi" id="gift-name" placeholder="例如：端午節禮品">
     </div>
     <div class="fr">
-      <label class="fl">福利內容</label>
-      <input class="fi" id="gift-content" placeholder="實際給的內容，例如：LV.3 方型立牌＋卡片">
+      <label class="fl">說明</label>
+      <input class="fi" id="gift-content" placeholder="例如：LV.3 方型立牌＋卡片">
     </div>
     <div class="fr">
       <label class="fl">觸發日期</label>
@@ -1293,9 +1293,10 @@ function calcExpectedRewards(member){
   const bdayLevels = ['LV.1鑰匙圈','LV.2壓克力卡','LV.3方型立牌','LV.4準備中'];
   bdayLevels.forEach(lv=>{
     rewards.push({
-      milestone: lv,          // 標題：LV.1鑰匙圈
+      milestone: lv,               // 標題：LV.1鑰匙圈
       type: '里民禮物',
-      rewardItem: lv+bdaySuffix, // 說明：LV.1鑰匙圈+卡
+      rewardItem: '',              // 兌換時再填
+      note: lv+bdaySuffix,        // 說明：LV.1鑰匙圈+卡
       triggerDate: TODAY.toISOString().slice(0,10),
     });
   });
@@ -1393,7 +1394,7 @@ async function syncRewards(){
   try{
     const created = await Promise.all(missing.map(rw => {
       const defaultItem=rw.rewardItem||(rw.type==='12個月獎勵'?'專屬週邊':(lvInfo.items?lvInfo.items[0]:''));
-      return apiFetch('/api/rewards',{method:'POST',body:{ memberId:m.id, type:rw.type, milestone:rw.milestone||'', rewardItem:defaultItem, triggerDate:rw.triggerDate }});
+      return apiFetch('/api/rewards',{method:'POST',body:{ memberId:m.id, type:rw.type, milestone:rw.milestone||'', rewardItem:defaultItem, note:rw.note||'', triggerDate:rw.triggerDate }});
     }));
     created.forEach(r=>{ drw會員Rewards.push(r); allRewards.push(r); });
     drw會員Rewards.sort((a,b)=>a.triggerDate>b.triggerDate?1:-1);
@@ -2128,8 +2129,7 @@ function renderGiftList(){
       <div class="reward-item-row">
         <div class="reward-left">
           <div class="reward-title">🎂 ${r.milestone}</div>
-          <div class="reward-sub">${r.rewardItem||'—'}${r.redeemed?' · ✓ 已兌換 '+(r.redeemedAt||''):''}</div>
-          ${r.note?`<div class="reward-sub" style="color:var(--th)">${r.note}</div>`:''}
+          <div class="reward-sub">${r.note||''}${r.redeemed?' · ✓ 已兌換 '+(r.redeemedAt||''):''}</div>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="btn btn-sm" onclick="openEditGiftModal('${r.id}')">編輯</button>
@@ -2182,7 +2182,7 @@ function openEditGiftModal(id){
   document.getElementById('gift-name-wrap').style.display = isBday ? 'none' : 'block';
   document.getElementById('gift-bday-level').value = rw.rewardItem || 'LV.1鑰匙圈';
   document.getElementById('gift-name').value = rw.milestone || '';
-  document.getElementById('gift-content').value = rw.rewardItem || rw.milestone || '';
+  document.getElementById('gift-content').value = rw.note || '';
   document.getElementById('gift-date').value = rw.triggerDate || new Date().toISOString().slice(0,10);
   document.getElementById('gift-note').value = rw.note || '';
   // 改 modal 標題和按鈕為儲存模式
@@ -2193,11 +2193,10 @@ function openEditGiftModal(id){
 }
 
 async function confirmEditGift(id){
-  const rewardItem = document.getElementById('gift-content').value.trim();
+  const giftNote2 = document.getElementById('gift-content').value.trim();
   const date = document.getElementById('gift-date').value;
-  const note = document.getElementById('gift-note').value.trim();
   try{
-    const updated = await apiFetch(`/api/rewards?id=${id}`,{method:'PATCH',body:{ rewardItem, triggerDate:date, note }});
+    const updated = await apiFetch(`/api/rewards?id=${id}`,{method:'PATCH',body:{ note:giftNote2, triggerDate:date }});
     drw會員Rewards = drw會員Rewards.map(r=>r.id===id?{...r,...updated}:r);
     allRewards = allRewards.map(r=>r.id===id?{...r,...updated}:r);
     renderGiftList();
@@ -2243,7 +2242,8 @@ async function confirmAddGift(){
       memberId: drw會員Id,
       type: '里民禮物',
       milestone: name,
-      rewardItem: rewardItem || (isBday ? level : ''),
+      rewardItem: '',
+      note: giftNote,
       triggerDate: date,
       redeemed: false,
       note,
