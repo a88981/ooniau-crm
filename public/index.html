@@ -2122,11 +2122,12 @@ function renderGiftList(){
     html += bdayRewards.map(r=>`
       <div class="reward-item-row">
         <div class="reward-left">
-          <div class="reward-title">🎂 ${r.milestone}</div>
-          <div class="reward-sub">${r.rewardItem||'—'}${r.redeemed?' · ✓ '+r.redeemedAt:''}</div>
+          <div class="reward-title">🎂 生日禮</div>
+          <div class="reward-sub">${r.milestone} ${r.redeemed?'· ✓ 已兌換 '+(r.redeemedAt||''):(r.rewardItem?'· '+r.rewardItem:'')}</div>
         </div>
-        <div style="display:flex;gap:6px">
-          ${!r.redeemed?`<button class="btn btn-sm btn-green" onclick="openGiftRedeemModal('${r.id}')">兌換</button>`:'<span style="font-size:.65rem;color:var(--purple)">已兌換</span>'}
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-sm" onclick="openEditGiftModal('${r.id}')">編輯</button>
+          ${!r.redeemed?`<button class="btn btn-sm btn-green" onclick="openGiftRedeemModal('${r.id}')">兌換</button>`:'<span style="font-size:.65rem;color:var(--purple);align-self:center">已兌換</span>'}
           <button class="btn btn-sm btn-del" onclick="deleteReward('${r.id}')">刪除</button>
         </div>
       </div>`).join('');
@@ -2139,8 +2140,9 @@ function renderGiftList(){
           <div class="reward-title">🎁 ${r.milestone||'禮品'}</div>
           <div class="reward-sub">${r.rewardItem||'—'}${r.redeemed?' · ✓ '+r.redeemedAt:''}</div>
         </div>
-        <div style="display:flex;gap:6px">
-          ${!r.redeemed?`<button class="btn btn-sm btn-green" onclick="openGiftRedeemModal('${r.id}')">兌換</button>`:'<span style="font-size:.65rem;color:var(--purple)">已兌換</span>'}
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-sm" onclick="openEditGiftModal('${r.id}')">編輯</button>
+          ${!r.redeemed?`<button class="btn btn-sm btn-green" onclick="openGiftRedeemModal('${r.id}')">兌換</button>`:'<span style="font-size:.65rem;color:var(--purple);align-self:center">已兌換</span>'}
           <button class="btn btn-sm btn-del" onclick="deleteReward('${r.id}')">刪除</button>
         </div>
       </div>`).join('');
@@ -2163,6 +2165,43 @@ async function addBirthdayGift(){
     renderGiftList(); renderDash(); render提醒(curFilter);
     showToast('✦ 已新增 '+yr+' 生日禮');
   }catch(e){ showToast('⚠ 新增失敗'); }
+}
+
+function openEditGiftModal(id){
+  const rw = drw會員Rewards.find(r=>r.id===id);
+  if(!rw) return;
+  const isBday = rw.milestone && rw.milestone.includes('生日');
+  document.getElementById('gift-type').value = isBday ? 'bday' : 'other';
+  document.getElementById('gift-bday-level-wrap').style.display = isBday ? 'block' : 'none';
+  document.getElementById('gift-name-wrap').style.display = isBday ? 'none' : 'block';
+  document.getElementById('gift-bday-level').value = rw.rewardItem || 'LV.1鑰匙圈';
+  document.getElementById('gift-name').value = rw.milestone || '';
+  document.getElementById('gift-content').value = rw.rewardItem || '';
+  document.getElementById('gift-date').value = rw.triggerDate || new Date().toISOString().slice(0,10);
+  document.getElementById('gift-note').value = rw.note || '';
+  // 改 modal 標題和按鈕為儲存模式
+  document.querySelector('#modal-add-gift .mdtitle').textContent = '編輯里民禮品';
+  const btn = document.querySelector('#modal-add-gift .btn-g');
+  if(btn){ btn.textContent = '儲存'; btn.onclick = ()=>confirmEditGift(id); }
+  openM('add-gift');
+}
+
+async function confirmEditGift(id){
+  const rewardItem = document.getElementById('gift-content').value.trim();
+  const date = document.getElementById('gift-date').value;
+  const note = document.getElementById('gift-note').value.trim();
+  try{
+    const updated = await apiFetch(`/api/rewards?id=${id}`,{method:'PATCH',body:{ rewardItem, triggerDate:date, note }});
+    drw會員Rewards = drw會員Rewards.map(r=>r.id===id?{...r,...updated}:r);
+    allRewards = allRewards.map(r=>r.id===id?{...r,...updated}:r);
+    renderGiftList();
+    closeM('add-gift');
+    // 重設按鈕為新增模式
+    document.querySelector('#modal-add-gift .mdtitle').textContent = '新增里民禮品';
+    const btn = document.querySelector('#modal-add-gift .btn-g');
+    if(btn){ btn.textContent = '新增'; btn.onclick = confirmAddGift; }
+    showToast('✦ 已更新');
+  }catch(e){ showToast('⚠ 更新失敗'); }
 }
 
 function onGiftTypeChange(){
