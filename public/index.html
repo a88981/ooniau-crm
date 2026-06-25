@@ -1397,8 +1397,8 @@ async function syncRewards(){
   const lvInfo=LEVELS[m.level]||{};
   try{
     const created = await Promise.all(missing.map(rw => {
-      const defaultItem=rw.type==='12個月獎勵'?'專屬週邊':(lvInfo.items?lvInfo.items[0]:'');
-      return apiFetch('/api/rewards',{method:'POST',body:{ memberId:m.id, type:rw.type, milestone:rw.milestone, rewardItem:defaultItem, triggerDate:rw.triggerDate }});
+      const defaultItem=rw.rewardItem||(rw.type==='12個月獎勵'?'專屬週邊':(lvInfo.items?lvInfo.items[0]:''));
+      return apiFetch('/api/rewards',{method:'POST',body:{ memberId:m.id, type:rw.type, milestone:rw.milestone||'', rewardItem:defaultItem, triggerDate:rw.triggerDate }});
     }));
     created.forEach(r=>{ drw會員Rewards.push(r); allRewards.push(r); });
     drw會員Rewards.sort((a,b)=>a.triggerDate>b.triggerDate?1:-1);
