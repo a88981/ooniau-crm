@@ -1288,6 +1288,18 @@ function calcExpectedRewards(member){
         rewards.push({ milestone:`${mo}個月占卜`, type:'每月占卜', triggerDate:trigDate.toISOString().slice(0,10) });
     }
   }
+  // 每年生日禮 LV1-LV4 四筆
+  const thisYear = TODAY.getFullYear();
+  const bdayItems = ['LV.1鑰匙圈','LV.2壓克力卡','LV.3方型立牌','LV.4準備中'];
+  bdayItems.forEach(item=>{
+    rewards.push({
+      milestone: `${thisYear}生日禮`,
+      type: '里民禮物',
+      rewardItem: item,
+      triggerDate: TODAY.toISOString().slice(0,10),
+    });
+  });
+
   if(!rewards.length) return [];
   return rewards;
 }
@@ -1372,8 +1384,8 @@ async function syncRewards(){
   if(syncBtn) syncBtn.disabled = true;
   const expected=calcExpectedRewards(m);
   if(!expected.length){showToast('訂閱未滿3個月，暫無福利');if(syncBtn)syncBtn.disabled=false;return;}
-  const existing=drw會員Rewards.map(r=>r.milestone);
-  const missing=expected.filter(e=>!existing.includes(e.milestone));
+  const existing=drw會員Rewards.map(r=>r.milestone+'|'+r.rewardItem);
+  const missing=expected.filter(e=>!existing.includes(e.milestone+'|'+(e.rewardItem||'')));
   const alreadyRedeemed=expected.filter(e=>existing.includes(e.milestone)&&drw會員Rewards.find(r=>r.milestone===e.milestone&&r.redeemed));
   if(!missing.length){showToast(`福利已是最新${alreadyRedeemed.length?'（已兌換 '+alreadyRedeemed.length+' 筆）':''}，無需同步`);if(syncBtn)syncBtn.disabled=false;return;}
   const lvInfo=LEVELS[m.level]||{};
