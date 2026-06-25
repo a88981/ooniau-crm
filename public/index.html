@@ -1382,9 +1382,8 @@ async function syncRewards(){
   const expected=calcExpectedRewards(m);
   if(!expected.length){showToast('訂閱未滿3個月，暫無福利');if(syncBtn)syncBtn.disabled=false;return;}
   // 去重：同 milestone + 同 rewardItem（空值統一為空字串）
-  const existing=drw會員Rewards.filter(r=>r.type==='里民禮物').map(r=>r.milestone||'');
-  const nonGiftExisting=drw會員Rewards.filter(r=>r.type!=='里民禮物').map(r=>(r.milestone||'')+'|'+(r.rewardItem||''));
-  const missing=expected.filter(e=>e.type==='里民禮物'?!existing.includes(e.milestone||''):!nonGiftExisting.includes((e.milestone||'')+'|'+(e.rewardItem||'')));
+  const existingKeys=drw會員Rewards.map(r=>(r.type||'')+'|'+(r.milestone||''));
+  const missing=expected.filter(e=>!existingKeys.includes((e.type||'')+'|'+(e.milestone||'')));
   const alreadyRedeemed=expected.filter(e=>drw會員Rewards.find(r=>(r.milestone||'')===(e.milestone||'')&&(r.rewardItem||'')===(e.rewardItem||'')&&r.redeemed));
   if(!missing.length){showToast(`福利已是最新${alreadyRedeemed.length?'（已兌換 '+alreadyRedeemed.length+' 筆）':''}，無需同步`);if(syncBtn)syncBtn.disabled=false;return;}
   const lvInfo=LEVELS[m.level]||{};
@@ -1394,6 +1393,7 @@ async function syncRewards(){
       return apiFetch('/api/rewards',{method:'POST',body:{ memberId:m.id, type:rw.type, milestone:rw.milestone||'', rewardItem:rewardItemVal, note:rw.note||'', triggerDate:rw.triggerDate }});
     }));
     created.forEach(r=>{ drw會員Rewards.push(r); allRewards.push(r); });
+    renderGiftList();
     drw會員Rewards.sort((a,b)=>a.triggerDate>b.triggerDate?1:-1);
     renderRewards(drw會員Rewards, m.id);
     renderDash();
