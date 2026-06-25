@@ -1288,14 +1288,6 @@ function calcExpectedRewards(member){
         rewards.push({ milestone:`${mo}個月占卜`, type:'每月占卜', triggerDate:trigDate.toISOString().slice(0,10) });
     }
   }
-  // 每年生日禮（只產生今年那一筆）
-  const thisYear = TODAY.getFullYear();
-  rewards.push({
-    milestone: `${thisYear}生日禮`,
-    type: '里民禮物',
-    triggerDate: TODAY.toISOString().slice(0,10),
-  });
-
   if(!rewards.length) return [];
   return rewards;
 }
@@ -2123,7 +2115,7 @@ function renderGiftList(){
       <div class="reward-item-row">
         <div class="reward-left">
           <div class="reward-title">🎂 生日禮</div>
-          <div class="reward-sub">${r.milestone} ${r.redeemed?'· ✓ 已兌換 '+(r.redeemedAt||''):(r.rewardItem?'· '+r.rewardItem:'')}</div>
+          <div class="reward-sub">${r.milestone}${r.redeemed?' · ✓ 已兌換 '+(r.redeemedAt||''):''}</div>
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="btn btn-sm" onclick="openEditGiftModal('${r.id}')">編輯</button>
@@ -2176,7 +2168,7 @@ function openEditGiftModal(id){
   document.getElementById('gift-name-wrap').style.display = isBday ? 'none' : 'block';
   document.getElementById('gift-bday-level').value = rw.rewardItem || 'LV.1鑰匙圈';
   document.getElementById('gift-name').value = rw.milestone || '';
-  document.getElementById('gift-content').value = rw.rewardItem || '';
+  document.getElementById('gift-content').value = rw.rewardItem || rw.milestone || '';
   document.getElementById('gift-date').value = rw.triggerDate || new Date().toISOString().slice(0,10);
   document.getElementById('gift-note').value = rw.note || '';
   // 改 modal 標題和按鈕為儲存模式
