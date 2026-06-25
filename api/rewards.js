@@ -18,7 +18,7 @@ function pageToReward(p) {
     illustration: pr['指定插圖']?.rich_text?.[0]?.plain_text || '',
     redeemed:     pr['已兌換']?.checkbox         || false,
     redeemedAt:   pr['兌換日期']?.date?.start    || '',
-    triggerDate:  pr['觸發日期']?.date?.start    || '',
+    triggerDate:  pr['觸發日期']?.title?.[0]?.plain_text || '',
     note:         pr['備註']?.rich_text?.[0]?.plain_text || '',
   };
 }
