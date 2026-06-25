@@ -1450,7 +1450,7 @@ async function cancelRedeem(id) {
     drw會員Rewards = drw會員Rewards.map(r => r.id === id ? updated : r);
     allRewards = allRewards.map(r => r.id === id ? updated : r);
     renderRewards(drw會員Rewards, drw會員Id);
-    if(document.getElementById('reward-panel-gift')?.style.display!=='none') renderGiftList();
+    renderGiftList();
     renderDash(); closeM('reward'); showToast('已取消兌換');
   } catch(e) { btns.forEach(b=>b.disabled=false); showToast('⚠ 操作失敗'); }
 }
@@ -1531,7 +1531,9 @@ async function confirmRedeem(){
     ));
     updates.forEach(u=>{ drw會員Rewards=drw會員Rewards.map(r=>r.id===u.id?u:r); allRewards=allRewards.map(r=>r.id===u.id?u:r); });
     renderRewards(drw會員Rewards, drw會員Id);
+    renderGiftList();
     renderDash(); closeM('reward');
+    btns.forEach(b=>b.disabled=false);
     showToast(`✦ 已標記兌換${ids.length>1?' ('+ids.length+'項)':''}`);
   }catch(e){ btns.forEach(b=>b.disabled=false); showToast('⚠ 更新失敗'); }
 }
