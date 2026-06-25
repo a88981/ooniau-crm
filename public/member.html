@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ooniau 暖暖｜會員福利查詢</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐈‍⬛</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500&family=Noto+Sans+TC:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#F5C800;--gold-dim:rgba(230,200,80,0.18);--gold-b:rgba(230,200,80,0.32);
+  --purple:#9080C0;--pd:#2D2840;--pm:#4A4060;--ps:#B8A8D8;
+  --tm:#8880A0;--th:#BEB8D0;
+  --lv3:#3B6D11;--lv3bg:#EAF3DE;
+  --lv4:#A07800;--lv4bg:#FFF8D6;
+  --lv5:#7050A0;--lv5bg:#F0EBF8;
+  --green:#3B6D11;
+}
+html,body{min-height:100%;font-family:'Noto Sans TC',sans-serif;font-size:16px;color:var(--pd);background:#F8F7F5}
+.page{max-width:540px;margin:0 auto;padding:2rem 1.2rem 4rem}
+
+.brand{text-align:center;padding:2.5rem 0 2rem}
+.brand-en{font-size:.56rem;letter-spacing:.4em;color:var(--th);text-transform:uppercase;margin-bottom:.4rem}
+.brand-name{font-family:'Noto Serif TC',serif;font-size:1.4rem;font-weight:300;color:var(--purple);letter-spacing:.12em}
+.brand-sub{font-size:.65rem;color:var(--tm);margin-top:.3rem;letter-spacing:.08em}
+
+.query-card{background:#fff;border:.5px solid var(--gold-b);border-radius:6px;padding:1.8rem;margin-bottom:1.5rem}
+.query-title{font-family:'Noto Serif TC',serif;font-size:.9rem;font-weight:300;color:var(--pm);letter-spacing:.08em;margin-bottom:1.2rem}
+
+.fi{width:100%;padding:10px 14px;border:.5px solid var(--gold-b);border-radius:3px;font-family:'Noto Sans TC',sans-serif;font-size:.85rem;color:var(--pd);background:#fff;outline:none;transition:border-color .18s;letter-spacing:.04em}
+.fi:focus{border-color:var(--ps)}
+.fi::placeholder{color:var(--th)}
+.btn{width:100%;padding:11px;font-family:'Noto Sans TC',sans-serif;font-size:.78rem;letter-spacing:.15em;color:var(--pd);background:linear-gradient(135deg,#FFF9E6,#FFFBF0);border:1px solid var(--gold);border-radius:40px;cursor:pointer;transition:all .18s;margin-top:.8rem}
+.btn:hover{background:#FFF3C0}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.hint{font-size:.65rem;color:var(--th);margin-top:.6rem;letter-spacing:.04em;line-height:1.6}
+.err{font-size:.72rem;color:#A32D2D;margin-top:.6rem;display:none;letter-spacing:.04em}
+
+.result{display:none}
+.member-card{background:#fff;border:.5px solid var(--gold-b);border-radius:6px;padding:1.4rem 1.6rem;margin-bottom:1rem}
+.member-header{display:flex;align-items:center;gap:12px;margin-bottom:1rem;padding-bottom:1rem;border-bottom:.5px solid var(--gold-dim)}
+.avatar{width:44px;height:44px;border-radius:50%;background:var(--lv5bg);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:var(--purple);flex-shrink:0}
+.member-name{font-family:'Noto Serif TC',serif;font-size:1rem;font-weight:400;color:var(--pd);margin-bottom:3px;letter-spacing:.04em}
+.member-meta{display:flex;gap:6px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:20px;font-size:.58rem;letter-spacing:.05em;white-space:nowrap}
+.b-lv3{background:var(--lv3bg);color:var(--lv3)}
+.b-lv4{background:var(--lv4bg);color:var(--lv4)}
+.b-lv5{background:var(--lv5bg);color:var(--lv5)}
+.b-ok{background:#EAF5EE;color:#3B6D11}
+.b-soon{background:#FFF8D6;color:#A07800}
+.b-exp{background:#EBEBEB;color:#888}
+.b-urg{background:#FCEAEA;color:#A32D2D}
+.b-yr{background:var(--lv5bg);color:var(--lv5)}
+.b-once{background:#E6F1F8;color:#305080}
+.info-row{display:flex;gap:.5rem;padding:5px 0;border-bottom:.5px solid var(--gold-dim);font-size:.76rem}
+.info-row:last-child{border-bottom:none}
+.info-key{color:var(--th);width:70px;flex-shrink:0;font-size:.65rem;letter-spacing:.04em}
+.info-val{color:var(--pd)}
+
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:1rem}
+.stat-box{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;padding:.8rem;text-align:center}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--purple);margin-bottom:2px;line-height:1}
+.stat-lbl{font-size:.56rem;letter-spacing:.12em;color:var(--th);text-transform:uppercase}
+
+.section-title{font-size:.56rem;letter-spacing:.3em;color:var(--gold);text-transform:uppercase;margin-bottom:.8rem;display:flex;align-items:center;gap:.5rem}
+.section-title::after{content:'';flex:1;height:.5px;background:var(--gold-dim)}
+.stamp-card{background:#fff;border:.5px solid var(--gold-b);border-radius:12px;padding:1.2rem;margin-bottom:12px}
+.sc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.8rem}
+.sc-title{font-family:'Noto Serif TC',serif;font-size:.85rem;font-weight:400;color:var(--pd);letter-spacing:.04em}
+.sc-sub{font-size:.6rem;color:var(--tm);margin-top:2px}
+.sc-count{font-size:.62rem;color:var(--th);white-space:nowrap}
+.stamps{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.stamp{display:flex;flex-direction:column;align-items:center;gap:3px}
+.s-circle{width:100%;aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:1.5px solid;gap:0}
+.s-circle.future{background:#F5F4F2;border-color:#D3D1C7}
+.s-circle.earned{background:#FFF9E6;border-color:var(--gold);border-style:dashed}
+.s-circle.redeemed{background:var(--lv5bg);border-color:var(--purple)}
+.s-num{font-weight:700;font-size:15px;line-height:1}
+.s-ico{font-size:11px;line-height:1}
+.s-num.future{color:#C8C6BE}
+.s-num.earned{color:var(--lv4)}
+.s-num.redeemed{color:var(--purple)}
+.s-lbl{font-size:9px;text-align:center;line-height:1.2}
+.s-lbl.future{color:#B4B2A9}
+.s-lbl.earned{color:var(--lv4)}
+.s-lbl.redeemed{color:var(--purple)}
+.sc-note{font-size:.62rem;color:var(--tm);margin-top:.6rem;padding:.4rem .6rem;background:var(--gold-dim);border-radius:6px;line-height:1.5}
+.sc-divider{border:none;border-top:.5px solid var(--gold-dim);margin:.6rem 0}
+.sc-legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:.5rem}
+.leg{display:flex;align-items:center;gap:4px;font-size:.6rem;color:var(--th)}
+.leg-c{width:10px;height:10px;border-radius:50%;border:1.5px solid}
+.leg-c.future{background:#F5F4F2;border-color:#D3D1C7}
+.leg-c.earned{background:#FFF9E6;border-color:var(--gold)}
+.leg-c.redeemed{background:var(--lv5bg);border-color:var(--purple)}
+.empty{text-align:center;padding:2rem;font-size:.72rem;color:var(--th);letter-spacing:.1em}
+.spinner{display:inline-block;width:16px;height:16px;border:1.5px solid var(--gold-dim);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.footer{text-align:center;font-size:.6rem;color:var(--th);margin-top:2rem;letter-spacing:.1em}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="brand">
+    <div class="brand-en">Ooniau Member</div>
+    <div class="brand-name">暖暖綠界暖暖包</div>
+    <div class="brand-sub">會員福利查詢</div>
+  </div>
+
+  <div class="query-card">
+    <div class="query-title">查詢你的福利</div>
+
+    <!-- Tab 切換 -->
+    <!-- 手機號碼 -->
+    <input class="fi" id="phone-input" type="tel" placeholder="請輸入登記的手機號碼" maxlength="10"
+      onkeydown="if(event.key==='Enter')query()" oninput="this.value=this.value.replace(/[^0-9]/g,'');hideErr()">
+    <div class="hint">請輸入加入會員時填寫的手機號碼</div>
+
+    <button class="btn" id="query-btn" onclick="query()">查詢</button>
+    <div class="err" id="err-msg"></div>
+  </div>
+
+  <!-- 結果 -->
+  <div class="result" id="result">
+    <div class="member-card">
+      <div class="member-header">
+        <div class="avatar" id="m-avatar">暖</div>
+        <div>
+          <div class="member-name" id="m-name">—</div>
+          <div class="member-meta" id="m-meta"></div>
+        </div>
+      </div>
+      <div class="info-row"><span class="info-key">生日</span><span class="info-val" id="m-bday">—</span></div>
+      <div class="info-row"><span class="info-key">加入日期</span><span class="info-val" id="m-join">—</span></div>
+      <div class="info-row"><span class="info-key">訂閱月數</span><span class="info-val" id="m-submonth">—</span></div>
+      <div class="info-row"><span class="info-key">到期日</span><span class="info-val" id="m-exp">—</span></div>
+      <div class="info-row"><span class="info-key">狀態</span><span class="info-val" id="m-status">—</span></div>
+
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-box"><div class="stat-num" id="s-total">0</div><div class="stat-lbl">總福利</div></div>
+      <div class="stat-box"><div class="stat-num" id="s-redeemed" style="color:#3B6D11">0</div><div class="stat-lbl">已兌換</div></div>
+      <div class="stat-box"><div class="stat-num" id="s-pending" style="color:#A07800">0</div><div class="stat-lbl">待兌換</div></div>
+    </div>
+
+    <div class="section-title">福利明細</div>
+    <div id="reward-list"></div>
+  </div>
+
+  <div class="footer">🐈‍⬛ Ooniau 暖暖 · 如有疑問請聯繫暖暖</div>
+</div>
+
+<script>
+function 天Until(s){
+  if(!s) return 9999;
+  const d=new Date(s); d.setHours(0,0,0,0);
+  const today=new Date(); today.setHours(0,0,0,0);
+  return Math.ceil((d-today)/86400000);
+}
+function expStatus(exp){
+  if(!exp) return{label:'未設定',cls:'b-exp'};
+  const d=天Until(exp);
+  if(d<0)  return{label:'已到期',cls:'b-exp'};
+  if(d<=7) return{label:`剩 ${d} 天`,cls:'b-urg'};
+  if(d<=30)return{label:`剩 ${d} 天`,cls:'b-soon'};
+  return{label:'有效',cls:'b-ok'};
+}
+function lvBadge(lv){
+  const map={'LV.3 里民暖暖包':'b-lv3','LV.4 肌肉暖暖包':'b-lv4','LV.5 真蒸暖暖包':'b-lv5'};
+  return `<span class="badge ${map[lv]||'b-exp'}">${lv||'—'}</span>`;
+}
+
+async function query(){
+  const val = document.getElementById('phone-input').value.trim();
+  if(!val){ showErr('請輸入手機號碼'); return; }
+
+  const btn = document.getElementById('query-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>查詢中…';
+  hideErr();
+  document.getElementById('result').style.display = 'none';
+
+  try{
+    const param = `phone=${encodeURIComponent(val)}&_=${Date.now()}`;
+    const r = await fetch(`/api/member-query?${param}`);
+    const data = await r.json();
+
+    if(!r.ok){
+      if(r.status===404) showErr('查無此會員，請確認手機號碼是否正確');
+      else showErr(data.error || '查詢失敗，請稍後再試');
+      return;
+    }
+    renderResult(data);
+  }catch(e){
+    showErr('連線失敗，請稍後再試');
+  }finally{
+    btn.disabled = false;
+    btn.textContent = '查詢';
+  }
+}
+
+function renderResult({member, rewards}){
+  const displayName = member.memberName || '會員';
+  document.getElementById('m-avatar').textContent = displayName.slice(0,1);
+  document.getElementById('m-name').textContent = displayName;
+  const st = expStatus(member.exp);
+  document.getElementById('m-meta').innerHTML =
+    lvBadge(member.level) +
+    `<span class="badge ${member.plan==='年繳'?'b-yr':'b-once'}">${member.plan||'—'}</span>` +
+    `<span class="badge ${st.cls}">${st.label}</span>`;
+  document.getElementById('m-bday').textContent = member.bday || '—';
+  // 計算已訂閱第幾個月（第N次繳款）
+  if(member.join){
+    const j = new Date(member.join); j.setHours(0,0,0,0);
+    const today = new Date(); today.setHours(0,0,0,0);
+    let mos = (today.getFullYear()-j.getFullYear())*12 + (today.getMonth()-j.getMonth());
+    if(today.getDate() >= j.getDate()) mos++;
+    document.getElementById('m-submonth').textContent = `第 ${mos} 個月`;
+  }
+  document.getElementById('m-join').textContent = member.join || '—';
+  document.getElementById('m-exp').textContent = member.exp || '—';
+  document.getElementById('m-status').innerHTML = `<span class="badge ${st.cls}">${st.label}</span>`;
+
+
+  const total = rewards.length;
+  const redeemed = rewards.filter(r=>r.redeemed).length;
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-redeemed').textContent = redeemed;
+  document.getElementById('s-pending').textContent = total - redeemed;
+
+  // 同類型合併
+  const typeGroups = {};
+  rewards.forEach(r=>{
+    const key = r.type + '_' + (r.redeemed?'1':'0');
+    if(!typeGroups[key]) typeGroups[key]={type:r.type,redeemed:r.redeemed,items:[]};
+    typeGroups[key].items.push(r);
+  });
+  const mergedRewards = Object.values(typeGroups).map(g=>{
+    if(g.items.length===1) return {...g.items[0], count:1};
+    return {...g.items[0], count:g.items.length, milestone:g.items[0].milestone};
+  });
+
+  // 等級對應福利說明
+  const lvRewards = {
+    'LV.3 里民暖暖包': { every3: '相印小卡／占卜30分鐘', year: '3階：15公分立牌', note: '選擇兌換占卜者可累積時數，一次兌換使用。例如累積 2 次 30 分鐘，可合併預約 1 小時占卜。' },
+    'LV.4 肌肉暖暖包': { every3: '實體拍立得', year: '4階：親簽簽名板' },
+    'LV.5 真蒸暖暖包': { every3: '親簽拍立得', year: '5階：15公分立牌 ＆ 親簽簽名板 ＆ 直式掛軸' },
+  };
+  const lvInfo2 = lvRewards[member.level] || { every3: '訂閱福利', year: '週邊' };
+
+  const subMos2 = member.join ? (()=>{
+    const j=new Date(member.join); j.setHours(0,0,0,0);
+    const t=new Date(); t.setHours(0,0,0,0);
+    let m=(t.getFullYear()-j.getFullYear())*12+(t.getMonth()-j.getMonth());
+    if(t.getDate()>=j.getDate()) m++;
+    return Math.min(m,12);
+  })() : 0;
+
+  const monthlyRewards = rewards.filter(r=>r.type==='每月占卜');
+  const subRewards = rewards.filter(r=>r.type==='3個月獎勵'||r.type==='12個月獎勵');
+
+  function buildStamps(totalSlots, giftSlots, rewardList, subMosCount, allPending=false){
+    let html='';
+    for(let i=1;i<=totalSlots;i++){
+      const is12 = i===12;
+      const hasGift = giftSlots.includes(i);
+      const rw = rewardList.find(r=>{
+        const mo = parseInt(r.milestone);
+        return mo===i || (is12 && r.type==='12個月獎勵');
+      });
+      let state;
+      if(rw && rw.redeemed) state='redeemed';
+      else if(i<=subMosCount) state='earned';
+      else state='future';
+      const label = state==='redeemed'?'已兌換':state==='earned'&&hasGift?'待兌換':state==='earned'?'已累積':'—';
+      const borderStyle = is12?'border-style:dashed;border-color:var(--purple)':'';
+      const ico = is12?'🏆':hasGift?'🎁':'';
+      html += `<div class="stamp"><div class="s-circle ${state}" style="${borderStyle}"><span class="s-num ${state}">${i}</span>${ico?`<span class="s-ico">${ico}</span>`:''}</div><div class="s-lbl ${state}">${label}</div></div>`;
+    }
+    return html;
+  }
+
+  let cardsHtml = '';
+  const sub3Done = subRewards.filter(r=>r.type==='3個月獎勵'&&r.redeemed).length;
+  const sub3Total = subRewards.filter(r=>r.type==='3個月獎勵').length;
+  cardsHtml += `<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">訂閱福利</div><div class="sc-sub">${member.level} · ${lvInfo2.every3} · 已訂閱 ${subMos2} 個月</div></div><div class="sc-count">${sub3Done} / ${sub3Total} 已兌換</div></div><div class="stamps">${buildStamps(12,[3,6,9,12],subRewards,subMos2)}</div>${lvInfo2.note ? '<div class="sc-note" style="margin-bottom:6px">💡 ' + lvInfo2.note + '</div>' : ''}<hr class="sc-divider"><div class="sc-note">🎁 每滿 3 個月不間斷，獲得【${lvInfo2.every3}】</div><div class="sc-note" style="margin-top:6px">🏆 連續訂閱一年不間斷，獲得【${lvInfo2.year}】</div><div class="sc-legend"><div class="leg"><div class="leg-c future"></div>尚未累積</div><div class="leg"><div class="leg-c earned"></div>累積中</div><div class="leg"><div class="leg-c redeemed"></div>已兌換</div></div></div>`;
+  if(member.level==='LV.4 肌肉暖暖包'||member.level==='LV.5 真蒸暖暖包'){
+    const mTitle = member.level==='LV.5 真蒸暖暖包'?'一小時占卜':'半小時占卜';
+    const mDone = monthlyRewards.filter(r=>r.redeemed).length;
+    cardsHtml += `<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">每月占卜</div><div class="sc-sub">${member.level} · ${mTitle} · 已訂閱 ${subMos2} 個月</div></div><div class="sc-count">${mDone} / ${subMos2} 已兌換</div></div><div class="stamps">${buildStamps(12,[],monthlyRewards,subMos2)}</div><div class="sc-legend"><div class="leg"><div class="leg-c future"></div>尚未累積</div><div class="leg"><div class="leg-c earned"></div>累積中</div><div class="leg"><div class="leg-c redeemed"></div>已兌換</div></div></div>`;
+  }
+  // 生日禮紀念卡（固定4格）
+  const anniItems = [
+    { year: '第 1 年', name: 'LV.1鑰匙圈', img: '/images/HBDGIFT-year1.jpg', key: '鑰匙圈' },
+    { year: '第 2 年', name: 'LV.2壓克力卡', img: '/images/HBDGIFT-year2.jpg', key: '壓克力卡' },
+    { year: '第 3 年', name: 'LV.3方型立牌', img: '/images/HBDGIFT-year3.jpg', key: '方型立牌' },
+    { year: '第 4 年', name: 'LV.4準備中', img: null, key: '準備中' },
+  ];
+  const anniRewards = rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&(r.milestone.includes('鑰匙圈')||r.milestone.includes('壓克力卡')||r.milestone.includes('方型立牌')||r.milestone.includes('準備中')));
+  
+  let anniHtml = '<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">生日禮紀念</div><div class="sc-sub">生日禮品限定</div></div></div>';
+  anniHtml += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:.5rem">';
+  anniItems.forEach(item=>{
+    const rw = anniRewards.find(r=>r.milestone&&r.milestone.includes(item.key));
+    const owned = rw && rw.redeemed;
+    const yr = owned && rw.redeemedAt ? rw.redeemedAt.slice(0,4) : '';
+    const state = owned ? 'owned' : 'unowned';
+    const imgHtml = item.img
+      ? '<img src="'+item.img+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;'+(owned?'':'filter:grayscale(1)')+'">'
+      : '<span style="font-size:22px;line-height:1">🎁</span>';
+    anniHtml += '<div style="display:flex;flex-direction:column;align-items:center;gap:5px">'
+      + '<div style="width:100%;aspect-ratio:1;border-radius:50%;border:2px solid '+(owned?'#9080C0':'#D3D1C7')+';background:'+(owned?'#F0EBF8':'#F5F4F2')+';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;'+(owned?'':'filter:grayscale(1);opacity:.55')+'">'
+      + imgHtml
+      + '</div>'
+      + '<div style="font-size:10px;text-align:center;color:'+(owned?'#7050A0':'#B4B2A9')+'">'+item.name+'</div>'
+      + '<div style="font-size:9px;text-align:center;color:'+(owned?'#9080C0':'#C8C6BE')+'">'+(owned?(yr?yr+' 兌換':'已擁有'):'未擁有')+'</div>'
+      + '</div>';
+  });
+  anniHtml += '</div></div>';
+  cardsHtml += anniHtml;
+  // 里民禮品卡（最後）
+  const anniKeys = ['鑰匙圈','壓克力卡','方型立牌','準備中'];
+  const activityRewards = rewards.filter(r=>r.type==='里民禮物'&&(!r.milestone||(!anniKeys.some(k=>r.milestone.includes(k))&&!r.milestone.includes('生日禮'))));
+  let activityHtml = '<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">里民禮品</div><div class="sc-sub">節日禮品 · 活動禮品</div></div></div><div class="stamps" style="grid-template-columns:repeat(4,1fr)">';
+  activityRewards.forEach(r=>{
+    const state = r.redeemed ? 'redeemed' : 'earned';
+    const label = r.redeemed ? '已兌換' : '待兌換';
+    activityHtml += `<div class="stamp"><div class="s-circle ${state}"><span style="font-size:18px">🐈‍⬛</span></div><div class="s-lbl ${state}">${label}</div></div>`;
+  });
+  for(let i=activityRewards.length; i<4; i++){
+    activityHtml += '<div class="stamp"><div class="s-circle future"><span style="font-size:18px">🐈‍⬛</span></div><div class="s-lbl future">—</div></div>';
+  }
+  activityHtml += '</div></div>';
+  cardsHtml += activityHtml;
+  document.getElementById('reward-list').innerHTML = cardsHtml || '<div class="empty">目前尚無福利記錄</div>';
+
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').scrollIntoView({behavior:'smooth', block:'start'});
+
+}
+
+function showErr(msg){ const e=document.getElementById('err-msg'); e.textContent=msg; e.style.display='block'; }
+function hideErr(){ document.getElementById('err-msg').style.display='none'; }
+</script>
+</body>
+</html>
