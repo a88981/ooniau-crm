@@ -52,9 +52,11 @@ module.exports = async function handler(req, res) {
         return val.split(',').map(s => s.trim()).includes(target);
       });
     } else if (phone) {
-      const target = phone.trim().replace(/[-\s]/g, '');
+      const target = phone.trim().replace(/[-\s]/g, '').replace(/^\+886/, '0');
       page = pages.find(p => {
-        const val = (p.properties['電話']?.phone_number || '').replace(/[-\s]/g, '');
+        const val = (p.properties['電話']?.phone_number || '')
+          .replace(/[-\s]/g, '')
+          .replace(/^\+886/, '0');
         return val === target;
       });
     }
