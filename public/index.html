@@ -497,8 +497,7 @@ tr:hover td{background:#FEFBF2}
       <div id="reward-panel-gift" style="display:none">
         <div id="gift-list"><div class="loading"><div class="spinner"></div></div></div>
         <div style="margin-top:.6rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-          <button class="btn btn-sm btn-g" onclick="addBirthdayGift()">🎂 新增生日禮</button>
-          <button class="btn btn-sm" onclick="openAddGiftModal()">＋ 新增不定期禮品</button>
+          <button class="btn btn-sm btn-g" onclick="openAddGiftModal()">＋ 新增里民禮品</button>
         </div>
       </div>
     </div>
@@ -557,6 +556,49 @@ tr:hover td{background:#FEFBF2}
       <button class="btn btn-del" id="nm-del" style="display:none" onclick="delete會員()">刪除</button>
       <button class="btn" onclick="cancel會員Modal()">取消</button>
       <button class="btn btn-g" id="nm-submit" onclick="save會員()">新增</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal 新增里民禮品 -->
+<div class="mdbg" id="modal-add-gift">
+  <div class="md">
+    <div class="mdtitle">新增里民禮品</div>
+    <div class="fr">
+      <label class="fl">禮品類型</label>
+      <select class="fi" id="gift-type" onchange="onGiftTypeChange()">
+        <option value="bday">生日禮</option>
+        <option value="other">不定期禮品</option>
+      </select>
+    </div>
+    <div class="fr" id="gift-bday-level-wrap">
+      <label class="fl">生日禮階級</label>
+      <select class="fi" id="gift-bday-level">
+        <option value="LV.1鑰匙圈">LV.1 鑰匙圈</option>
+        <option value="LV.2壓克力卡">LV.2 壓克力卡</option>
+        <option value="LV.3方型立牌">LV.3 方型立牌</option>
+        <option value="LV.4準備中">LV.4 準備中</option>
+      </select>
+    </div>
+    <div class="fr" id="gift-name-wrap" style="display:none">
+      <label class="fl">禮品名稱</label>
+      <input class="fi" id="gift-name" placeholder="例如：端午節禮品">
+    </div>
+    <div class="fr">
+      <label class="fl">福利內容</label>
+      <input class="fi" id="gift-content" placeholder="實際給的內容，例如：LV.3 方型立牌＋卡片">
+    </div>
+    <div class="fr">
+      <label class="fl">觸發日期</label>
+      <input class="fi" id="gift-date" type="date">
+    </div>
+    <div class="fr">
+      <label class="fl">備註（選填）</label>
+      <input class="fi" id="gift-note" placeholder="備註">
+    </div>
+    <div class="mdfoot">
+      <button class="btn" onclick="closeM('add-gift')">取消</button>
+      <button class="btn btn-g" onclick="confirmAddGift()">新增</button>
     </div>
   </div>
 </div>
@@ -1307,7 +1349,7 @@ function renderRewards(list, memberId){
   const years=Object.keys(byYear).sort((a,b)=>{ if(a==='未知') return 1; if(b==='未知') return -1; return b-a; });
   document.getElementById('reward-list').innerHTML=years.map(yr=>`
     <div class="reward-year-group">
-      <div class="reward-year-label">${yr}</div>
+      ${yr!=='未知'?`<div class="reward-year-label">${yr}</div>`:''}
       ${byYear[yr].map(r=>`
       <div class="reward-item${r.redeemed?' redeemed':''}">
         <div class="reward-badge-wrap">
@@ -2123,7 +2165,52 @@ async function addBirthdayGift(){
   }catch(e){ showToast('⚠ 新增失敗'); }
 }
 
-async function openAddGiftModal(){
+function onGiftTypeChange(){
+  const type = document.getElementById('gift-type').value;
+  document.getElementById('gift-bday-level-wrap').style.display = type==='bday' ? 'block' : 'none';
+  document.getElementById('gift-name-wrap').style.display = type==='other' ? 'block' : 'none';
+}
+
+function openAddGiftModal(){
+  if(!drw會員Id){ showToast('請先開啟會員'); return; }
+  document.getElementById('gift-type').value = 'bday';
+  document.getElementById('gift-bday-level').value = 'LV.1鑰匙圈';
+  document.getElementById('gift-name').value = '';
+  document.getElementById('gift-content').value = '';
+  document.getElementById('gift-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('gift-note').value = '';
+  document.getElementById('gift-bday-level-wrap').style.display = 'block';
+  document.getElementById('gift-name-wrap').style.display = 'none';
+  openM('add-gift');
+}
+
+async function confirmAddGift(){
+  const type = document.getElementById('gift-type').value;
+  const isBday = type === 'bday';
+  const level = document.getElementById('gift-bday-level').value;
+  const name = isBday ? (new Date().getFullYear()+'生日禮') : document.getElementById('gift-name').value.trim();
+  if(!isBday && !name){ showToast('請填寫禮品名稱'); return; }
+  const rewardItem = document.getElementById('gift-content').value.trim();
+  const date = document.getElementById('gift-date').value;
+  const note = document.getElementById('gift-note').value.trim();
+  try{
+    const rw = await apiFetch('/api/rewards',{method:'POST',body:{
+      memberId: drw會員Id,
+      type: '里民禮物',
+      milestone: name,
+      rewardItem: rewardItem || (isBday ? level : ''),
+      triggerDate: date,
+      redeemed: false,
+      note,
+    }});
+    drw會員Rewards.push(rw); allRewards.push(rw);
+    renderGiftList(); renderDash(); render提醒(curFilter);
+    closeM('add-gift');
+    showToast('✦ 已新增里民禮品');
+  }catch(e){ showToast('⚠ 新增失敗'); }
+}
+
+async function openAddGiftModal_OLD(){
   const name = prompt('禮品名稱（例如：端午節禮品）：');
   if(!name) return;
   const content = prompt('禮品內容（選填）：') || '';
