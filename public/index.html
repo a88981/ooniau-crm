@@ -593,8 +593,8 @@ tr:hover td{background:#FEFBF2}
       <input class="fi" id="gift-date" type="date">
     </div>
     <div class="fr">
-      <label class="fl">備註（選填）</label>
-      <input class="fi" id="gift-note" placeholder="備註">
+      <label class="fl">說明（選填）</label>
+      <input class="fi" id="gift-note" placeholder="例如：已確認收件地址">
     </div>
     <div class="mdfoot">
       <button class="btn" onclick="closeM('add-gift')">取消</button>
@@ -1290,17 +1290,12 @@ function calcExpectedRewards(member){
   }
   // 每年生日禮 LV1-LV4 四筆，依等級帶入兌換內容
   const bdaySuffix = member.level==='LV.5 真蒸暖暖包'?'+卡片+影片':member.level==='LV.4 肌肉暖暖包'?'+卡片+語音':'+卡';
-  const bdayItems = [
-    'LV.1鑰匙圈'+bdaySuffix,
-    'LV.2壓克力卡'+bdaySuffix,
-    'LV.3方型立牌'+bdaySuffix,
-    'LV.4準備中'+bdaySuffix,
-  ];
-  bdayItems.forEach(item=>{
+  const bdayLevels = ['LV.1鑰匙圈','LV.2壓克力卡','LV.3方型立牌','LV.4準備中'];
+  bdayLevels.forEach(lv=>{
     rewards.push({
-      milestone: '',
+      milestone: lv,          // 標題：LV.1鑰匙圈
       type: '里民禮物',
-      rewardItem: item,
+      rewardItem: lv+bdaySuffix, // 說明：LV.1鑰匙圈+卡
       triggerDate: TODAY.toISOString().slice(0,10),
     });
   });
@@ -2123,8 +2118,8 @@ function switchRewardTab(tab, el){
 
 function renderGiftList(){
   const rewards = drw會員Rewards;
-  const bdayRewards = rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&r.milestone.includes('生日')).sort((a,b)=>b.milestone.localeCompare(a.milestone));
-  const otherRewards = rewards.filter(r=>r.type==='里民禮物'&&(!r.milestone||!r.milestone.includes('生日')));
+  const bdayRewards = rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&r.milestone.startsWith('LV.')).sort((a,b)=>a.milestone.localeCompare(b.milestone));
+  const otherRewards = rewards.filter(r=>r.type==='里民禮物'&&(!r.milestone||!r.milestone.startsWith('LV.')));
   
   let html = '';
   if(bdayRewards.length){
@@ -2132,8 +2127,9 @@ function renderGiftList(){
     html += bdayRewards.map(r=>`
       <div class="reward-item-row">
         <div class="reward-left">
-          <div class="reward-title">🎂 生日禮</div>
+          <div class="reward-title">🎂 ${r.milestone}</div>
           <div class="reward-sub">${r.rewardItem||'—'}${r.redeemed?' · ✓ 已兌換 '+(r.redeemedAt||''):''}</div>
+          ${r.note?`<div class="reward-sub" style="color:var(--th)">${r.note}</div>`:''}
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap">
           <button class="btn btn-sm" onclick="openEditGiftModal('${r.id}')">編輯</button>
