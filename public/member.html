@@ -294,10 +294,10 @@ function renderResult({member, rewards}){
   }
   // 生日禮紀念卡（固定4格）
   const anniItems = [
-    { year: '第 1 年', name: '鑰匙圈', img: '/images/HBDGIFT-year1.jpg', key: '鑰匙圈' },
-    { year: '第 2 年', name: '壓克力卡', img: '/images/HBDGIFT-year2.jpg', key: '壓克力卡' },
-    { year: '第 3 年', name: '方型立牌', img: '/images/HBDGIFT-year3.jpg', key: '方型立牌' },
-    { year: '第 4 年', name: '準備中…', img: null, key: '準備中' },
+    { year: '第 1 年', name: 'LV.1鑰匙圈', img: '/images/HBDGIFT-year1.jpg', key: '鑰匙圈' },
+    { year: '第 2 年', name: 'LV.2壓克力卡', img: '/images/HBDGIFT-year2.jpg', key: '壓克力卡' },
+    { year: '第 3 年', name: 'LV.3方型立牌', img: '/images/HBDGIFT-year3.jpg', key: '方型立牌' },
+    { year: '第 4 年', name: 'LV.4準備中', img: null, key: '準備中' },
   ];
   const anniRewards = rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&(r.milestone.includes('鑰匙圈')||r.milestone.includes('壓克力卡')||r.milestone.includes('方型立牌')||r.milestone.includes('準備中')));
   
@@ -332,7 +332,7 @@ function renderResult({member, rewards}){
   // 其他里民禮物（非生日）
   const otherActivity = activityRewards.filter(r=>!r.milestone||!r.milestone.includes('生日'));
   const totalSlots = Math.max(bdaySlots.length + otherActivity.length, 6);
-  let activityHtml = '<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">里民禮品</div><div class="sc-sub">節日禮品 · 活動禮品</div></div></div><div class="stamps" style="grid-template-columns:repeat(6,1fr)">';
+  let activityHtml = '<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">里民禮品</div><div class="sc-sub">節日禮品 · 活動禮品</div></div></div><div class="stamps" style="grid-template-columns:repeat(4,1fr)">';
   
   // 先排生日禮
   bdaySlots.forEach(y=>{
