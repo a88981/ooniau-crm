@@ -294,7 +294,7 @@ function renderResult({member, rewards}){
   }
   // 里民禮品卡（最後）
   const anniKeys = ['鑰匙圈','壓克力卡','方型立牌','準備中'];
-  const activityRewards = rewards.filter(r=>r.type==='里民禮物'&&(!r.milestone||!anniKeys.some(k=>r.milestone.includes(k))));
+  const activityRewards = rewards.filter(r=>r.type==='里民禮物'&&(!r.milestone||(!anniKeys.some(k=>r.milestone.includes(k))&&!r.milestone.includes('生日禮'))));
   const joinYear = member.join ? parseInt(member.join.slice(0,4)) : new Date().getFullYear();
   const thisYear = new Date().getFullYear();
   // 每年一個生日禮格子（從加入年到今年）
@@ -303,7 +303,7 @@ function renderResult({member, rewards}){
   // 其他里民禮物（非生日）
   const otherActivity = activityRewards.filter(r=>!r.milestone||!r.milestone.includes('生日'));
   const totalSlots = Math.max(bdaySlots.length + otherActivity.length, 6);
-  let activityHtml = '<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">里民禮品</div><div class="sc-sub">生日禮品 · 節日禮品 · 活動禮品</div></div></div><div class="stamps" style="grid-template-columns:repeat(6,1fr)">';
+  let activityHtml = '<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">里民禮品</div><div class="sc-sub">節日禮品 · 活動禮品</div></div></div><div class="stamps" style="grid-template-columns:repeat(6,1fr)">';
   
   // 先排生日禮
   bdaySlots.forEach(y=>{
@@ -337,7 +337,7 @@ function renderResult({member, rewards}){
   ];
   const anniRewards = rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&(r.milestone.includes('鑰匙圈')||r.milestone.includes('壓克力卡')||r.milestone.includes('方型立牌')||r.milestone.includes('準備中')));
   
-  let anniHtml = '<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">生日禮紀念</div><div class="sc-sub">每年訂閱週年限定</div></div></div>';
+  let anniHtml = '<div class="stamp-card"><div class="sc-head"><div><div class="sc-title">生日禮紀念</div><div class="sc-sub">生日禮品限定</div></div></div>';
   anniHtml += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:.5rem">';
   anniItems.forEach(item=>{
     const rw = anniRewards.find(r=>r.milestone&&r.milestone.includes(item.key));
@@ -345,7 +345,7 @@ function renderResult({member, rewards}){
     const yr = owned && rw.redeemedAt ? rw.redeemedAt.slice(0,4) : '';
     const state = owned ? 'owned' : 'unowned';
     const imgHtml = item.img
-      ? '<img src="'+item.img+'" style="width:60%;height:60%;object-fit:cover;border-radius:50%;'+(owned?'':'filter:grayscale(1)')+'">'
+      ? '<img src="'+item.img+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;'+(owned?'':'filter:grayscale(1)')+'">'
       : '<span style="font-size:22px;line-height:1">🎁</span>';
     anniHtml += '<div style="display:flex;flex-direction:column;align-items:center;gap:5px">'
       + '<div style="width:100%;aspect-ratio:1;border-radius:50%;border:2px solid '+(owned?'#9080C0':'#D3D1C7')+';background:'+(owned?'#F0EBF8':'#F5F4F2')+';display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;'+(owned?'':'filter:grayscale(1);opacity:.55')+'">'
