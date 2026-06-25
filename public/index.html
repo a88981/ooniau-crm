@@ -150,6 +150,10 @@ tr:hover td{background:#FEFBF2}
 
 /* 福利年份分組 */
 .reward-year-group{margin-bottom:.8rem}
+.reward-item-row{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:.5px solid var(--gold-dim)}
+.reward-item-row:last-child{border-bottom:none}
+.reward-left{display:flex;flex-direction:column;gap:2px}
+.reward-title{font-size:.76rem;font-weight:500;color:var(--pd)}
 .reward-year-label{font-size:.65rem;font-weight:600;color:var(--th);letter-spacing:.1em;padding:4px 0 6px;border-bottom:.5px solid var(--gold-dim);margin-bottom:4px}
 
 /* 訂閱歷史 */
@@ -474,21 +478,28 @@ tr:hover td{background:#FEFBF2}
 
     <!-- 福利記錄 -->
     <div class="dsec">
-      <div class="dsec-label" style="cursor:pointer" onclick="toggleSec('reward-sec')">福利兌換 <span id="reward-sec-arrow" style="font-size:.6rem">▼</span></div>
-      <div id="reward-sec">
-      <div id="bday-gift-panel" style="display:none;flex-wrap:wrap;gap:6px;padding:.6rem 0;border-bottom:.5px solid var(--gold-dim);margin-bottom:.6rem">
-        <button class="btn btn-sm" onclick="addBdayGift('鑰匙圈','第 1 年')">＋ 第1年 鑰匙圈</button>
-        <button class="btn btn-sm" onclick="addBdayGift('壓克力卡','第 2 年')">＋ 第2年 壓克力卡</button>
-        <button class="btn btn-sm" onclick="addBdayGift('方型立牌','第 3 年')">＋ 第3年 方型立牌</button>
-        <button class="btn btn-sm" onclick="addBdayGift('準備中','第 4 年')">＋ 第4年 準備中</button>
+      <div class="dsec-label">福利兌換</div>
+      <!-- Tab bar -->
+      <div style="display:flex;border-bottom:.5px solid var(--gold-dim);margin-bottom:.8rem">
+        <button class="reward-tab active" id="rtab-sub" onclick="switchRewardTab('sub',this)" style="flex:1;padding:7px;font-size:.72rem;border:none;cursor:pointer;background:var(--bg);border-bottom:2px solid var(--gold);color:var(--pd);font-weight:500">訂閱福利</button>
+        <button class="reward-tab" id="rtab-gift" onclick="switchRewardTab('gift',this)" style="flex:1;padding:7px;font-size:.72rem;border:none;cursor:pointer;background:var(--gold-dim);color:var(--th)">里民禮品</button>
       </div>
-      <div id="reward-list"><div class="loading"><div class="spinner"></div></div></div>
-      <div style="margin-top:.6rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
-        <button class="btn btn-sm btn-g" id="sync-rewards-btn" onclick="syncRewards()">↻ 同步福利</button>
-        <button class="btn btn-sm" onclick="openAddRewardModal()">＋ 手動新增</button>
-        <button class="btn btn-sm" onclick="openBdayGiftPanel()" id="bday-gift-btn">🎁 生日禮</button>
-        <span style="font-size:.58rem;color:var(--th)">根據加入日期自動產生應有的福利筆數</span>
+      <!-- 訂閱福利 tab -->
+      <div id="reward-panel-sub">
+        <div id="reward-list"><div class="loading"><div class="spinner"></div></div></div>
+        <div style="margin-top:.6rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-sm btn-g" id="sync-rewards-btn" onclick="syncRewards()">↻ 同步福利</button>
+          <button class="btn btn-sm" onclick="openAddRewardModal()">＋ 手動新增</button>
+          <span style="font-size:.58rem;color:var(--th)">根據加入日期自動產生應有的福利筆數</span>
+        </div>
       </div>
+      <!-- 里民禮品 tab -->
+      <div id="reward-panel-gift" style="display:none">
+        <div id="gift-list"><div class="loading"><div class="spinner"></div></div></div>
+        <div style="margin-top:.6rem;display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+          <button class="btn btn-sm btn-g" onclick="addBirthdayGift()">🎂 新增生日禮</button>
+          <button class="btn btn-sm" onclick="openAddGiftModal()">＋ 新增不定期禮品</button>
+        </div>
       </div>
     </div>
 
@@ -1392,6 +1403,7 @@ async function cancelRedeem(id) {
     drw會員Rewards = drw會員Rewards.map(r => r.id === id ? updated : r);
     allRewards = allRewards.map(r => r.id === id ? updated : r);
     renderRewards(drw會員Rewards, drw會員Id);
+    if(document.getElementById('reward-panel-gift')?.style.display!=='none') renderGiftList();
     renderDash(); closeM('reward'); showToast('已取消兌換');
   } catch(e) { btns.forEach(b=>b.disabled=false); showToast('⚠ 操作失敗'); }
 }
@@ -2037,6 +2049,109 @@ function updateEvPreview() {
     });
   el.innerHTML = `將新增 <b style="color:var(--pd)">${total}</b> 筆福利：`
     + lines.map(l => `<div style="margin-top:4px">・${l.label}</div>${l.nameStr?`<div style="margin-top:2px;color:var(--tm);font-size:.68rem">　${l.nameStr}</div>`:''}`).join('');
+}
+
+function switchRewardTab(tab, el){
+  document.querySelectorAll('.reward-tab').forEach(t=>{
+    t.style.background='var(--gold-dim)';
+    t.style.color='var(--th)';
+    t.style.fontWeight='normal';
+    t.style.borderBottom='none';
+  });
+  el.style.background='var(--bg,#fff)';
+  el.style.color='var(--pd)';
+  el.style.fontWeight='500';
+  el.style.borderBottom='2px solid var(--gold)';
+  document.getElementById('reward-panel-sub').style.display = tab==='sub' ? 'block' : 'none';
+  document.getElementById('reward-panel-gift').style.display = tab==='gift' ? 'block' : 'none';
+  if(tab==='gift' && drw會員Id) renderGiftList();
+}
+
+function renderGiftList(){
+  const rewards = drw會員Rewards;
+  const bdayRewards = rewards.filter(r=>r.type==='里民禮物'&&r.milestone&&r.milestone.includes('生日')).sort((a,b)=>b.milestone.localeCompare(a.milestone));
+  const otherRewards = rewards.filter(r=>r.type==='里民禮物'&&(!r.milestone||!r.milestone.includes('生日')));
+  
+  let html = '';
+  if(bdayRewards.length){
+    html += '<div class="reward-year-label">生日禮品</div>';
+    html += bdayRewards.map(r=>`
+      <div class="reward-item-row">
+        <div class="reward-left">
+          <div class="reward-title">🎂 ${r.milestone}</div>
+          <div class="reward-sub">${r.rewardItem||'—'}${r.redeemed?' · ✓ '+r.redeemedAt:''}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          ${!r.redeemed?`<button class="btn btn-sm btn-green" onclick="openGiftRedeemModal('${r.id}')">兌換</button>`:'<span style="font-size:.65rem;color:var(--purple)">已兌換</span>'}
+          <button class="btn btn-sm btn-del" onclick="deleteReward('${r.id}')">刪除</button>
+        </div>
+      </div>`).join('');
+  }
+  if(otherRewards.length){
+    html += '<div class="reward-year-label" style="margin-top:.6rem">不定期禮品</div>';
+    html += otherRewards.map(r=>`
+      <div class="reward-item-row">
+        <div class="reward-left">
+          <div class="reward-title">🎁 ${r.milestone||'禮品'}</div>
+          <div class="reward-sub">${r.rewardItem||'—'}${r.redeemed?' · ✓ '+r.redeemedAt:''}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          ${!r.redeemed?`<button class="btn btn-sm btn-green" onclick="openGiftRedeemModal('${r.id}')">兌換</button>`:'<span style="font-size:.65rem;color:var(--purple)">已兌換</span>'}
+          <button class="btn btn-sm btn-del" onclick="deleteReward('${r.id}')">刪除</button>
+        </div>
+      </div>`).join('');
+  }
+  if(!html) html = '<div class="empty">尚無里民禮品記錄</div>';
+  document.getElementById('gift-list').innerHTML = html;
+}
+
+async function addBirthdayGift(){
+  if(!drw會員Id){ showToast('請先開啟會員'); return; }
+  const yr = new Date().getFullYear();
+  const exists = drw會員Rewards.find(r=>r.type==='里民禮物'&&r.milestone===yr+'生日禮');
+  if(exists){ showToast(`${yr}生日禮已存在`); return; }
+  try{
+    const rw = await apiFetch('/api/rewards',{method:'POST',body:{
+      memberId:drw會員Id, type:'里民禮物', milestone:yr+'生日禮',
+      triggerDate:new Date().toISOString().slice(0,10), redeemed:false,
+    }});
+    drw會員Rewards.push(rw); allRewards.push(rw);
+    renderGiftList(); renderDash(); render提醒(curFilter);
+    showToast('✦ 已新增 '+yr+' 生日禮');
+  }catch(e){ showToast('⚠ 新增失敗'); }
+}
+
+async function openAddGiftModal(){
+  const name = prompt('禮品名稱（例如：端午節禮品）：');
+  if(!name) return;
+  const content = prompt('禮品內容（選填）：') || '';
+  try{
+    const rw = await apiFetch('/api/rewards',{method:'POST',body:{
+      memberId:drw會員Id, type:'里民禮物', milestone:name,
+      rewardItem:content, triggerDate:new Date().toISOString().slice(0,10), redeemed:false,
+    }});
+    drw會員Rewards.push(rw); allRewards.push(rw);
+    renderGiftList(); renderDash(); render提醒(curFilter);
+    showToast('✦ 已新增禮品');
+  }catch(e){ showToast('⚠ 新增失敗'); }
+}
+
+function openGiftRedeemModal(id){
+  const rw = drw會員Rewards.find(r=>r.id===id);
+  if(!rw) return;
+  document.getElementById('rw-id').value = id;
+  document.getElementById('rw-allids').value = id;
+  document.getElementById('rw-redeemedAt').value = '';
+  document.getElementById('rw-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('rw-item').value = rw.rewardItem || '';
+  document.getElementById('rw-note').value = rw.note || '';
+  document.getElementById('rw-item-wrap').style.display = 'block';
+  document.getElementById('rw-illus-wrap').style.display = 'none';
+  document.getElementById('rw-count-wrap').style.display = 'none';
+  document.getElementById('reward-modal-title').textContent = '兌換 · '+rw.milestone;
+  // 兌換後要重新渲染 gift list
+  document.getElementById('rw-id').dataset.isGift = '1';
+  openM('reward');
 }
 
 function openBdayGiftPanel(){
