@@ -577,7 +577,7 @@ tr:hover td{background:#FEFBF2}
         <option value="LV.1鑰匙圈">LV.1 鑰匙圈</option>
         <option value="LV.2壓克力卡">LV.2 壓克力卡</option>
         <option value="LV.3方型立牌">LV.3 方型立牌</option>
-        <option value="LV.4準備中">LV.4 準備中</option>
+        <option value="LV.4飯友">LV.4 飯友</option>
       </select>
     </div>
     <div class="fr" id="gift-name-wrap" style="display:none">
@@ -1286,7 +1286,7 @@ function calcExpectedRewards(member){
   }
   // 每年生日禮 LV1-LV4 四筆，依等級帶入兌換內容
   const bdaySuffix = member.level==='LV.5 真蒸暖暖包'?'+卡片+影片':member.level==='LV.4 肌肉暖暖包'?'+卡片+語音':'+卡片';
-  const bdayLevels = ['LV.1鑰匙圈','LV.2壓克力卡','LV.3方型立牌','LV.4準備中'];
+  const bdayLevels = ['LV.1鑰匙圈','LV.2壓克力卡','LV.3方型立牌','LV.4飯友'];
   bdayLevels.forEach(lv=>{
     rewards.push({
       milestone:   lv,           // 里程碑：LV.1鑰匙圈
