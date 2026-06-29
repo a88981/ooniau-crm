@@ -65,6 +65,7 @@ html,body{height:100%;font-family:'Noto Sans TC',sans-serif;font-size:18px;color
 /* ── DASHBOARD ───────────────────────── */
 .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .dash-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.dash-grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .panel{background:#fff;border:.5px solid var(--gold-dim);border-radius:4px;padding:1rem 1.2rem}
 .pl{font-size:.58rem;letter-spacing:.28em;color:var(--gold);text-transform:uppercase;margin-bottom:.75rem;display:flex;align-items:center;gap:.6rem}
 .pl::after{content:'';flex:1;max-width:30px;height:.5px;background:var(--gold)}
@@ -288,10 +289,11 @@ tr:hover td{background:#FEFBF2}
         <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('urgent',document.getElementById('remind-btn-urgent')),50)"><div class="stn" style="color:#A32D2D" id="s-exp7">—</div><div class="stl">7天內到期</div></div>
         <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('reward',document.getElementById('remind-btn-reward')),50)"><div class="stn" style="color:var(--purple)" id="s-reward">—</div><div class="stl">福利待兌換</div></div>
       </div>
-      <div class="dash-grid-3">
+      <div class="dash-grid-4">
         <div class="panel"><div class="pl">近期壽星</div><div id="dash-bday"><div class="loading"><div class="spinner"></div></div></div></div>
-        <div class="panel"><div class="pl" style="display:none"></div><div id="dash-exp" style="display:none"><div class="loading"><div class="spinner"></div></div></div></div>
-        <div class="panel"><div class="pl">待兌換福利</div><div id="dash-reward"><div class="loading"><div class="spinner"></div></div></div></div>
+        <div class="panel"><div class="pl">里民禮品</div><div id="dash-gift"><div class="loading"><div class="spinner"></div></div></div></div>
+        <div class="panel"><div class="pl">占卜福利</div><div id="dash-divination"><div class="loading"><div class="spinner"></div></div></div></div>
+        <div class="panel"><div class="pl">生日禮品</div><div id="dash-bdaygift"><div class="loading"><div class="spinner"></div></div></div></div>
       </div>
     </div>
 
@@ -1051,6 +1053,24 @@ function renderDash(){
   const allPending=allRewards.filter(r=>!r.redeemed);
   const rw=allPending.slice(0,4);
   const rwMore = allPending.length > 4 ? `<div style="text-align:right;margin-top:4px"><span style="font-size:.65rem;color:var(--purple);cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('reward',document.getElementById('remind-btn-reward')),50)">查看全部 ${allPending.length} 筆 →</span></div>` : '';
+  // 里民禮品待兌換
+  const giftPending = allRewards.filter(r=>r.type==='里民禮物'&&!r.redeemed);
+  document.getElementById('dash-gift').innerHTML = giftPending.length
+    ? giftPending.slice(0,4).map(r=>{const mb=members.find(x=>x.id===r.memberId)||{};return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${r.memberId}'))"><div class="ri-dot rg">🎪</div><div class="ri-info"><div class="ri-name">${mb.memberName||mb.name||'—'}</div><div class="ri-sub">${r.milestone||r.rewardItem||'—'}</div></div></div>`;}).join('')+(giftPending.length>4?`<div style="text-align:right;padding:.3rem 0"><span style="font-size:.65rem;color:var(--purple);cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('activity',document.getElementById('remind-btn-activity')),50)">查看全部 ${giftPending.length} 筆 →</span></div>`:'')
+    : '<div class="empty">無待兌換里民禮品</div>';
+
+  // 占卜福利待兌換
+  const divinePending = allRewards.filter(r=>r.type==='每月占卜'&&!r.redeemed);
+  document.getElementById('dash-divination').innerHTML = divinePending.length
+    ? divinePending.slice(0,4).map(r=>{const mb=members.find(x=>x.id===r.memberId)||{};return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${r.memberId}'))"><div class="ri-dot rg">🔮</div><div class="ri-info"><div class="ri-name">${mb.memberName||mb.name||'—'}</div><div class="ri-sub">${r.rewardItem||'占卜'} · ${r.milestone}</div></div></div>`;}).join('')+(divinePending.length>4?`<div style="text-align:right;padding:.3rem 0"><span style="font-size:.65rem;color:var(--purple);cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('reward-monthly',document.getElementById('remind-btn-reward-monthly')),50)">查看全部 ${divinePending.length} 筆 →</span></div>`:'')
+    : '<div class="empty">無待兌換占卜福利</div>';
+
+  // 生日禮品待兌換（LV.1~LV.4）
+  const bdayGiftPending = allRewards.filter(r=>r.type==='里民禮物'&&!r.redeemed&&r.milestone&&['LV.1鑰匙圈','LV.2壓克力卡','LV.3方型立牌','LV.4飯友'].includes(r.milestone));
+  document.getElementById('dash-bdaygift').innerHTML = bdayGiftPending.length
+    ? bdayGiftPending.slice(0,4).map(r=>{const mb=members.find(x=>x.id===r.memberId)||{};return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${r.memberId}'))"><div class="ri-dot rb">🎂</div><div class="ri-info"><div class="ri-name">${mb.memberName||mb.name||'—'}</div><div class="ri-sub">${r.milestone}</div></div></div>`;}).join('')+(bdayGiftPending.length>4?`<div style="text-align:right;padding:.3rem 0"><span style="font-size:.65rem;color:var(--purple);cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('birthday',document.getElementById('remind-btn-birthday')),50)">查看全部 ${bdayGiftPending.length} 筆 →</span></div>`:'')
+    : '<div class="empty">無待兌換生日禮品</div>';
+
   document.getElementById('dash-reward').innerHTML=(rw.length?rw.map(r=>{const m=members.find(x=>x.id===r.memberId)||{};const typeLabel = r.type==='里民禮物'?'🎪 活動':r.type==='12個月獎勵'?'🏆 週邊':'🎁 訂閱';
 return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${r.memberId}'))"><div class="ri-dot rg">${r.type==='里民禮物'?'🎪':r.type==='12個月獎勵'?'🏆':'🎁'}</div><div class="ri-info"><div class="ri-name">${m.memberName||m.name||'—'}</div><div class="ri-sub">${typeLabel} · ${r.milestone} · ${r.rewardItem||''}</div></div></div>`;}).join(''):'<div class="empty">無待兌換福利</div>')+rwMore;
 }
