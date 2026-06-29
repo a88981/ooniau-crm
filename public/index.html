@@ -856,6 +856,12 @@ document.addEventListener('keydown', e => {
 
 function openDrw(m){
   if(!m) return;
+  // 清空上一個會員的資料
+  drw會員Id=null;
+  drw會員Rewards=[];
+  drw會員Payments=[];
+  document.getElementById('reward-list').innerHTML='<div class="loading"><div class="spinner"></div></div>';
+  document.getElementById('gift-list').innerHTML='<div class="loading"><div class="spinner"></div></div>';
   drw會員Id=m.id;
   refreshDrwInfo(m);
   document.getElementById('drw-bg').classList.add('open');
