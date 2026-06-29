@@ -284,12 +284,12 @@ tr:hover td{background:#FEFBF2}
       </div>
       <div class="stats">
         <div class="stat" style="cursor:pointer" onclick="go('members',document.getElementById('nav-members'));setTimeout(()=>setMFilter('all',document.querySelector('#view-members .filter-row .btn')),50)"><div class="stn" id="s-total">—</div><div class="stl">有效 / 全部</div></div>
-        <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('birthday',document.getElementById('remind-btn-birthday')),50)"><div class="stn" style="color:#D4A800" id="s-bday">—</div><div class="stl">本月生日</div></div>
+        <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('birthday',document.getElementById('remind-btn-birthday')),50)"><div class="stn" style="color:#D4A800" id="s-bday">—</div><div class="stl">近3個月生日</div></div>
         <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('urgent',document.getElementById('remind-btn-urgent')),50)"><div class="stn" style="color:#A32D2D" id="s-exp7">—</div><div class="stl">7天內到期</div></div>
         <div class="stat" style="cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('reward',document.getElementById('remind-btn-reward')),50)"><div class="stn" style="color:var(--purple)" id="s-reward">—</div><div class="stl">福利待兌換</div></div>
       </div>
       <div class="dash-grid-3">
-        <div class="panel"><div class="pl">本月壽星</div><div id="dash-bday"><div class="loading"><div class="spinner"></div></div></div></div>
+        <div class="panel"><div class="pl">近期壽星</div><div id="dash-bday"><div class="loading"><div class="spinner"></div></div></div></div>
         <div class="panel"><div class="pl">即將生日</div><div id="dash-exp"><div class="loading"><div class="spinner"></div></div></div></div>
         <div class="panel"><div class="pl">待兌換福利</div><div id="dash-reward"><div class="loading"><div class="spinner"></div></div></div></div>
       </div>
@@ -1034,15 +1034,14 @@ async function delete會員(){
 function renderDash(){
   const activeCount = members.filter(m=>m.exp && 天Until(m.exp)>=0).length;
   document.getElementById('s-total').textContent=`${activeCount} / ${members.length}`;
-  document.getElementById('s-bday').textContent=members.filter(m=>m.bday&&m.exp&&天Until(m.exp)>=0&&parseInt(m.bday.slice(5,7))===TODAY.getMonth()+1).length;
+  document.getElementById('s-bday').textContent=members.filter(m=>m.bday&&m.exp&&天Until(m.exp)>=0&&天UntilBday(m.bday)>=0&&天UntilBday(m.bday)<=90).length;
   document.getElementById('s-exp7').textContent=members.filter(m=>{const d=天Until(m.exp);return d>=0&&d<=7;}).length;
   const pendingRewards=allRewards.filter(r=>!r.redeemed).length;
   document.getElementById('s-reward').textContent=pendingRewards;
 
   const icons=['🎂','✨','🌸','🎁'];
-  const thisMonth = TODAY.getMonth()+1;
-  const bd=[...members].filter(m=>m.bday&&m.exp&&天Until(m.exp)>=0&&parseInt(m.bday.slice(5,7))===thisMonth).sort((a,b)=>parseInt(a.bday.slice(8))-parseInt(b.bday.slice(8)));
-  document.getElementById('dash-bday').innerHTML=bd.length?bd.map((m,i)=>{const d=天UntilBday(m.bday);return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${m.id}'))"><div class="ri-dot rb">${icons[i]||'🎂'}</div><div class="ri-info"><div class="ri-name">${m.memberName||m.name}</div><div class="ri-sub">${m.memberName?m.name+' · ':''} ${m.level} · ${m.bday.slice(5).replace('-','/')}</div></div><div class="ri-天"><span class="dn${d<=7?' red':''}">${d}</span><span class="dl">天</span></div></div>`;}).join(''):'<div class="empty">本月無壽星</div>';
+  const bd=[...members].filter(m=>m.bday&&m.exp&&天Until(m.exp)>=0&&天UntilBday(m.bday)>=0&&天UntilBday(m.bday)<=90).sort((a,b)=>天UntilBday(a.bday)-天UntilBday(b.bday));
+  document.getElementById('dash-bday').innerHTML=bd.length?bd.map((m,i)=>{const d=天UntilBday(m.bday);return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${m.id}'))"><div class="ri-dot rb">${icons[i]||'🎂'}</div><div class="ri-info"><div class="ri-name">${m.memberName||m.name}</div><div class="ri-sub">${m.memberName?m.name+' · ':''} ${m.level} · ${m.bday.slice(5).replace('-','/')}</div></div><div class="ri-天"><span class="dn${d<=7?' red':''}">${d}</span><span class="dl">天</span></div></div>`;}).join(''):'<div class="empty">近3個月無壽星</div>';
 
   const upcoming3Mo=[...members].filter(m=>m.bday&&m.exp&&天Until(m.exp)>=0&&天UntilBday(m.bday)>=0&&天UntilBday(m.bday)<=90).sort((a,b)=>天UntilBday(a.bday)-天UntilBday(b.bday));
   const bdUpcoming=upcoming3Mo.slice(0,4);
