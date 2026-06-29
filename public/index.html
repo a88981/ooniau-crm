@@ -290,7 +290,7 @@ tr:hover td{background:#FEFBF2}
       </div>
       <div class="dash-grid-3">
         <div class="panel"><div class="pl">近期壽星</div><div id="dash-bday"><div class="loading"><div class="spinner"></div></div></div></div>
-        <div class="panel"><div class="pl">即將生日</div><div id="dash-exp"><div class="loading"><div class="spinner"></div></div></div></div>
+        <div class="panel"><div class="pl" style="display:none"></div><div id="dash-exp" style="display:none"><div class="loading"><div class="spinner"></div></div></div></div>
         <div class="panel"><div class="pl">待兌換福利</div><div id="dash-reward"><div class="loading"><div class="spinner"></div></div></div></div>
       </div>
     </div>
@@ -346,11 +346,11 @@ tr:hover td{background:#FEFBF2}
         <button class="btn f-on" id="remind-btn-all" onclick="filterR('all',this)">全部</button>
         <button class="btn" id="remind-btn-urgent" onclick="filterR('urgent',this)">⚠ 7天內到期</button>
         <button class="btn" id="remind-btn-soon" onclick="filterR('soon',this)">◇ 30天內到期</button>
-        <button class="btn" id="remind-btn-birthday" onclick="filterR('birthday',this)">🎂 生日</button>
+        <button class="btn" id="remind-btn-birthday" onclick="filterR('birthday',this)">🎂 生日禮品</button>
         <button class="btn" id="remind-btn-reward-monthly" onclick="filterR('reward-monthly',this)">🔮 占卜福利</button>
         <button class="btn" id="remind-btn-reward-sub" onclick="filterR('reward-sub',this)">🎁 三個月福利</button>
         <button class="btn" id="remind-btn-reward-year" onclick="filterR('reward-year',this)">🏆 週邊福利</button>
-<button class="btn" id="remind-btn-activity" onclick="filterR('activity',this)">🎪 活動福利</button>
+        <button class="btn" id="remind-btn-activity" onclick="filterR('activity',this)">🎪 里民禮品</button>
         <button class="btn" id="remind-btn-holiday" onclick="filterR('holiday',this)">◈ 節日</button>
       </div>
       <div class="rlist" id="r-list"><div class="loading"><div class="spinner"></div>載入中</div></div>
