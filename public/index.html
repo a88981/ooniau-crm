@@ -1054,7 +1054,7 @@ function renderDash(){
   const rw=allPending.slice(0,4);
   const rwMore = allPending.length > 4 ? `<div style="text-align:right;margin-top:4px"><span style="font-size:.65rem;color:var(--purple);cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('reward',document.getElementById('remind-btn-reward')),50)">查看全部 ${allPending.length} 筆 →</span></div>` : '';
   // 里民禮品待兌換
-  const giftPending = allRewards.filter(r=>r.type==='里民禮物'&&!r.redeemed);
+  const giftPending = allRewards.filter(r=>r.type==='里民禮物'&&!r.redeemed&&(!r.milestone||(!r.milestone.startsWith('LV.')&&!r.milestone.includes('生日禮'))));
   document.getElementById('dash-gift').innerHTML = giftPending.length
     ? giftPending.slice(0,4).map(r=>{const mb=members.find(x=>x.id===r.memberId)||{};return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${r.memberId}'))"><div class="ri-dot rg">🎪</div><div class="ri-info"><div class="ri-name">${mb.memberName||mb.name||'—'}</div><div class="ri-sub">${r.milestone||r.rewardItem||'—'}</div></div></div>`;}).join('')+(giftPending.length>4?`<div style="text-align:right;padding:.3rem 0"><span style="font-size:.65rem;color:var(--purple);cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('activity',document.getElementById('remind-btn-activity')),50)">查看全部 ${giftPending.length} 筆 →</span></div>`:'')
     : '<div class="empty">無待兌換里民禮品</div>';
@@ -1071,7 +1071,7 @@ function renderDash(){
     ? bdayGiftPending.slice(0,4).map(r=>{const mb=members.find(x=>x.id===r.memberId)||{};return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${r.memberId}'))"><div class="ri-dot rb">🎂</div><div class="ri-info"><div class="ri-name">${mb.memberName||mb.name||'—'}</div><div class="ri-sub">${r.milestone}</div></div></div>`;}).join('')+(bdayGiftPending.length>4?`<div style="text-align:right;padding:.3rem 0"><span style="font-size:.65rem;color:var(--purple);cursor:pointer" onclick="go('reminders',document.getElementById('nav-reminders'));setTimeout(()=>filterR('birthday',document.getElementById('remind-btn-birthday')),50)">查看全部 ${bdayGiftPending.length} 筆 →</span></div>`:'')
     : '<div class="empty">無待兌換生日禮品</div>';
 
-  document.getElementById('dash-reward').innerHTML=(rw.length?rw.map(r=>{const m=members.find(x=>x.id===r.memberId)||{};const typeLabel = r.type==='里民禮物'?'🎪 活動':r.type==='12個月獎勵'?'🏆 週邊':'🎁 訂閱';
+  const dashReward=document.getElementById('dash-reward'); if(dashReward) dashReward.innerHTML=(rw.length?rw.map(r=>{const m=members.find(x=>x.id===r.memberId)||{};const typeLabel = r.type==='里民禮物'?'🎪 活動':r.type==='12個月獎勵'?'🏆 週邊':'🎁 訂閱';
 return`<div class="ri-row" onclick="openDrw(members.find(x=>x.id==='${r.memberId}'))"><div class="ri-dot rg">${r.type==='里民禮物'?'🎪':r.type==='12個月獎勵'?'🏆':'🎁'}</div><div class="ri-info"><div class="ri-name">${m.memberName||m.name||'—'}</div><div class="ri-sub">${typeLabel} · ${r.milestone} · ${r.rewardItem||''}</div></div></div>`;}).join(''):'<div class="empty">無待兌換福利</div>')+rwMore;
 }
 
